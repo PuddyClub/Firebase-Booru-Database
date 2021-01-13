@@ -363,7 +363,16 @@ class booru_manager {
                     // Validate Size
                     if (require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
 
+                        // Allowed Item
                         result.allowed = true;
+
+                        // Firebase Escape
+                        const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                        result.escaped = {};
+
+                        // Escaped Values
+                        result.escaped.tagName = databaseEscape(tagName, resultCheck.usePath);
+                        result.escaped.itemID = databaseEscape(itemID, resultCheck.usePath);
 
                     }
 
@@ -412,14 +421,8 @@ class booru_manager {
             // Allowed
             if (resultCheck.allowed) {
 
-                // Firebase Escape
-                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-
-                const escapedTagName = databaseEscape(tagName, resultCheck.usePath);
-                const escapedItemID = databaseEscape(itemID, resultCheck.usePath);
-
                 // Get Tag
-                const tagItem = this.dbItems.tag.child(escapedTagName).child(escapedItemID);
+                const tagItem = this.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.set(itemData)
@@ -436,8 +439,8 @@ class booru_manager {
                                     itemID: itemID
                                 },
                                 escape: {
-                                    tag: escapedTagName,
-                                    itemID: escapedItemID
+                                    tag: resultCheck.escaped.tagName,
+                                    itemID: resultCheck.escaped.itemID
                                 }
                             }
                         });
