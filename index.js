@@ -147,17 +147,42 @@ class booru_manager {
     }
 
     // Get OLD Tag
-    getOLDTag() {
+    getOLDTag(tag_name) {
+        return new Promise(function (resolve, reject) {
 
+            // Get Firebase Database Data
+            if (typeof tag_name === "string" && tag_name.length > 0) {
+                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag.child(tag_name)).then(data => {
+                    resolve(data);
+                    return;
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
+            }
 
+            // Ops
+            else {
+                reject(new Error('Invalid Tag Name!'));
+            }
 
+        });
     }
 
     // Get OLD Tags
     getOLDTags() {
+        return new Promise(function (resolve, reject) {
 
+            // Get Firebase Database Data
+            require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag).then(data => {
+                resolve(data);
+                return;
+            }).catch(err => {
+                reject(err);
+                return;
+            });
 
-
+        });
     }
 
     // Get Error
