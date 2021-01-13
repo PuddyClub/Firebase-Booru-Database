@@ -25,6 +25,12 @@ const test_booru = new booru_database({
     // Module
     module_name: 'test',
 
+    // Tags Var
+    tagListVar: 'tags',
+
+    // Tags Var
+    idVar: 'id',
+
     // Database
     db: {
 
@@ -32,7 +38,7 @@ const test_booru = new booru_database({
         type: 'ref',
 
         // Database
-        data: firebase.db()
+        data: firebase.database()
 
     },
 
@@ -55,6 +61,23 @@ const test_booru = new booru_database({
 });
 
 // Start Test
+test_booru.updateDatabase([
+    { id: 'tiny_test_1', tags: ['test1', 'test2', 'test3'], custom: 1 },
+    { id: 'tiny_test_2', tags: ['test1', 'test2', 'test3'], custom: 2 },
+    { id: 'tiny_test_3', tags: ['test1', 'test2', 'test3'], custom: 3 }
+]).then(result => {
+
+    // Show Result
+    console.log(result);
+    return;
+
+}).catch(err => {
+
+    // Show Error
+    console.error(err);
+    return;
+
+});
 
 // Keep Test Online
-setInterval(function () {}, 1000);
+setInterval(function () { }, 1000);
