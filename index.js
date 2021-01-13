@@ -750,11 +750,18 @@ class booru_manager {
                                     // Result
                                     .then(() => {
 
+                                        // Firebase Escape
+                                        const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                        const escaped_values = {
+                                            tagName: databaseEscape(tagName, allowPath),
+                                            itemID: databaseEscape(itemID, allowPath)
+                                        };
+
                                         // Create Tag
-                                        if (!itemList[tagName]) { itemList[tagName] = {}; }
+                                        if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
 
                                         // Insert Item in the Tag
-                                        itemList[tagName][itemID] = data[item];
+                                        itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
 
                                         // Complete
                                         fn();
@@ -784,9 +791,6 @@ class booru_manager {
                         // Result
                         .then(() => {
 
-                            // Firebase Escape
-                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-
                             // Obj Type
                             const objType = require('@tinypudding/puddy-lib/get/objType');
                             if (objType(oldTags, 'object') || Array.isArray(oldTags)) {
@@ -801,24 +805,29 @@ class booru_manager {
                                         const readTag = extra({ data: oldTags[tag] });
                                         readTag.run(function (item, fn, fn_error) {
 
-                                            // OLD Data
-                                            const oldDB = tinythis.dbItems.tag.child(tag).child(item);
+                                            // Can Delete
+                                            if (
+                                                !objType(oldTags[tag][item]) ||
+                                                typeof oldTags[tag][item][tinythis.idVar] !== "string" ||
+                                                !itemList[tag] || !itemList[tag][item]
+                                            ) {
 
-                                            // Is Object
-                                            if (objType(oldTags[tag][item])) {
-
-                                            }
-
-                                            // Nope
-                                            else {
-                                                oldDB.remove().then(() => {
+                                                // Remover
+                                                tinythis.dbItems.tag.child(tag).child(item).remove().then(() => {
                                                     fn();
                                                     return;
                                                 }).catch(err => {
                                                     fn_error(err);
                                                     return;
                                                 });
+
                                             }
+
+                                            // Nope
+                                            else { fn(); }
+
+                                            // Complete
+                                            return;
 
                                         });
 
@@ -826,7 +835,6 @@ class booru_manager {
 
                                     // Complete
                                     fn();
-
                                     return;
 
                                 })
