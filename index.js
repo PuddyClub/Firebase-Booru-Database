@@ -707,7 +707,7 @@ class booru_manager {
     }
 
     // Checker Data
-    checker(data) {
+    checker(data, allowPath = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -718,9 +718,53 @@ class booru_manager {
                 const itemList = {};
 
                 // For Promise
-                require('for-promise')({ data: data }, function (item, fn, fn_error) {
+                require('for-promise')({ data: data }, function (item, fn, fn_error, extra) {
+
+                    // Check Exist Tag
+                    if (Array.isArray(data[item][tinythis.tagList])) {
+
+                        // Read Tags
+                        const readTags = extra({ data: data[item][tinythis.tagList] });
+                        readTags.run(function (tagIndex, fn, fn_error) {
+
+                            // Tag Name
+                            const tagName = data[item][tinythis.tagList][tagIndex];
+                            const itemID = data[item][tinythis.idVar];
+
+                            // Validator
+                            if (typeof tagName === "string" && tagName.length > 0) {
+
+                                // Add Tag
+                                tinythis.addTagItem({
+                                    tag: tagName,
+                                    itemID: itemID,
+                                    data: data[item],
+                                    allowPath: allowPath
+                                })
+
+                                    // Result
+                                    .then(() => {
+                                        fn();
+                                        return;
+                                    }).catch(err => {
+                                        fn_error(err);
+                                        return;
+                                    });
+
+                            }
+
+                            // Nope
+                            else { fn(); }
+
+                            // Complete
+                            return;
+
+                        });
+
+                    }
 
                     // Complete
+                    fn();
                     return;
 
                 })
