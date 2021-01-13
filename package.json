@@ -1,0 +1,22 @@
+{
+  "name": "@tinypudding/firebase-booru-database",
+  "version": "1.0.0",
+  "description": "Script to synchronize data from booru websites with Firebase Database Realtime.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TinyPudding/Firebase-Booru-Database.git"
+  },
+  "keywords": [
+    "booru"
+  ],
+  "author": "Yasmin Seidel (JasminDreasond)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TinyPudding/Firebase-Booru-Database/issues"
+  },
+  "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme"
+}
