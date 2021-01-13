@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme",
   "dependencies": {
-    "@tinypudding/puddy-lib": "^1.0.0",
+    "@tinypudding/puddy-lib": "^1.0.1",
     "for-promise": "^1.2.7",
     "valid-url": "^1.0.9"
   }
