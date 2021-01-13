@@ -385,8 +385,8 @@ class booru_manager {
                         result.escaped = {};
 
                         // Escaped Values
-                        result.escaped.tagName = databaseEscape(tagName, resultCheck.usePath);
-                        result.escaped.itemID = databaseEscape(itemID, resultCheck.usePath);
+                        result.escaped.tagName = databaseEscape(tagName, allowPath);
+                        result.escaped.itemID = databaseEscape(itemID, allowPath);
 
                     }
 
