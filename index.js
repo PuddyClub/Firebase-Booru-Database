@@ -642,6 +642,12 @@ class booru_manager {
 
             tinythis.dbItems.error.set({
 
+            }).then(() => {
+                resolve();
+                return;
+            }).catch(err => {
+                reject(err);
+                return;
             });
 
         });
