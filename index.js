@@ -339,96 +339,125 @@ class booru_manager {
 
     // Add Items
 
-    // Tags
-    addTagItem(tagName, itemID, itemData, allowPath = false) {
-        return new Promise(function (resolve, reject) {
+    // Tag Function Template
+    tagFunctionChecker(tagName, itemID, itemData, allowPath = false) {
 
-            // Get Allow Path
-            let allowDatabasePath = false;
-            if (typeof allowPath === "boolean") { allowDatabasePath = allowPath; }
+        // Tiny Result
+        const result = { usePath: false };
 
-            // Obj Type
-            const objType = require('@tinypudding/puddy-lib/get/objType');
+        // Get Allow Path
+        if (typeof allowPath === "boolean") { result.usePath = allowPath; }
 
-            // Tag Name
-            if (typeof tagName === "string" && tagName.length > 0) {
+        // Obj Type
+        const objType = require('@tinypudding/puddy-lib/get/objType');
 
-                // Tag ID
-                if (typeof itemID === "string" && itemID.length > 0) {
+        // Tag Name
+        if (typeof tagName === "string" && tagName.length > 0) {
 
-                    // Object Validator
-                    if (objType(itemData, 'object')) {
+            // Tag ID
+            if (typeof itemID === "string" && itemID.length > 0) {
 
-                        // Validate Size
-                        if (require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
+                // Object Validator
+                if (objType(itemData, 'object')) {
 
-                            // Firebase Escape
-                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                    // Validate Size
+                    if (require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
 
-                            const escapedTagName = databaseEscape(tagName, allowDatabasePath);
-                            const escapedItemID = databaseEscape(itemID, allowDatabasePath);
-
-                            // Get Tag
-                            const tagItem = this.dbItems.tag.child(escapedTagName).child(escapedItemID);
-
-                            // Set Data
-                            tagItem.set(itemData)
-                            
-                            // Success
-                            .then(() => {
-
-                                // Send Result
-                                resolve({
-                                    db: tagItem,
-                                    values: {
-                                        normal: {
-                                            tag: tagName,
-                                            itemID: itemID
-                                        },
-                                        escape: {
-                                            tag: escapedTagName,
-                                            itemID: escapedItemID
-                                        }
-                                    }
-                                });
-
-                                // Complete
-                                return;
-
-                            })
-                            
-                            // Error
-                            .catch(err => {
-                                reject(err);
-                                return;
-                            });
-
-                        }
-
-                        // Nope
-                        else {
-                            reject(new Error('The tag item size is very big!'));
-                        }
+                        result.allowed = true;
 
                     }
 
                     // Nope
                     else {
-                        reject(new Error('Invalid data for add the tag item!'));
+                        result.err = new Error('The tag item size is very big!');
+                        result.allowed = false;
                     }
 
                 }
 
                 // Nope
                 else {
-                    reject(new Error('Invalid Tag ID!'));
+                    result.err = new Error('Invalid data for add the tag item!');
+                    result.allowed = false;
                 }
 
             }
 
             // Nope
             else {
-                reject(new Error('Invalid Tag Name!'));
+                result.err = new Error('Invalid Tag ID!');
+                result.allowed = false;
+            }
+
+        }
+
+        // Nope
+        else {
+            result.err = new Error('Invalid Tag Name!');
+            result.allowed = false;
+        }
+
+        // Send Result
+        return result;
+
+    }
+
+    // Tags
+    addTagItem(tagName, itemID, itemData, allowPath) {
+        return new Promise(function (resolve, reject) {
+
+            // Check
+            const resultCheck = this.tagFunctionChecker(tagName, itemID, itemData, allowPath);
+
+            // Allowed
+            if (resultCheck.allowed) {
+
+                // Firebase Escape
+                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+
+                const escapedTagName = databaseEscape(tagName, resultCheck.usePath);
+                const escapedItemID = databaseEscape(itemID, resultCheck.usePath);
+
+                // Get Tag
+                const tagItem = this.dbItems.tag.child(escapedTagName).child(escapedItemID);
+
+                // Set Data
+                tagItem.set(itemData)
+
+                    // Success
+                    .then(() => {
+
+                        // Send Result
+                        resolve({
+                            db: tagItem,
+                            values: {
+                                normal: {
+                                    tag: tagName,
+                                    itemID: itemID
+                                },
+                                escape: {
+                                    tag: escapedTagName,
+                                    itemID: escapedItemID
+                                }
+                            }
+                        });
+
+                        // Complete
+                        return;
+
+                    })
+
+                    // Error
+                    .catch(err => {
+                        reject(err);
+                        return;
+                    });
+
+            }
+
+            // Nope
+            else {
+                reject(resultCheck.err);
             }
 
             // Complete
