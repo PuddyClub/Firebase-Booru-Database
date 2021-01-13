@@ -166,6 +166,9 @@ class booru_manager {
                 reject(new Error('Invalid Tag Name!'));
             }
 
+            // Complete
+            return;
+
         });
     }
 
@@ -242,6 +245,9 @@ class booru_manager {
                 reject(new Error('Invalid Item List!'));
             }
 
+            // Complete
+            return;
+
         });
     }
 
@@ -257,6 +263,9 @@ class booru_manager {
                 reject(err);
                 return;
             });
+
+            // Complete
+            return;
 
         });
     }
