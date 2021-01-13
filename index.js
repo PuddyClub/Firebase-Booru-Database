@@ -743,9 +743,21 @@ class booru_manager {
 
                                 // Result
                                 .then(() => {
+
+                                    // Create Tag
+                                    if(!itemList[tagName]) { itemList[tagName] = {}; }
+
+                                    // Insert Item in the Tag
+                                    itemList[tagName][itemID] = data[item];
+
+                                    // Complete
                                     fn();
                                     return;
-                                }).catch(err => {
+                                
+                                })
+                                
+                                // Error
+                                .catch(err => {
                                     fn_error(err);
                                     return;
                                 });
