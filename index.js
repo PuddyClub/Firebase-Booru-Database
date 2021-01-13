@@ -201,7 +201,23 @@ class booru_manager {
                     // Is String
                     if (typeof itemsList[item] === "string" && itemsList[item].length > 0) {
 
-
+                        // Get Data
+                        getDBData(this.dbItems.tag.child(itemsList[item])).then(data => {
+                            
+                            // Insert Data
+                            itemList[itemsList[item]] = data;
+                            
+                            // Complete
+                            fn();
+                            return;
+                        
+                        })
+                        
+                        // Fail
+                        .catch(err => {
+                            fn_error(err);
+                            return;
+                        });
 
                     } 
                     
