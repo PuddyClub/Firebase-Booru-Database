@@ -706,6 +706,26 @@ class booru_manager {
         });
     }
 
+    // Checker Data
+    checker(data) {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            // Is Array
+            if(Array.isArray(data)) {
+
+                
+
+            }
+
+            // Nope
+            else {
+                reject(new Error('Invalid Array Value! Please! Insert a array value to be checked!'));
+            }
+
+        });
+    }
+
 };
 
 // Export
