@@ -146,13 +146,13 @@ class booru_manager {
 
     }
 
-    // Get Tag
-    getTag(tag_name) {
+    // Get Template
+    getItemTemplate(tag_name, database_name) {
         return new Promise(function (resolve, reject) {
 
             // Get Firebase Database Data
             if (typeof tag_name === "string" && tag_name.length > 0) {
-                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag.child(tag_name)).then(data => {
+                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems[database_name].child(tag_name)).then(data => {
                     resolve(data);
                     return;
                 }).catch(err => {
@@ -172,8 +172,7 @@ class booru_manager {
         });
     }
 
-    // Get Tags
-    getTags(itemsList = null) {
+    getItemsTemplate(itemsList = null, database_name) {
         return new Promise(function (resolve, reject) {
 
             // Modules
@@ -183,7 +182,7 @@ class booru_manager {
 
             // Normal
             if (!itemsList) {
-                getDBData(this.dbItems.tag).then(data => {
+                getDBData(this.dbItems[database_name]).then(data => {
                     resolve(data);
                     return;
                 }).catch(err => {
@@ -200,43 +199,43 @@ class booru_manager {
 
                 // For Promise
                 require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
-                    
+
                     // Is String
                     if (typeof itemsList[item] === "string" && itemsList[item].length > 0) {
 
                         // Get Data
-                        getDBData(this.dbItems.tag.child(itemsList[item])).then(data => {
-                            
+                        getDBData(this.dbItems[database_name].child(itemsList[item])).then(data => {
+
                             // Insert Data
                             itemList[itemsList[item]] = data;
-                            
+
                             // Complete
                             fn();
                             return;
-                        
-                        })
-                        
-                        // Fail
-                        .catch(err => {
-                            fn_error(err);
-                            return;
-                        });
 
-                    } 
-                    
+                        })
+
+                            // Fail
+                            .catch(err => {
+                                fn_error(err);
+                                return;
+                            });
+
+                    }
+
                     // Nope
                     else { fn(); }
 
                 })
-                
-                // Result
-                .then(() => {
-                    resolve(itemList);
-                    return;
-                }).catch(err => {
-                    reject(err);
-                    return;
-                });
+
+                    // Result
+                    .then(() => {
+                        resolve(itemList);
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
 
             }
 
@@ -251,23 +250,24 @@ class booru_manager {
         });
     }
 
+    // Get Tag
+    getTag(tag_name) {
+        return this.getItemTemplate(tag_name, 'tag');
+    }
+
+    // Get Tags
+    getTags(itemsList) {
+        return this.getItemsTemplate(itemsList, 'tag');
+    }
+
     // Get Error
-    getError() {
-        return new Promise(function (resolve, reject) {
+    getError(error_name) {
+        return this.getItemTemplate(error_name, 'error');
+    }
 
-            // Get Firebase Database Data
-            require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.error).then(data => {
-                resolve(data);
-                return;
-            }).catch(err => {
-                reject(err);
-                return;
-            });
-
-            // Complete
-            return;
-
-        });
+    // Get Errors
+    getErrors(itemsList) {
+        return this.getItemsTemplate(itemsList, 'error');
     }
 
 };
