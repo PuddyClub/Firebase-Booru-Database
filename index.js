@@ -340,7 +340,7 @@ class booru_manager {
     // Add Items
 
     // Tag Function Template
-    tagItemChecker(tagName, itemID, itemData, allowPath = false) {
+    tagItemChecker(tagName, itemID, itemData = null, allowPath = false, allowItemNull = false) {
 
         // Tiny Result
         const result = { usePath: false };
@@ -358,10 +358,10 @@ class booru_manager {
             if (typeof itemID === "string" && itemID.length > 0) {
 
                 // Object Validator
-                if (objType(itemData, 'object')) {
+                if (allowItemNull || objType(itemData, 'object')) {
 
                     // Validate Size
-                    if (require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
+                    if (allowItemNull || require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
 
                         // Allowed Item
                         result.allowed = true;
@@ -426,6 +426,64 @@ class booru_manager {
 
                 // Set Data
                 tagItem.set(itemData)
+
+                    // Success
+                    .then(() => {
+
+                        // Send Result
+                        resolve({
+                            db: tagItem,
+                            values: {
+                                normal: {
+                                    tag: tagName,
+                                    itemID: itemID
+                                },
+                                escape: {
+                                    tag: resultCheck.escaped.tagName,
+                                    itemID: resultCheck.escaped.itemID
+                                }
+                            }
+                        });
+
+                        // Complete
+                        return;
+
+                    })
+
+                    // Error
+                    .catch(err => {
+                        reject(err);
+                        return;
+                    });
+
+            }
+
+            // Nope
+            else {
+                reject(resultCheck.err);
+            }
+
+            // Complete
+            return;
+
+        });
+    }
+
+    // Tags
+    removeTagItem(tagName, itemID, allowPath) {
+        return new Promise(function (resolve, reject) {
+
+            // Check
+            const resultCheck = this.tagItemChecker(tagName, itemID, null, allowPath, true);
+
+            // Allowed
+            if (resultCheck.allowed) {
+
+                // Get Tag
+                const tagItem = this.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+
+                // Set Data
+                tagItem.rempve()
 
                     // Success
                     .then(() => {
