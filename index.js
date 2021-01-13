@@ -64,11 +64,13 @@ class booru_manager {
                             // Is Ref
                             if (database_checker.isRef) {
                                 this.db = data.db.data.ref(data.db.value);
+                                this.firstDBLine = 'child';
                             }
 
                             // Is Base
                             else if (database_checker.isBase) {
                                 this.db = data.db.data;
+                                this.firstDBLine = 'ref';
                             }
 
                             // Complete
