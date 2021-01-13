@@ -147,7 +147,7 @@ class booru_manager {
     }
 
     // Get OLD Tag
-    getOLDTag(tag_name) {
+    getTag(tag_name) {
         return new Promise(function (resolve, reject) {
 
             // Get Firebase Database Data
@@ -170,7 +170,7 @@ class booru_manager {
     }
 
     // Get OLD Tags
-    getOLDTags(itemsList = null) {
+    getTags(itemsList = null) {
         return new Promise(function (resolve, reject) {
 
             // Modules
