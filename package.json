@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme",
   "dependencies": {
-    "for-promise": "^1.2.6"
+    "for-promise": "^1.2.7"
   }
 }
