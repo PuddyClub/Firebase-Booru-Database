@@ -706,8 +706,8 @@ class booru_manager {
         });
     }
 
-    // Checker Data
-    checker(data, allowPath = false) {
+    // Update Database
+    updateDatabase(data, allowPath = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -777,8 +777,12 @@ class booru_manager {
 
                     // Result
                     .then(() => {
+
+
+
                         resolve(itemList);
                         return;
+                    
                     }).catch(err => {
                         reject(err);
                         return;
