@@ -484,7 +484,18 @@ class booru_manager {
                 // For Promise
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
-                    this.addTagItem();
+                    // Add Tag
+                    this.addTagItem(items[item]).then((result) => {
+                        itemList[items[item].tag] = result;
+                        fn();
+                        return;
+                    }).catch(err => {
+                        fn_error(err);
+                        return;
+                    });
+
+                    // Complete
+                    return;
 
                 })
 
@@ -581,6 +592,18 @@ class booru_manager {
                 // For Promise
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
+                    // Remove Tag
+                    this.removeTagItem(items[item]).then((result) => {
+                        itemList[items[item].tag] = result;
+                        fn();
+                        return;
+                    }).catch(err => {
+                        fn_error(err);
+                        return;
+                    });
+
+                    // Complete
+                    return;
 
                 })
 
