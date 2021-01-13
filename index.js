@@ -472,26 +472,36 @@ class booru_manager {
     }
 
     // Add Multiple Tags
-    addTagItems() {
+    addTagItems(items) {
         return new Promise(function (resolve, reject) {
 
             // Item List
             const itemList = {};
 
-            // For Promise
-            require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+            // Array Validator
+            if (Array.isArray(items)) {
+
+                // For Promise
+                require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
 
-            })
+                })
 
-                // Result
-                .then(() => {
-                    resolve(itemList);
-                    return;
-                }).catch(err => {
-                    reject(err);
-                    return;
-                });
+                    // Result
+                    .then(() => {
+                        resolve(itemList);
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+
+            }
+
+            // Nope
+            else {
+                reject(new Error('The Tag List data is not a array!'));
+            }
 
             // Complete
             return;
@@ -558,26 +568,36 @@ class booru_manager {
     }
 
     // Remove Multiple Tags
-    removeTagItems() {
+    removeTagItems(items) {
         return new Promise(function (resolve, reject) {
 
             // Item List
             const itemList = {};
 
-            // For Promise
-            require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+            // Array Validator
+            if (Array.isArray(items)) {
+
+                // For Promise
+                require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
 
-            })
+                })
 
-                // Result
-                .then(() => {
-                    resolve(itemList);
-                    return;
-                }).catch(err => {
-                    reject(err);
-                    return;
-                });
+                    // Result
+                    .then(() => {
+                        resolve(itemList);
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+
+            }
+
+            // Nope
+            else {
+                reject(new Error('The Tag List data is not a array!'));
+            }
 
             // Complete
             return;
