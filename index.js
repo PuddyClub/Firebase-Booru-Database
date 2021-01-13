@@ -340,10 +340,53 @@ class booru_manager {
     // Add Items
 
     // Tags
-    addTagItem(tagName, itemID) {
+    addTagItem(tagName, itemID, itemData) {
         return new Promise(function (resolve, reject) {
 
+            // Obj Type
+            const objType = require('@tinypudding/puddy-lib/get/objType');
 
+            // Tag Name
+            if (typeof tagName === "string" && tagName.length > 0) {
+
+                // Tag ID
+                if (typeof itemID === "string" && itemID.length > 0) {
+
+                    // Object Validator
+                    if (objType(itemData, 'object')) {
+
+                        // Validate Size
+                        if (require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
+
+                            
+
+                        }
+
+                        // Nope
+                        else {
+                            reject(new Error('The tag item size is very big!'));
+                        }
+
+                    }
+
+                    // Nope
+                    else {
+                        reject(new Error('Invalid data for add the tag item!'));
+                    }
+
+                }
+
+                // Nope
+                else {
+                    reject(new Error('Invalid Tag ID!'));
+                }
+
+            }
+
+            // Nope
+            else {
+                reject(new Error('Invalid Tag Name!'));
+            }
 
             // Complete
             return;
