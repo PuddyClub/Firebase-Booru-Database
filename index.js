@@ -712,9 +712,27 @@ class booru_manager {
         return new Promise(function (resolve, reject) {
 
             // Is Array
-            if(Array.isArray(data)) {
+            if (Array.isArray(data)) {
 
-                
+                // Item List
+                const itemList = {};
+
+                // For Promise
+                require('for-promise')({ data: data }, function (item, fn, fn_error) {
+
+                    // Complete
+                    return;
+
+                })
+
+                    // Result
+                    .then(() => {
+                        resolve(itemList);
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
 
             }
 
@@ -722,6 +740,9 @@ class booru_manager {
             else {
                 reject(new Error('Invalid Array Value! Please! Insert a array value to be checked!'));
             }
+
+            // Complete
+            return;
 
         });
     }
