@@ -173,11 +173,14 @@ class booru_manager {
     getOLDTags(itemsList = null) {
         return new Promise(function (resolve, reject) {
 
+            // Modules
+            const getDBData = require('@tinypudding/puddy-lib/firebase/getDBData');
+
             // Get Firebase Database Data
 
             // Normal
             if (!itemsList) {
-                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag).then(data => {
+                getDBData(this.dbItems.tag).then(data => {
                     resolve(data);
                     return;
                 }).catch(err => {
