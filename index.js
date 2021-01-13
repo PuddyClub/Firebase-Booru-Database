@@ -714,79 +714,90 @@ class booru_manager {
             // Is Array
             if (Array.isArray(data)) {
 
-                // Item List
-                const itemList = {};
+                // Get OLD Data
+                tinythis.getTags().then(oldTags => {
 
-                // For Promise
-                require('for-promise')({ data: data }, function (item, fn, fn_error, extra) {
+                    // Item List
+                    const itemList = {};
 
-                    // Item ID
-                    const itemID = data[item][tinythis.idVar];
+                    // For Promise
+                    require('for-promise')({ data: data }, function (item, fn, fn_error, extra) {
 
-                    // Check Exist Options
-                    if (Array.isArray(data[item][tinythis.tagList]) && typeof tagName === "string" && tagName.length > 0) {
+                        // Item ID
+                        const itemID = data[item][tinythis.idVar];
 
-                        // Read Tags
-                        const readTags = extra({ data: data[item][tinythis.tagList] });
-                        readTags.run(function (tagIndex, fn, fn_error) {
+                        // Check Exist Options
+                        if (Array.isArray(data[item][tinythis.tagList]) && typeof tagName === "string" && tagName.length > 0) {
 
-                            // Tag Name
-                            const tagName = data[item][tinythis.tagList][tagIndex];
+                            // Read Tags
+                            const readTags = extra({ data: data[item][tinythis.tagList] });
+                            readTags.run(function (tagIndex, fn, fn_error) {
 
-                            // Add Tag
-                            tinythis.addTagItem({
-                                tag: tagName,
-                                itemID: itemID,
-                                data: data[item],
-                                allowPath: allowPath
-                            })
+                                // Tag Name
+                                const tagName = data[item][tinythis.tagList][tagIndex];
 
-                                // Result
-                                .then(() => {
-
-                                    // Create Tag
-                                    if(!itemList[tagName]) { itemList[tagName] = {}; }
-
-                                    // Insert Item in the Tag
-                                    itemList[tagName][itemID] = data[item];
-
-                                    // Complete
-                                    fn();
-                                    return;
-                                
+                                // Add Tag
+                                tinythis.addTagItem({
+                                    tag: tagName,
+                                    itemID: itemID,
+                                    data: data[item],
+                                    allowPath: allowPath
                                 })
-                                
-                                // Error
-                                .catch(err => {
-                                    fn_error(err);
-                                    return;
-                                });
 
-                            // Complete
+                                    // Result
+                                    .then(() => {
+
+                                        // Create Tag
+                                        if (!itemList[tagName]) { itemList[tagName] = {}; }
+
+                                        // Insert Item in the Tag
+                                        itemList[tagName][itemID] = data[item];
+
+                                        // Complete
+                                        fn();
+                                        return;
+
+                                    })
+
+                                    // Error
+                                    .catch(err => {
+                                        fn_error(err);
+                                        return;
+                                    });
+
+                                // Complete
+                                return;
+
+                            });
+
+                        }
+
+                        // Complete
+                        fn();
+                        return;
+
+                    })
+
+                        // Result
+                        .then(() => {
+
+
+                            // Finished
+                            resolve(itemList);
                             return;
 
+                        }).catch(err => {
+                            reject(err);
+                            return;
                         });
 
-                    }
-
                     // Complete
-                    fn();
                     return;
 
-                })
-
-                    // Result
-                    .then(() => {
-
-
-
-                        resolve(itemList);
-                        return;
-                    
-                    }).catch(err => {
-                        reject(err);
-                        return;
-                    });
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
 
             }
 
