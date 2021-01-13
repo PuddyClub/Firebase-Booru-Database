@@ -442,7 +442,7 @@ class booru_manager {
                 const tagItem = tinythis.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
-                tagItem.set(itemData)
+                tagItem.set(data.data)
 
                     // Success
                     .then(() => {
