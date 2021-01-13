@@ -215,11 +215,12 @@ class booru_manager {
 
     // Get Template
     getItemTemplate(tag_name, database_name) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Get Firebase Database Data
             if (typeof tag_name === "string" && tag_name.length > 0) {
-                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems[database_name].child(tag_name)).then(data => {
+                require('@tinypudding/puddy-lib/firebase/getDBData')(tinythis.dbItems[database_name].child(tag_name)).then(data => {
                     resolve(data);
                     return;
                 }).catch(err => {
@@ -240,6 +241,7 @@ class booru_manager {
     }
 
     getItemsTemplate(itemsList = null, database_name) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Modules
@@ -249,7 +251,7 @@ class booru_manager {
 
             // Normal
             if (!itemsList) {
-                getDBData(this.dbItems[database_name]).then(data => {
+                getDBData(tinythis.dbItems[database_name]).then(data => {
                     resolve(data);
                     return;
                 }).catch(err => {
@@ -271,7 +273,7 @@ class booru_manager {
                     if (typeof itemsList[item] === "string" && itemsList[item].length > 0) {
 
                         // Get Data
-                        getDBData(this.dbItems[database_name].child(itemsList[item])).then(data => {
+                        getDBData(tinythis.dbItems[database_name].child(itemsList[item])).then(data => {
 
                             // Insert Data
                             itemList[itemsList[item]] = data;
@@ -415,16 +417,17 @@ class booru_manager {
 
     // Add
     addTagItem(data) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Check
-            const resultCheck = this.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath);
+            const resultCheck = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath);
 
             // Allowed
             if (resultCheck.allowed) {
 
                 // Get Tag
-                const tagItem = this.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const tagItem = tinythis.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.set(itemData)
@@ -473,6 +476,7 @@ class booru_manager {
 
     // Add Multiple Tags
     addTagItems(items) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Item List
@@ -485,7 +489,7 @@ class booru_manager {
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
                     // Add Tag
-                    this.addTagItem(items[item]).then((result) => {
+                    tinythis.addTagItem(items[item]).then((result) => {
                         itemList[items[item].tag] = result;
                         fn();
                         return;
@@ -523,16 +527,17 @@ class booru_manager {
 
     // Remove
     removeTagItem(data) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Check
-            const resultCheck = this.tagItemChecker(data.tag, data.itemID, null, data.allowPath, true);
+            const resultCheck = tinythis.tagItemChecker(data.tag, data.itemID, null, data.allowPath, true);
 
             // Allowed
             if (resultCheck.allowed) {
 
                 // Get Tag
-                const tagItem = this.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const tagItem = tinythis.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.rempve()
@@ -581,6 +586,7 @@ class booru_manager {
 
     // Remove Multiple Tags
     removeTagItems(items) {
+        const tinythis = this;
         return new Promise(function (resolve, reject) {
 
             // Item List
@@ -593,7 +599,7 @@ class booru_manager {
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
                     // Remove Tag
-                    this.removeTagItem(items[item]).then((result) => {
+                    tinythis.removeTagItem(items[item]).then((result) => {
                         itemList[items[item].tag] = result;
                         fn();
                         return;
@@ -625,6 +631,18 @@ class booru_manager {
 
             // Complete
             return;
+
+        });
+    }
+
+    // Send Error
+    error() {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            tinythis.dbItems.error.set({
+
+            });
 
         });
     }
