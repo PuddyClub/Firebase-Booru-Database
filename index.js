@@ -784,15 +784,49 @@ class booru_manager {
                         // Result
                         .then(() => {
 
+                            // Firebase Escape
+                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+
                             // Obj Type
                             const objType = require('@tinypudding/puddy-lib/get/objType');
                             if (objType(oldTags, 'object') || Array.isArray(oldTags)) {
 
                                 // For Promise
-                                forPromise({ data: oldTags }, function (item, fn, fn_error, extra) {
+                                forPromise({ data: oldTags }, function (tag, fn, fn_error, extra) {
+
+                                    // Read Tag
+                                    if (objType(oldTags[tag], 'object')) {
+
+                                        // Create Tag Reader
+                                        const readTag = extra({ data: oldTags[tag] });
+                                        readTag.run(function (item, fn, fn_error) {
+
+                                            // OLD Data
+                                            const oldDB = tinythis.dbItems.tag.child(tag).child(item);
+
+                                            // Is Object
+                                            if (objType(oldTags[tag][item])) {
+
+                                            }
+
+                                            // Nope
+                                            else {
+                                                oldDB.remove().then(() => {
+                                                    fn();
+                                                    return;
+                                                }).catch(err => {
+                                                    fn_error(err);
+                                                    return;
+                                                });
+                                            }
+
+                                        });
+
+                                    }
 
                                     // Complete
                                     fn();
+
                                     return;
 
                                 })
