@@ -412,6 +412,8 @@ class booru_manager {
     }
 
     // Tags
+
+    // Add
     addTagItem(tagName, itemID, itemData, allowPath) {
         return new Promise(function (resolve, reject) {
 
@@ -469,7 +471,35 @@ class booru_manager {
         });
     }
 
-    // Tags
+    // Add Multiple Tags
+    addTagItems() {
+        return new Promise(function (resolve, reject) {
+
+            // Item List
+            const itemList = {};
+
+            // For Promise
+            require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+
+
+            })
+
+                // Result
+                .then(() => {
+                    resolve(itemList);
+                    return;
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
+
+            // Complete
+            return;
+
+        });
+    }
+
+    // Remove
     removeTagItem(tagName, itemID, allowPath) {
         return new Promise(function (resolve, reject) {
 
@@ -520,6 +550,34 @@ class booru_manager {
             else {
                 reject(resultCheck.err);
             }
+
+            // Complete
+            return;
+
+        });
+    }
+
+    // Remove Multiple Tags
+    removeTagItems() {
+        return new Promise(function (resolve, reject) {
+
+            // Item List
+            const itemList = {};
+
+            // For Promise
+            require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+
+
+            })
+
+                // Result
+                .then(() => {
+                    resolve(itemList);
+                    return;
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
 
             // Complete
             return;
