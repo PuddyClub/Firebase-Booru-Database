@@ -1,5 +1,6 @@
 # File Test
 test/config.json
+test/firebase.json
 
 # Logs
 logs

@@ -1,6 +1,14 @@
 // Get Modules
 const booru_database = require('../index');
 const admin = require('firebase-admin');
+const path = require('path');
+
+// Config
+const tinyCfg = require('./config.json');
+tinyCfg.credential = admin.credential.cert(path.join(__dirname, './firebase.json'));
+
+// Start Firebase
+const firebase = admin.initializeApp(tinyCfg);
 
 // Create Booru
 const test_booru = new booru_database({
@@ -23,7 +31,8 @@ const test_booru = new booru_database({
         // Type
         type: 'ref',
 
-        data: db
+        // Database
+        data: firebase.db()
 
     },
 
@@ -44,3 +53,8 @@ const test_booru = new booru_database({
     }
 
 });
+
+// Start Test
+
+// Keep Test Online
+setInterval(function () {}, 1000);
