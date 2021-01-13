@@ -146,7 +146,7 @@ class booru_manager {
 
     }
 
-    // Get OLD Tag
+    // Get Tag
     getTag(tag_name) {
         return new Promise(function (resolve, reject) {
 
@@ -172,7 +172,7 @@ class booru_manager {
         });
     }
 
-    // Get OLD Tags
+    // Get Tags
     getTags(itemsList = null) {
         return new Promise(function (resolve, reject) {
 
