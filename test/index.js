@@ -68,6 +68,7 @@ test_booru.updateDatabase([
 ]).then(result => {
 
     // Show Result
+    console.log('Complete');
     console.log(result);
     return;
 

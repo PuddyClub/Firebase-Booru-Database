@@ -730,7 +730,7 @@ class booru_manager {
                         const itemID = data[item][tinythis.idVar];
 
                         // Check Exist Options
-                        if (Array.isArray(data[item][tinythis.tagList]) && typeof tagName === "string" && tagName.length > 0) {
+                        if (Array.isArray(data[item][tinythis.tagList])) {
 
                             // Read Tags
                             const readTags = extra({ data: data[item][tinythis.tagList] });
@@ -739,41 +739,49 @@ class booru_manager {
                                 // Tag Name
                                 const tagName = data[item][tinythis.tagList][tagIndex];
 
-                                // Add Tag
-                                tinythis.addTagItem({
-                                    tag: tagName,
-                                    itemID: itemID,
-                                    data: data[item],
-                                    allowPath: allowPath
-                                })
+                                // Check Tag Name
+                                if (typeof tagName === "string" && tagName.length > 0) {
 
-                                    // Result
-                                    .then(() => {
-
-                                        // Firebase Escape
-                                        const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-                                        const escaped_values = {
-                                            tagName: databaseEscape(tagName, allowPath),
-                                            itemID: databaseEscape(itemID, allowPath)
-                                        };
-
-                                        // Create Tag
-                                        if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
-
-                                        // Insert Item in the Tag
-                                        itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
-
-                                        // Complete
-                                        fn();
-                                        return;
-
+                                    // Add Tag
+                                    tinythis.addTagItem({
+                                        tag: tagName,
+                                        itemID: itemID,
+                                        data: data[item],
+                                        allowPath: allowPath
                                     })
 
-                                    // Error
-                                    .catch(err => {
-                                        fn_error(err);
-                                        return;
-                                    });
+                                        // Result
+                                        .then(() => {
+
+                                            // Firebase Escape
+                                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                            const escaped_values = {
+                                                tagName: databaseEscape(tagName, allowPath),
+                                                itemID: databaseEscape(itemID, allowPath)
+                                            };
+
+                                            // Create Tag
+                                            if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
+
+                                            // Insert Item in the Tag
+                                            itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
+
+                                            // Complete
+                                            fn();
+                                            return;
+
+                                        })
+
+                                        // Error
+                                        .catch(err => {
+                                            fn_error(err);
+                                            return;
+                                        });
+
+                                }
+
+                                // Nope
+                                else { fn(); }
 
                                 // Complete
                                 return;
