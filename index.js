@@ -720,8 +720,11 @@ class booru_manager {
                 // For Promise
                 require('for-promise')({ data: data }, function (item, fn, fn_error, extra) {
 
-                    // Check Exist Tag
-                    if (Array.isArray(data[item][tinythis.tagList])) {
+                    // Item ID
+                    const itemID = data[item][tinythis.idVar];
+
+                    // Check Exist Options
+                    if (Array.isArray(data[item][tinythis.tagList]) && typeof tagName === "string" && tagName.length > 0) {
 
                         // Read Tags
                         const readTags = extra({ data: data[item][tinythis.tagList] });
@@ -729,32 +732,23 @@ class booru_manager {
 
                             // Tag Name
                             const tagName = data[item][tinythis.tagList][tagIndex];
-                            const itemID = data[item][tinythis.idVar];
 
-                            // Validator
-                            if (typeof tagName === "string" && tagName.length > 0) {
+                            // Add Tag
+                            tinythis.addTagItem({
+                                tag: tagName,
+                                itemID: itemID,
+                                data: data[item],
+                                allowPath: allowPath
+                            })
 
-                                // Add Tag
-                                tinythis.addTagItem({
-                                    tag: tagName,
-                                    itemID: itemID,
-                                    data: data[item],
-                                    allowPath: allowPath
-                                })
-
-                                    // Result
-                                    .then(() => {
-                                        fn();
-                                        return;
-                                    }).catch(err => {
-                                        fn_error(err);
-                                        return;
-                                    });
-
-                            }
-
-                            // Nope
-                            else { fn(); }
+                                // Result
+                                .then(() => {
+                                    fn();
+                                    return;
+                                }).catch(err => {
+                                    fn_error(err);
+                                    return;
+                                });
 
                             // Complete
                             return;
