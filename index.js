@@ -632,4 +632,4 @@ class booru_manager {
 };
 
 // Export
-module.exports = booru_manager;;
+module.exports = booru_manager;
