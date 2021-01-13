@@ -414,11 +414,11 @@ class booru_manager {
     // Tags
 
     // Add
-    addTagItem(tagName, itemID, itemData, allowPath) {
+    addTagItem(data) {
         return new Promise(function (resolve, reject) {
 
             // Check
-            const resultCheck = this.tagItemChecker(tagName, itemID, itemData, allowPath);
+            const resultCheck = this.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath);
 
             // Allowed
             if (resultCheck.allowed) {
@@ -437,8 +437,8 @@ class booru_manager {
                             db: tagItem,
                             values: {
                                 normal: {
-                                    tag: tagName,
-                                    itemID: itemID
+                                    tag: data.tag,
+                                    itemID: data.itemID
                                 },
                                 escape: {
                                     tag: resultCheck.escaped.tagName,
@@ -484,6 +484,7 @@ class booru_manager {
                 // For Promise
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
+                    this.addTagItem();
 
                 })
 
@@ -510,11 +511,11 @@ class booru_manager {
     }
 
     // Remove
-    removeTagItem(tagName, itemID, allowPath) {
+    removeTagItem(data) {
         return new Promise(function (resolve, reject) {
 
             // Check
-            const resultCheck = this.tagItemChecker(tagName, itemID, null, allowPath, true);
+            const resultCheck = this.tagItemChecker(data.tag, data.itemID, null, data.allowPath, true);
 
             // Allowed
             if (resultCheck.allowed) {
@@ -533,8 +534,8 @@ class booru_manager {
                             db: tagItem,
                             values: {
                                 normal: {
-                                    tag: tagName,
-                                    itemID: itemID
+                                    tag: data.tag,
+                                    itemID: data.itemID
                                 },
                                 escape: {
                                     tag: resultCheck.escaped.tagName,
