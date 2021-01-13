@@ -137,6 +137,35 @@ class booru_manager {
 
                                 };
 
+                                // Prepare Limit Items
+                                this.byteLimit = {
+
+                                    // JSON
+                                    json: {
+
+                                        // Tag
+                                        tag: 1048576
+
+                                    }
+
+                                };
+
+                                // Limits
+                                if (objType(data.byteLimit, 'object')) {
+
+                                    // Json
+                                    if (objType(data.byteLimit.json, 'object')) {
+
+
+                                        // Tag
+                                        if (typeof data.byteLimit.json.tag === "number" && !isNaN(data.byteLimit.json.tag) && data.byteLimit.json.tag > 0) {
+                                            this.byteLimit.json.tag = data.byteLimit.json.tag;
+                                        }
+
+                                    }
+
+                                }
+
                                 // Complete
                                 return this;
 
@@ -306,6 +335,20 @@ class booru_manager {
     // Get Errors
     getErrors(itemsList) {
         return this.getItemsTemplate(itemsList, 'error');
+    }
+
+    // Add Items
+
+    // Tags
+    addTagItem(tagName, itemID) {
+        return new Promise(function (resolve, reject) {
+
+
+
+            // Complete
+            return;
+
+        });
     }
 
 };
