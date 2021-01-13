@@ -1,6 +1,44 @@
 // Module Base
 class booru_manager {
 
+    // Get Values
+
+    // Name
+    getName() { return this.name; }
+
+    // ID
+    getId() { return this.id; }
+
+    // URL
+    getUrl() { return this.url; }
+
+    // Module Name
+    getModuleName() { return this.module_name; }
+
+    // Tag List Var
+    getTagListVar() { return this.tagList; }
+
+    // ID Var
+    getIdVar() { return this.idVar; }
+
+    // DB
+    getDB() { return this.db; }
+
+    // First DB Line
+    getFirstDBLine() { return this.firstDBLine; }
+
+    // Get DB Items
+    getDBItems() { return this.dbItems; }
+
+    // Get DB Item
+    getDBItems(item) {
+        if (typeof item === "string" && item.length > 0 && this.dbItems[item]) {
+            return this.dbItems[item];
+        } else {
+            return null;
+        }
+    }
+
     // Constructor
     constructor(data) {
 
