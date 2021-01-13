@@ -340,7 +340,7 @@ class booru_manager {
     // Add Items
 
     // Tag Function Template
-    tagFunctionChecker(tagName, itemID, itemData, allowPath = false) {
+    tagItemChecker(tagName, itemID, itemData, allowPath = false) {
 
         // Tiny Result
         const result = { usePath: false };
@@ -407,7 +407,7 @@ class booru_manager {
         return new Promise(function (resolve, reject) {
 
             // Check
-            const resultCheck = this.tagFunctionChecker(tagName, itemID, itemData, allowPath);
+            const resultCheck = this.tagItemChecker(tagName, itemID, itemData, allowPath);
 
             // Allowed
             if (resultCheck.allowed) {
