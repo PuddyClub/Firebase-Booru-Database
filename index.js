@@ -784,24 +784,34 @@ class booru_manager {
                         // Result
                         .then(() => {
 
-                            // For Promise
-                            forPromise({ data: oldTags }, function (item, fn, fn_error, extra) {
+                            // Obj Type
+                            const objType = require('@tinypudding/puddy-lib/get/objType');
+                            if (objType(oldTags, 'object') || Array.isArray(oldTags)) {
 
-                                // Complete
-                                fn();
-                                return;
+                                // For Promise
+                                forPromise({ data: oldTags }, function (item, fn, fn_error, extra) {
 
-                            })
-
-                                // Finished
-                                .then(() => {
-                                    resolve(itemList);
+                                    // Complete
+                                    fn();
                                     return;
-                                }).catch(err => {
-                                    reject(err);
-                                    return;
-                                });
 
+                                })
+
+                                    // Finished
+                                    .then(() => {
+                                        resolve(itemList);
+                                        return;
+                                    }).catch(err => {
+                                        reject(err);
+                                        return;
+                                    });
+
+                            }
+
+                            // Nope
+                            else { resolve(itemList); }
+
+                            // Complete
                             return;
 
                         }).catch(err => {
