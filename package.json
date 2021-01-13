@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/TinyPudding/Firebase-Booru-Database/issues"
   },
-  "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme"
+  "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme",
+  "dependencies": {
+    "for-promise": "^1.2.6"
+  }
 }
