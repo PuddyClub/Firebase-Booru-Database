@@ -721,7 +721,10 @@ class booru_manager {
                     const itemList = {};
 
                     // For Promise
-                    require('for-promise')({ data: data }, function (item, fn, fn_error, extra) {
+                    const forPromise = require('for-promise');
+
+                    // For Promise
+                    forPromise({ data: data }, function (item, fn, fn_error, extra) {
 
                         // Item ID
                         const itemID = data[item][tinythis.idVar];
@@ -781,9 +784,24 @@ class booru_manager {
                         // Result
                         .then(() => {
 
+                            // For Promise
+                            forPromise({ data: oldTags }, function (item, fn, fn_error, extra) {
 
-                            // Finished
-                            resolve(itemList);
+                                // Complete
+                                fn();
+                                return;
+
+                            })
+
+                                // Finished
+                                .then(() => {
+                                    resolve(itemList);
+                                    return;
+                                }).catch(err => {
+                                    reject(err);
+                                    return;
+                                });
+
                             return;
 
                         }).catch(err => {
