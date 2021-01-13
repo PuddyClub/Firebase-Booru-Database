@@ -164,11 +164,8 @@ class booru_manager {
     getError() {
         return new Promise(function (resolve, reject) {
 
-            // Error Database
-            this.db[this.firstDBLine]('error')
-
             // Get Firebase Database Data
-            require('@tinypudding/puddy-lib/firebase/getDBData')().then(data => {
+            require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.error).then(data => {
                 resolve(data);
                 return;
             }).catch(err => {
