@@ -636,19 +636,50 @@ class booru_manager {
     }
 
     // Send Error
-    error() {
+    error(data) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
-            tinythis.dbItems.error.set({
+            // Prepare Data
+            const insertData = {};
 
-            }).then(() => {
-                resolve();
-                return;
-            }).catch(err => {
-                reject(err);
-                return;
-            });
+            // Timeout
+            if (typeof data.timeout === "number" && !isNaN(data.timeout) && data.timeout > 0) {
+
+                // Insert Timeout
+                insertData.timeout = data.timeout;
+
+                // Message
+                if (typeof data.message === "string" && data.message.length > 0) {
+
+                    // Insert Message
+                    insertData.message = data.message;
+
+                    // Insert Data
+                    tinythis.dbItems.error.set(insertData).then(() => {
+                        resolve();
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+
+                }
+
+                // Nope
+                else {
+                    reject(new Error('Invalid Error Message.'));
+                }
+
+            }
+
+            // Nope
+            else {
+                reject(new Error('Invalid Error Timeout.'));
+            }
+
+            // Complete
+            return;
 
         });
     }
