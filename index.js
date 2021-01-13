@@ -170,17 +170,58 @@ class booru_manager {
     }
 
     // Get OLD Tags
-    getOLDTags() {
+    getOLDTags(itemsList = null) {
         return new Promise(function (resolve, reject) {
 
             // Get Firebase Database Data
-            require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag).then(data => {
-                resolve(data);
-                return;
-            }).catch(err => {
-                reject(err);
-                return;
-            });
+
+            // Normal
+            if (!itemsList) {
+                require('@tinypudding/puddy-lib/firebase/getDBData')(this.dbItems.tag).then(data => {
+                    resolve(data);
+                    return;
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
+            }
+
+            // Per Item
+            else if (Array.isArray(itemsList)) {
+
+                // Item List
+                const itemList = {};
+
+                // For Promise
+                require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+                    
+                    // Is String
+                    if (typeof itemsList[item] === "string" && itemsList[item].length > 0) {
+
+
+
+                    } 
+                    
+                    // Nope
+                    else { fn(); }
+
+                })
+                
+                // Result
+                .then(() => {
+                    resolve(itemList);
+                    return;
+                }).catch(err => {
+                    reject(err);
+                    return;
+                });
+
+            }
+
+            // Invalid
+            else {
+                reject(new Error('Invalid Item List!'));
+            }
 
         });
     }
