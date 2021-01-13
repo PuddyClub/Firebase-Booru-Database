@@ -144,7 +144,10 @@ class booru_manager {
                                     json: {
 
                                         // Tag
-                                        tag: 1048576
+                                        tag: 1048576,
+
+                                        // Error
+                                        error: 1048576
 
                                     }
 
@@ -153,13 +156,22 @@ class booru_manager {
                                 // Limits
                                 if (objType(data.byteLimit, 'object')) {
 
+                                    // Check Limit
+                                    const checkNumberLimit = function (where, theValue) {
+                                        return (typeof data.byteLimit[where][theValue] === "number" && !isNaN(data.byteLimit[where][theValue]) && data.byteLimit[where][theValue] > 0);
+                                    };
+
                                     // Json
                                     if (objType(data.byteLimit.json, 'object')) {
 
-
                                         // Tag
-                                        if (typeof data.byteLimit.json.tag === "number" && !isNaN(data.byteLimit.json.tag) && data.byteLimit.json.tag > 0) {
+                                        if (checkNumberLimit('json', 'tag')) {
                                             this.byteLimit.json.tag = data.byteLimit.json.tag;
+                                        }
+
+                                        // Error
+                                        if (checkNumberLimit('json', 'error')) {
+                                            this.byteLimit.json.error = data.byteLimit.json.error;
                                         }
 
                                     }
@@ -652,17 +664,27 @@ class booru_manager {
                 // Message
                 if (typeof data.message === "string" && data.message.length > 0) {
 
-                    // Insert Message
-                    insertData.message = data.message;
+                    // Message Size
+                    if (require('json-sizeof')(insertData) <= tinythis.byteLimit.json.error) {
 
-                    // Insert Data
-                    tinythis.dbItems.error.set(insertData).then(() => {
-                        resolve();
-                        return;
-                    }).catch(err => {
-                        reject(err);
-                        return;
-                    });
+                        // Insert Message
+                        insertData.message = data.message;
+
+                        // Insert Data
+                        tinythis.dbItems.error.set(insertData).then(() => {
+                            resolve();
+                            return;
+                        }).catch(err => {
+                            reject(err);
+                            return;
+                        });
+
+                    }
+
+                    // Nope
+                    else {
+                        reject(new Error('The error item size is very big!'));
+                    }
 
                 }
 
