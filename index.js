@@ -1131,7 +1131,7 @@ class booru_manager {
 
                                         // Finished
                                         .then(() => {
-                                            resolve(itemList.added);
+                                            resolve(itemList);
                                             return;
                                         }).catch(err => {
                                             reject(err);
@@ -1141,7 +1141,7 @@ class booru_manager {
                                 }
 
                                 // Nope
-                                else { resolve(itemList.added); }
+                                else { resolve(itemList); }
 
                                 // Complete
                                 return;
