@@ -935,7 +935,7 @@ class booru_manager {
                         const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
                         // Item List
-                        const itemList = {};
+                        const itemList = { added: {}, removed: {} };
 
                         // For Promise
                         const forPromise = require('for-promise');
@@ -978,10 +978,10 @@ class booru_manager {
                                                 };
 
                                                 // Create Tag
-                                                if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
+                                                if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
 
                                                 // Insert Item in the Tag
-                                                itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
+                                                itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
 
                                                 // Complete
                                                 fn();
@@ -1019,9 +1019,6 @@ class booru_manager {
                                 // Exist OLD Checker
                                 if (existOLD) {
 
-                                    // Removed Items List
-                                    const removedItems = [];
-
                                     // Firebase Escape
                                     const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
 
@@ -1029,14 +1026,14 @@ class booru_manager {
                                     forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
 
                                         // Action Remove Item
-                                        const removeTagsItem = function (fn, fn_error) {
+                                        const removeTagsItem = function (fn, fn_error, tag) {
 
                                             // Detect if the value was removed
-                                            if (removedItems.indexOf(item) < 0) {
+                                            if (typeof tag !== "string" && tag.length > 0 && !removedItems.removed[tag][item]) {
 
                                                 // Remover
                                                 tinythis.dbItems.itemData.child(item).remove().then(() => {
-                                                    removedItems.push(item);
+                                                    removedItems.removed[tag][item];
                                                     fn();
                                                     return;
                                                 }).catch(err => {
@@ -1083,31 +1080,37 @@ class booru_manager {
                                                 let tagName = oldItems[item][tinythis.tagList][tag];
                                                 if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName, notAddData); } else { tagName = null; }
 
-                                                console.log(oldTags[tagName]);
-
                                                 // Validator
                                                 const theTagisNotString = (typeof tagName !== "string");
                                                 const notExistOLDTag = (!objType(oldTags[tagName], 'object') || !Array.isArray(oldTags[tagName]));
                                                 const notExistNewTagItem = (
-                                                    (!objType(itemList[tagName], 'object') && !Array.isArray(itemList[tagName])) ||
-                                                    (objType(itemList[tagName][item], 'object') && !Array.isArray(itemList[tagName][item]))
+                                                    (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
+                                                    (objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
                                                 );
 
+                                                console.group(`${tagName} | ${item}`);
+                                                console.log(oldTags[tagName]);
+                                                console.log(itemList.added[tagName]);
+                                                console.log(theTagisNotString);
+                                                console.log(notExistOLDTag);
+                                                console.log(notExistNewTagItem);
+                                                console.groupEnd();
+
                                                 // Remover
-                                                if (theTagisNotString || notExistOLDTag || notExistNewTagItem) {
-                                                    removeTagsItem(function () {
+                                                if (theTagisNotString) {
+                                                    if (notExistOLDTag || notExistNewTagItem) {
+                                                        removeTagsItem(function () {
 
-                                                        // Remover
-                                                        removeTag(fn, fn_error, tagName);
+                                                            // Remover
+                                                            removeTag(fn, fn_error, tagName);
 
-                                                        // Complete
-                                                        return;
+                                                            // Complete
+                                                            return;
 
-                                                    }, fn_error);
-                                                }
-
-                                                // Nope
-                                                else { removeTagsItem(fn, fn_error); }
+                                                        }, fn_error, tagName);
+                                                    }
+                                                    else { removeTagsItem(fn, fn_error, tagName); }
+                                                } else { removeTagsItem(fn, fn_error); }
 
                                                 // Complete
                                                 return;
@@ -1129,7 +1132,7 @@ class booru_manager {
 
                                         // Finished
                                         .then(() => {
-                                            resolve(itemList);
+                                            resolve(itemList.added);
                                             return;
                                         }).catch(err => {
                                             reject(err);
@@ -1139,7 +1142,7 @@ class booru_manager {
                                 }
 
                                 // Nope
-                                else { resolve(itemList); }
+                                else { resolve(itemList.added); }
 
                                 // Complete
                                 return;
