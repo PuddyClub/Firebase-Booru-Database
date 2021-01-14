@@ -1051,7 +1051,7 @@ class booru_manager {
 
                                             // Prepare to Remove Tags
                                             if (Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
-                                                
+
                                                 // Add the Extra and Run the Extra
                                                 const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
                                                 prepareRemovetags.run(function (tag, fn, fn_error) {
@@ -1063,7 +1063,13 @@ class booru_manager {
                                                     // Remover
                                                     if (notString || notOLDString) {
 
-                                                        
+                                                        tinythis.dbItems.tagData.child(tag).remove().then(() => {
+                                                            removeTagsItem(fn, fn_error);
+                                                            return;
+                                                        }).catch(err => {
+                                                            fn_error(err);
+                                                            return;
+                                                        });
 
                                                     }
 
