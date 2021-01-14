@@ -1029,13 +1029,13 @@ class booru_manager {
                                         const removeTagsItem = function (fn, fn_error, tag) {
 
                                             // Detect if the value was removed
-                                            if (!removedItems.removed[tag][item]) {
+                                            if (!itemList.removed[tag][item]) {
 
                                                 // Remover
                                                 tinythis.dbItems.itemData.child(item).remove().then(() => {
                                                     if (typeof tag === "string" && tag.length > 0) {
-                                                        if (!removedItems.removed[tag]) { removedItems.removed[tag] = {}; }
-                                                        removedItems.removed[tag][item] = oldItems[item];
+                                                        if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
+                                                        itemList.removed[tag][item] = oldItems[item];
                                                     }
                                                     fn();
                                                     return;
