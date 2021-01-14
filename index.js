@@ -458,7 +458,7 @@ class booru_manager {
         return new Promise(function (resolve, reject) {
 
             // Fix Database Tag Item
-            if (!escapeResult) { escapeResult = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath); }
+            if (!escapeResult) { escapeResult = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath).escaped; }
             if (!tagItem) { tagItem = tinythis.dbItems.tagData.child(escapeResult.tagName).child(escapeResult.itemID); }
 
             // Prepare Item Data
