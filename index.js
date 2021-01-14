@@ -1102,14 +1102,26 @@ class booru_manager {
                                                         (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                     ) {
 
-                                                        console.log('mio1');
                                                         // Don't Exist Added Items
                                                         if (
                                                             (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
                                                             (!objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
                                                         ) {
-                                                            console.log('mio2');
-                                                            removeTagsItem(prepare_removeTag, fn_error, tagName);
+
+                                                            // Exist Other Tags
+                                                            let existOtherTags = false;
+                                                            for (const tinyTag in itemList.added) {
+                                                                if (objType(itemList.added[tinyTag][item], 'object') || Array.isArray(itemList.added[tinyTag][item])) {
+                                                                    existOtherTags = true;
+                                                                    break;
+                                                                }
+                                                            }
+
+                                                            // Don't Exist Other Tags
+                                                            if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+
+                                                            // Exist
+                                                            else { prepare_removeTag(); }
                                                         }
                                                         else { fn(); }
 
