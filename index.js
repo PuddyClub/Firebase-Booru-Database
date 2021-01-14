@@ -1051,19 +1051,24 @@ class booru_manager {
 
                                                 // Validator
                                                 const notString = (typeof oldItems[item][tinythis.tagList][tag] !== "string");
-                                                const notOLDString = ((!objType(itemList[tag], 'object') && !Array.isArray(itemList[tag])) || typeof itemList[tag][item] !== "string");
+                                                const notOLDString = ((!objType(itemList[tag], 'object') && !Array.isArray(itemList[tag])) || !objType(itemList[tag][item], 'object'));
 
                                                 // Remover
                                                 if (notString || notOLDString) {
+                                                    removeTagsItem(function () {
 
-                                                    tinythis.dbItems.tagData.child(tag).remove().then(() => {
-                                                        removeTagsItem(fn, fn_error);
-                                                        return;
-                                                    }).catch(err => {
-                                                        fn_error(err);
-                                                        return;
-                                                    });
+                                                        tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+                                                            fn();
+                                                            return;
+                                                        }).catch(err => {
+                                                            fn_error(err);
+                                                            return;
+                                                        });
 
+                                                        // Complete
+                                                        return;
+
+                                                    }, fn_error);
                                                 }
 
                                                 // Nope
