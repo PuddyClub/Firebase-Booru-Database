@@ -1082,19 +1082,11 @@ class booru_manager {
 
                                                 // Validator
                                                 const theTagisNotString = (typeof tagName !== "string");
-                                                const notExistOLDTag = (!objType(oldTags[tagName], 'object') || !Array.isArray(oldTags[tagName]));
+                                                const notExistOLDTag = (!objType(oldTags[tagName], 'object') && !Array.isArray(oldTags[tagName]));
                                                 const notExistNewTagItem = (
-                                                    (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
-                                                    (objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
+                                                    !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
+                                                    !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
                                                 );
-
-                                                console.group(`${tagName} | ${item}`);
-                                                console.log(oldTags[tagName]);
-                                                console.log(itemList.added[tagName]);
-                                                console.log(theTagisNotString);
-                                                console.log(notExistOLDTag);
-                                                console.log(notExistNewTagItem);
-                                                console.groupEnd();
 
                                                 // Remover
                                                 if (theTagisNotString) {
