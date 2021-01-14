@@ -1029,11 +1029,13 @@ class booru_manager {
                                         const removeTagsItem = function (fn, fn_error, tag) {
 
                                             // Detect if the value was removed
-                                            if (typeof tag === "string" && tag.length > 0 && !removedItems.removed[tag][item]) {
+                                            if (!removedItems.removed[tag][item]) {
 
                                                 // Remover
                                                 tinythis.dbItems.itemData.child(item).remove().then(() => {
-                                                    removedItems.removed[tag][item];
+                                                    if(typeof tag === "string" && tag.length > 0) {
+                                                        removedItems.removed[tag][item];
+                                                    }
                                                     fn();
                                                     return;
                                                 }).catch(err => {
@@ -1080,28 +1082,34 @@ class booru_manager {
                                                 let tagName = oldItems[item][tinythis.tagList][tag];
                                                 if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName, notAddData); } else { tagName = null; }
 
-                                                // Validator
-                                                const theTagisNotString = (typeof tagName !== "string");
-                                                const notExistOLDTag = (!objType(oldTags[tagName], 'object') && !Array.isArray(oldTags[tagName]));
-                                                const notExistNewTagItem = (
-                                                    !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
-                                                    !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
-                                                );
+                                                // Exist Tag
+                                                if (typeof tagName === "string") {
 
-                                                // Remover
-                                                if (theTagisNotString) {
-                                                    if (notExistOLDTag || notExistNewTagItem) {
-                                                        removeTagsItem(function () {
+                                                    // Exist OLD Tag
+                                                    if (
+                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length) || 
+                                                        (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
+                                                    ) {
 
-                                                            // Remover
-                                                            removeTag(fn, fn_error, tagName);
+                                                        // Don't Exist Added Items
+                                                        if (
+                                                            !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
+                                                            !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
+                                                        ) {
+                                                            removeTagsItem(function () {
 
-                                                            // Complete
-                                                            return;
+                                                                // Remover Tag
+                                                                removeTag(fn, fn_error, tagName);
 
-                                                        }, fn_error, tagName);
-                                                    }
-                                                    else { removeTagsItem(fn, fn_error, tagName); }
+                                                                // Complete
+                                                                return;
+
+                                                            }, fn_error, tagName);
+                                                        }
+                                                        else { removeTagsItem(fn, fn_error, tagName); }
+
+                                                    } else { removeTagsItem(fn, fn_error, tagName); }
+
                                                 } else { removeTagsItem(fn, fn_error); }
 
                                                 // Complete
