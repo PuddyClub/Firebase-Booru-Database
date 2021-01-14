@@ -1033,7 +1033,7 @@ class booru_manager {
                                         if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
 
                                             // Action Remove Item
-                                            const removeTagsItem = function () {
+                                            const removeTagsItem = function (fn, fn_error) {
 
                                                 // Remover
                                                 tinythis.dbItems.itemData.child(item).remove().then(() => {
@@ -1051,21 +1051,37 @@ class booru_manager {
 
                                             // Prepare to Remove Tags
                                             if (Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
+                                                
+                                                // Add the Extra and Run the Extra
                                                 const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
                                                 prepareRemovetags.run(function (tag, fn, fn_error) {
 
                                                     // Validator
                                                     const notString = (typeof oldItems[item][tinythis.tagList][tag] !== "string");
+                                                    const notOLDString = ((!objType(itemList[tag], 'object') && !Array.isArray(itemList[tag])) || typeof itemList[tag][item] !== "string");
 
+                                                    // Remover
+                                                    if (notString || notOLDString) {
+
+                                                        
+
+                                                    }
+
+                                                    // Nope
+                                                    else { removeTagsItem(fn, fn_error); }
 
                                                     // Complete
                                                     return;
 
                                                 });
+
+                                                // Complete
+                                                fn();
+
                                             }
 
                                             // Nope
-                                            else { removeTagsItem(); }
+                                            else { removeTagsItem(fn, fn_error); }
 
                                         }
 
