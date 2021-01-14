@@ -372,7 +372,7 @@ class booru_manager {
         if (typeof tagName === "string" && tagName.length > 0) {
 
             // Tag ID
-            if (typeof itemID === "string" && itemID.length > 0) {
+            if ((typeof itemID === "string" && itemID.length > 0) || (typeof itemID === "number" && !isNaN(itemID))) {
 
                 // Object Validator
                 if (allowItemNull || objType(itemData, 'object')) {
