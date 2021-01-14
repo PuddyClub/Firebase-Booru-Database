@@ -949,61 +949,81 @@ class booru_manager {
                             // Check Exist Options
                             if (Array.isArray(data[item][tinythis.tagList])) {
 
-                                // Read Tags
-                                const readTags = extra({ data: data[item][tinythis.tagList] });
-                                readTags.run(function (tagIndex, fn, fn_error) {
+                                // Tag Insert Result
+                                const tagInsertResult = (fn, tagName = null) => {
 
-                                    // Tag Name
-                                    const tagName = data[item][tinythis.tagList][tagIndex];
+                                    // Firebase Escape
+                                    const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                    const escaped_values = {
+                                        itemID: databaseEscape(itemID, allowPath)
+                                    };
 
-                                    // Check Tag Name
+                                    // Check Exist Tag Name
                                     if (typeof tagName === "string" && tagName.length > 0) {
-
-                                        // Add Tag
-                                        tinythis.addTagItem({
-                                            tag: tagName,
-                                            itemID: itemID,
-                                            data: data[item],
-                                            allowPath: allowPath
-                                        }, notAddData)
-
-                                            // Result
-                                            .then(() => {
-
-                                                // Firebase Escape
-                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-                                                const escaped_values = {
-                                                    tagName: databaseEscape(tagName, allowPath),
-                                                    itemID: databaseEscape(itemID, allowPath)
-                                                };
-
-                                                // Create Tag
-                                                if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
-
-                                                // Insert Item in the Tag
-                                                itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
-
-                                                // Complete
-                                                fn();
-                                                return;
-
-                                            })
-
-                                            // Error
-                                            .catch(err => {
-                                                fn_error(err);
-                                                return;
-                                            });
-
-                                    }
+                                        escaped_values.tagName = databaseEscape(tagName, allowPath);
+                                    } 
 
                                     // Nope
-                                    else { fn(); }
+                                    else {
+                                        escaped_values.tagName = 'UNKNOWNTAG';
+                                    }
+
+                                    // Create Tag
+                                    if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
+
+                                    // Insert Item in the Tag
+                                    itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
 
                                     // Complete
+                                    fn();
                                     return;
 
-                                });
+                                };
+
+                                // Check Array Amount
+                                if (data[item][tinythis.tagList].length > 0) {
+
+                                    // Read Tags
+                                    const readTags = extra({ data: data[item][tinythis.tagList] });
+                                    readTags.run(function (tagIndex, fn, fn_error) {
+
+                                        // Tag Name
+                                        const tagName = data[item][tinythis.tagList][tagIndex];
+
+                                        // Check Tag Name
+                                        if (typeof tagName === "string" && tagName.length > 0) {
+
+                                            // Add Tag
+                                            tinythis.addTagItem({
+                                                tag: tagName,
+                                                itemID: itemID,
+                                                data: data[item],
+                                                allowPath: allowPath
+                                            }, notAddData)
+
+                                                // Result
+                                                .then(() => { tagInsertResult(fn, tagName); return; })
+
+                                                // Error
+                                                .catch(err => {
+                                                    fn_error(err);
+                                                    return;
+                                                });
+
+                                        }
+
+                                        // Nope
+                                        else { fn(); }
+
+                                        // Complete
+                                        return;
+
+                                    });
+
+                                }
+
+                                // Nope
+                                else { tagInsertResult(fn); }
 
                             }
 
@@ -1071,7 +1091,7 @@ class booru_manager {
                                         };
 
                                         // Check OLD Data
-                                        if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
+                                        if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item][tinythis.tagList])) {
 
                                             // Add the Extra and Run the Extra
                                             const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
