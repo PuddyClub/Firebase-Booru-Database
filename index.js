@@ -744,18 +744,36 @@ class booru_manager {
     }
 
     // Remove Error
-    errorTimeout() {
+    setErrorTimeout(newTimeout) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
-            // Insert Data
-            tinythis.dbItems.error.remove().then(() => {
-                resolve();
-                return;
-            }).catch(err => {
-                reject(err);
-                return;
-            });
+            // Valid Number
+            if (typeof newTimeout === "number" && !isNaN(newTimeout)) {
+
+                // Update
+                if (newTimeout > 0) {
+                    tinythis.dbItems.error.update({ timeout: newTimeout }).then(() => {
+                        resolve();
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+                }
+
+                // Delete
+                else {
+                    tinythis.clearError().then(() => {
+                        resolve();
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+                }
+
+            }
 
             // Complete
             return;
