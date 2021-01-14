@@ -1,6 +1,6 @@
 {
   "name": "@tinypudding/firebase-booru-database",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Script to synchronize data from booru websites with Firebase Database Realtime.",
   "main": "index.js",
   "scripts": {
