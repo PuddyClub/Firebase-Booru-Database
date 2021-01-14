@@ -920,7 +920,13 @@ class booru_manager {
             if (Array.isArray(data)) {
 
                 // Get OLD Data
-                tinythis.getTags().then(oldTags => {
+                tinythis.getItems().then(oldItems => {
+
+                    // Prepare MD5
+                    const md5 = require('md5');
+
+                    // Exist OLD
+                    const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
                     // Item List
                     const itemList = {};
@@ -1006,51 +1012,59 @@ class booru_manager {
 
                             // Obj Type
                             const objType = require('@tinypudding/puddy-lib/get/objType');
-                            if (objType(oldTags, 'object') || Array.isArray(oldTags)) {
+                            if (existOLD) {
 
                                 // For Promise
-                                forPromise({ data: oldTags }, function (tag, fn, fn_error, extra) {
+                                forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
 
-                                    // Read Tag
-                                    if (objType(oldTags[tag], 'object')) {
+                                    // Validator
+                                    const notObject = (!objType(oldItems[item], 'object'));
+                                    let notStringorNumber = false;
+                                    if (!notObject) { (typeof oldItems[item][tinythis.idVar] !== "string" && typeof oldItems[item][tinythis.idVar] !== "number"); }
 
-                                        // Create Tag Reader
-                                        const readTag = extra({ data: oldTags[tag] });
-                                        readTag.run(function (item, fn, fn_error) {
+                                    const dontExistNewTag = (!itemList[tag]);
+                                    let dontExistNewTagItem = false;
+                                    if (!dontExistNewTag) { dontExistNewTagItem = (!itemList[tag][item]); }
 
-                                            // Validator
-                                            const notObject = (!objType(oldTags[tag][item], 'object'));
-                                            const notStringorNumber = (typeof oldTags[tag][item][tinythis.idVar] !== "string" && typeof oldTags[tag][item][tinythis.idVar] !== "number");
-                                            const dontExistNewTag = (!itemList[tag]);
-                                            let dontExistNewTagItem = false;
-                                            if (!dontExistNewTag) { dontExistNewTagItem = (!itemList[tag][item]); }
+                                    // Can Delete
+                                    if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
 
-                                            // Can Delete
-                                            if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
+                                        // Action Remove Item
+                                        const removeTagsItem = function () {
 
-                                                // Remover
-                                                tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
-                                                    fn();
-                                                    return;
-                                                }).catch(err => {
-                                                    fn_error(err);
-                                                    return;
-                                                });
-
-                                            }
-
-                                            // Nope
-                                            else { fn(); }
+                                            // Remover
+                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                                fn();
+                                                return;
+                                            }).catch(err => {
+                                                fn_error(err);
+                                                return;
+                                            });
 
                                             // Complete
                                             return;
 
-                                        });
+                                        };
+
+                                        // Prepare to Remove Tags
+                                        if (Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
+                                            const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
+                                            prepareRemovetags.run(function (tag, fn, fn_error) {
+
+
+
+                                            });
+                                        }
+
+                                        // Nope
+                                        else { removeTagsItem(); }
 
                                     }
 
+                                    // Nope
+                                    else { fn(); }
+
                                     // Complete
-                                    fn();
                                     return;
 
                                 })
