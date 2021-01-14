@@ -534,12 +534,7 @@ class booru_manager {
                 }
 
                 // Nope
-                else {
-
-                    // Add Tag
-                    addTagResult();
-
-                }
+                else { addTagResult(); }
 
             }
 
@@ -689,12 +684,7 @@ class booru_manager {
                 }
 
                 // Nope
-                else {
-
-                    // Remove
-                    removeTagResult();
-
-                }
+                else { removeTagResult(); }
 
             }
 
