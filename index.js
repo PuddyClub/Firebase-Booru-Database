@@ -1081,7 +1081,7 @@ class booru_manager {
 
                                                 // Get Tag Name
                                                 let tagName = oldItems[item][tinythis.tagList][tag];
-                                                if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape.escape(tagName); } else { tagName = null; }
+                                                if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName); } else { tagName = null; }
 
                                                 // Validator
                                                 const theTagisNotString = (typeof tagName !== "string");
