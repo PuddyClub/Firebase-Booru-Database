@@ -462,7 +462,7 @@ class booru_manager {
 
                 // Get Tag
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
-                const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
+                const itemData = tinythis.dbItems.itemData.child(resultCheck.escaped.itemID);
 
                 // Add Tag Result
                 const addTagResult = function () {
@@ -613,7 +613,7 @@ class booru_manager {
 
                 // Get Tag
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
-                const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
+                const itemData = tinythis.dbItems.itemData.child(resultCheck.escaped.itemID);
 
                 // Remove Tag Result
                 const removeTagResult = function () {
@@ -928,6 +928,9 @@ class booru_manager {
                         // Prepare MD5
                         const md5 = require('md5');
 
+                        // Obj Type
+                        const objType = require('@tinypudding/puddy-lib/get/objType');
+
                         // Exist OLD
                         const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
@@ -1013,8 +1016,7 @@ class booru_manager {
                             // Result
                             .then(() => {
 
-                                // Obj Type
-                                const objType = require('@tinypudding/puddy-lib/get/objType');
+                                // Exist OLD Checker
                                 if (existOLD) {
 
                                     // For Promise
