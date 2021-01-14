@@ -744,7 +744,27 @@ class booru_manager {
     }
 
     // Remove Error
-    removeError() {
+    errorTimeout() {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            // Insert Data
+            tinythis.dbItems.error.remove().then(() => {
+                resolve();
+                return;
+            }).catch(err => {
+                reject(err);
+                return;
+            });
+
+            // Complete
+            return;
+
+        });
+    }
+
+    // Remove Error
+    clearError() {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
