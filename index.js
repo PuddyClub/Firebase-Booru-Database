@@ -1033,8 +1033,9 @@ class booru_manager {
 
                                                 // Remover
                                                 tinythis.dbItems.itemData.child(item).remove().then(() => {
-                                                    if(typeof tag === "string" && tag.length > 0) {
-                                                        removedItems.removed[tag][item];
+                                                    if (typeof tag === "string" && tag.length > 0) {
+                                                        if (!removedItems.removed[tag]) { removedItems.removed[tag] = {}; }
+                                                        removedItems.removed[tag][item] = oldItems[item];
                                                     }
                                                     fn();
                                                     return;
@@ -1087,7 +1088,7 @@ class booru_manager {
 
                                                     // Exist OLD Tag
                                                     if (
-                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length) || 
+                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length) ||
                                                         (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                     ) {
 
