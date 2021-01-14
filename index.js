@@ -450,7 +450,7 @@ class booru_manager {
     // Tags
 
     // Add
-    addTagItem(data) {
+    addTagItem(data, notAddData = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -462,16 +462,21 @@ class booru_manager {
 
                 // Get Tag
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
 
                 // Set Data
-                tagItem.set(data.data)
+                tagItem.set(data.itemID)
 
                     // Success
                     .then(() => {
 
-                        // Send Result
-                        resolve({
-                            db: tagItem,
+                        // Result Data
+                        const resolveData = {
+                            data: data.data,
+                            db: {
+                                tag: tagItem,
+                                item: itemData
+                            },
                             values: {
                                 normal: {
                                     tag: data.tag,
@@ -482,7 +487,35 @@ class booru_manager {
                                     itemID: resultCheck.escaped.itemID
                                 }
                             }
-                        });
+                        };
+
+                        // Add Adata
+                        if (!notAddData) {
+
+                            // Set Data
+                            itemData.set(data.data)
+
+                                // Success
+                                .then(() => {
+
+                                    // Send Result
+                                    resolve(resolveData);
+
+                                    // Complete
+                                    return;
+
+                                })
+
+                                // Error
+                                .catch(err => {
+                                    reject(err);
+                                    return;
+                                });
+
+                        }
+
+                        // Nope
+                        else { resolve(resolveData); }
 
                         // Complete
                         return;
@@ -560,7 +593,7 @@ class booru_manager {
     }
 
     // Remove
-    removeTagItem(data) {
+    removeTagItem(data, notRemoveData = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -572,6 +605,7 @@ class booru_manager {
 
                 // Get Tag
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.rempve()
@@ -579,9 +613,12 @@ class booru_manager {
                     // Success
                     .then(() => {
 
-                        // Send Result
-                        resolve({
-                            db: tagItem,
+                        // Result Data
+                        const resolveData = {
+                            db: {
+                                tag: tagItem,
+                                item: itemData
+                            },
                             values: {
                                 normal: {
                                     tag: data.tag,
@@ -592,7 +629,35 @@ class booru_manager {
                                     itemID: resultCheck.escaped.itemID
                                 }
                             }
-                        });
+                        };
+
+                        // Add Adata
+                        if (!notRemoveData) {
+
+                            // Set Data
+                            itemData.remove()
+
+                                // Success
+                                .then(() => {
+
+                                    // Send Result
+                                    resolve(resolveData);
+
+                                    // Complete
+                                    return;
+
+                                })
+
+                                // Error
+                                .catch(err => {
+                                    reject(err);
+                                    return;
+                                });
+
+                        }
+
+                        // Nope
+                        else { resolve(resolveData); }
 
                         // Complete
                         return;
