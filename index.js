@@ -1028,28 +1028,26 @@ class booru_manager {
                                         // Action Remove Item
                                         const removeTagsItem = function (fn, fn_error, tag) {
 
-                                            // Detect if the value was removed
-                                            if (!itemList.removed[tag][item]) {
+                                            // Remover
+                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
 
-                                                // Remover
-                                                tinythis.dbItems.itemData.child(item).remove().then(() => {
-                                                    if (typeof tag === "string" && tag.length > 0) {
-                                                        if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
-                                                        itemList.removed[tag][item] = oldItems[item];
-                                                    }
-                                                    fn();
-                                                    return;
-                                                }).catch(err => {
-                                                    fn_error(err);
-                                                    return;
-                                                });
+                                                // Tag Name Add List
+                                                if (typeof tag === "string" && tag.length > 0) {
 
-                                            }
+                                                    // Create Item
+                                                    if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
+                                                    itemList.removed[tag][item] = oldItems[item];
 
-                                            // Nope
-                                            else {
+                                                }
+
+                                                // Complete
                                                 fn();
-                                            }
+                                                return;
+
+                                            }).catch(err => {
+                                                fn_error(err);
+                                                return;
+                                            });
 
                                             // Complete
                                             return;
@@ -1086,9 +1084,20 @@ class booru_manager {
                                                 // Exist Tag
                                                 if (typeof tagName === "string") {
 
+                                                    // Prepare Remove Tag
+                                                    const prepare_removeTag = function () {
+
+                                                        // Remover Tag
+                                                        removeTag(fn, fn_error, tagName);
+
+                                                        // Complete
+                                                        return;
+
+                                                    };
+
                                                     // Exist OLD Tag
                                                     if (
-                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length) ||
+                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
                                                         (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                     ) {
 
@@ -1097,19 +1106,11 @@ class booru_manager {
                                                             !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
                                                             !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
                                                         ) {
-                                                            removeTagsItem(function () {
-
-                                                                // Remover Tag
-                                                                removeTag(fn, fn_error, tagName);
-
-                                                                // Complete
-                                                                return;
-
-                                                            }, fn_error, tagName);
+                                                            removeTagsItem(prepare_removeTag, fn_error, tagName);
                                                         }
-                                                        else { removeTagsItem(fn, fn_error, tagName); }
+                                                        else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
 
-                                                    } else { removeTagsItem(fn, fn_error, tagName); }
+                                                    } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
 
                                                 } else { removeTagsItem(fn, fn_error); }
 
