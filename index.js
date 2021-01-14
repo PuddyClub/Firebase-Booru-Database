@@ -1083,10 +1083,15 @@ class booru_manager {
                                                 let tagName = oldItems[item][tinythis.tagList][tag];
                                                 if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName, notAddData); } else { tagName = null; }
 
+                                                console.log(oldTags[tagName]);
+
                                                 // Validator
                                                 const theTagisNotString = (typeof tagName !== "string");
-                                                const notExistOLDTag = (typeof oldTags[tagName] !== "string");
-                                                const notExistNewTagItem = (!objType(itemList[tagName], 'object') || !Array.isArray(itemList[tagName][item]) || objType(itemList[tagName][item], 'object'));
+                                                const notExistOLDTag = (!objType(oldTags[tagName], 'object') || !Array.isArray(oldTags[tagName]));
+                                                const notExistNewTagItem = (
+                                                    (!objType(itemList[tagName], 'object') && !Array.isArray(itemList[tagName])) ||
+                                                    (objType(itemList[tagName][item], 'object') && !Array.isArray(itemList[tagName][item]))
+                                                );
 
                                                 // Remover
                                                 if (theTagisNotString || notExistOLDTag || notExistNewTagItem) {
