@@ -951,9 +951,6 @@ class booru_manager {
                     // Get OLD Tags
                     tinythis.getTags().then(oldTags => {
 
-                        // Prepare MD5
-                        const md5 = require('md5');
-
                         // Obj Type
                         const objType = require('@tinypudding/puddy-lib/get/objType');
 
