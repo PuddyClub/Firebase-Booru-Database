@@ -1050,14 +1050,15 @@ class booru_manager {
                                             prepareRemovetags.run(function (tag, fn, fn_error) {
 
                                                 // Validator
-                                                const notString = (typeof oldItems[item][tinythis.tagList][tag] !== "string");
-                                                const notOLDString = ((!objType(itemList[tag], 'object') && !Array.isArray(itemList[tag])) || !objType(itemList[tag][item], 'object'));
+                                                const tagName = oldItems[item][tinythis.tagList][tag];
+                                                const notString = (typeof tagName !== "string");
+                                                const notOLDString = ((!objType(itemList[tagName], 'object') && !Array.isArray(itemList[tagName])) || !objType(itemList[tagName][item], 'object'));
 
                                                 // Remover
                                                 if (notString || notOLDString) {
                                                     removeTagsItem(function () {
 
-                                                        tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+                                                        tinythis.dbItems.tagData.child(tagName).child(item).remove().then(() => {
                                                             fn();
                                                             return;
                                                         }).catch(err => {
