@@ -1095,22 +1095,26 @@ class booru_manager {
 
                                                     };
 
+                                                    console.group(`${item} | ${tagName}`);
                                                     // Exist OLD Tag
                                                     if (
                                                         (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
                                                         (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                     ) {
 
+                                                        console.log('mio1');
                                                         // Don't Exist Added Items
                                                         if (
                                                             (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
                                                             (!objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
                                                         ) {
+                                                            console.log('mio2');
                                                             removeTagsItem(prepare_removeTag, fn_error, tagName);
                                                         }
                                                         else { fn(); }
 
                                                     } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+                                                    console.groupEnd();
 
                                                 } else { removeTagsItem(fn, fn_error); }
 
