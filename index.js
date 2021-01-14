@@ -1096,10 +1096,7 @@ class booru_manager {
                                                     };
 
                                                     // Exist OLD Tag
-                                                    if (
-                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
-                                                        (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
-                                                    ) {
+                                                    if (typeof oldTags[tagName] === "string" && oldTags[tagName].length > 0) {
 
                                                         // Don't Exist Added Items
                                                         if (
@@ -1108,7 +1105,7 @@ class booru_manager {
                                                         ) {
                                                             removeTagsItem(prepare_removeTag, fn_error, tagName);
                                                         }
-                                                        else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+                                                        else { fn(); }
 
                                                     } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
 
