@@ -813,12 +813,15 @@ class booru_manager {
                                         const readTag = extra({ data: oldTags[tag] });
                                         readTag.run(function (item, fn, fn_error) {
 
+                                            // Validator
+                                            const notObject = (!objType(oldTags[tag][item], 'object'));
+                                            const notStringorNumber = (typeof oldTags[tag][item][tinythis.idVar] !== "string" && typeof oldTags[tag][item][tinythis.idVar] !== "number");
+                                            const dontExistNewTag = (!itemList[tag]);
+                                            let dontExistNewTagItem = false;
+                                            if (!dontExistNewTag) { dontExistNewTagItem = (!itemList[tag][item]); }
+
                                             // Can Delete
-                                            if (
-                                                !objType(oldTags[tag][item]) ||
-                                                typeof oldTags[tag][item][tinythis.idVar] !== "string" ||
-                                                !itemList[tag] || !itemList[tag][item]
-                                            ) {
+                                            if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
 
                                                 // Remover
                                                 tinythis.dbItems.tag.child(tag).child(item).remove().then(() => {
