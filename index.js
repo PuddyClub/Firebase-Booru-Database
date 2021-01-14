@@ -959,9 +959,9 @@ class booru_manager {
                                     };
 
                                     // Check Exist Tag Name
-                                    if (typeof tagName === "string" && tagName.length > 0) {
+                                    if (typeof tagName === "string") {
                                         escaped_values.tagName = databaseEscape(tagName, allowPath);
-                                    } 
+                                    }
 
                                     // Nope
                                     else {
@@ -1023,7 +1023,25 @@ class booru_manager {
                                 }
 
                                 // Nope
-                                else { tagInsertResult(fn); }
+                                else {
+
+                                    // Add Tag
+                                    tinythis.addTagItem({
+                                        itemID: itemID,
+                                        data: data[item],
+                                        allowPath: allowPath
+                                    }, notAddData)
+
+                                        // Result
+                                        .then(() => { tagInsertResult(fn); return; })
+
+                                        // Error
+                                        .catch(err => {
+                                            fn_error(err);
+                                            return;
+                                        });
+
+                                }
 
                             }
 
