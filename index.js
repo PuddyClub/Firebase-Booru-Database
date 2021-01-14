@@ -77,6 +77,9 @@ class booru_manager {
 
                             if (database_checker_verified) {
 
+                                // Unknown Tag
+                                this.unknownTag = 'UNKNOWNTAG';
+
                                 // Insert ID
                                 this.id = data.id;
 
@@ -988,7 +991,7 @@ class booru_manager {
 
                                     // Nope
                                     else {
-                                        escaped_values.tagName = 'UNKNOWNTAG';
+                                        escaped_values.tagName = tinythis.unknownTag;
                                     }
 
                                     // Create Tag
@@ -1050,6 +1053,7 @@ class booru_manager {
 
                                     // Add Tag
                                     tinythis.addItem({
+                                        tag: tinythis.unknownTag,
                                         itemID: itemID,
                                         data: data[item],
                                         allowPath: allowPath
