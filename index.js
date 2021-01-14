@@ -1028,14 +1028,25 @@ class booru_manager {
                                         // Action Remove Item
                                         const removeTagsItem = function (fn, fn_error) {
 
-                                            // Remover
-                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                            // Detect if the value was removed
+                                            if (removedItems.indexOf(item) < 0) {
+
+                                                // Remover
+                                                tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                                    removedItems.push(item);
+                                                    fn();
+                                                    return;
+                                                }).catch(err => {
+                                                    fn_error(err);
+                                                    return;
+                                                });
+
+                                            }
+
+                                            // Nope
+                                            else {
                                                 fn();
-                                                return;
-                                            }).catch(err => {
-                                                fn_error(err);
-                                                return;
-                                            });
+                                            }
 
                                             // Complete
                                             return;
