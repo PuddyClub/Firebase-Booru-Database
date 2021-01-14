@@ -126,6 +126,9 @@ class booru_manager {
                                     // Name
                                     name: this.db[this.firstDBLine]('name'),
 
+                                    // URL
+                                    url: this.db[this.firstDBLine]('url'),
+
                                     // ID
                                     id: this.db[this.firstDBLine]('id'),
 
@@ -709,7 +712,17 @@ class booru_manager {
     // Update Database
     updateDatabase(data, allowPath = false) {
         const tinythis = this;
-        return new Promise(function (resolve, reject) {
+        return new Promise(async function (resolve, reject) {
+
+            // Update Database Info
+            try {
+                await tinythis.dbItems.url.set(tinythis.url);
+                await tinythis.dbItems.name.set(tinythis.name);
+                await tinythis.dbItems.id.set(tinythis.id);
+                await tinythis.dbItems.module_name.set(tinythis.module_name);
+            } catch (err) {
+                reject(err);
+            }
 
             // Is Array
             if (Array.isArray(data)) {
