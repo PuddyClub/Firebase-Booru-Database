@@ -1042,6 +1042,22 @@ class booru_manager {
 
                                         };
 
+                                        // Action Remove Tag
+                                        const removeTag = function (fn, fn_error, tagName) {
+
+                                            tinythis.dbItems.tagData.child(tagName).child(item).remove().then(() => {
+                                                fn();
+                                                return;
+                                            }).catch(err => {
+                                                fn_error(err);
+                                                return;
+                                            });
+
+                                            // Complete
+                                            return;
+
+                                        };
+
                                         // Check OLD Data
                                         if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
 
@@ -1049,22 +1065,20 @@ class booru_manager {
                                             const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
                                             prepareRemovetags.run(function (tag, fn, fn_error) {
 
-                                                // Validator
+                                                // Get Tag Name
                                                 const tagName = oldItems[item][tinythis.tagList][tag];
-                                                const notString = (typeof tagName !== "string");
-                                                const notOLDString = ((!objType(itemList[tagName], 'object') && !Array.isArray(itemList[tagName])) || !objType(itemList[tagName][item], 'object'));
+
+                                                // Validator
+                                                const theTagisNotString = (typeof tagName !== "string");
+                                                const notExistOLDTag = (typeof oldTags[tagName] !== "string");
+                                                const notExistNewTagItem = (!objType(itemList[tagName], 'object') || !Array.isArray(itemList[tagName][item]) || objType(itemList[tagName][item], 'object'));
 
                                                 // Remover
-                                                if (notString || notOLDString) {
+                                                if (theTagisNotString || notExistOLDTag || notExistNewTagItem) {
                                                     removeTagsItem(function () {
 
-                                                        tinythis.dbItems.tagData.child(tagName).child(item).remove().then(() => {
-                                                            fn();
-                                                            return;
-                                                        }).catch(err => {
-                                                            fn_error(err);
-                                                            return;
-                                                        });
+                                                        // Remover
+                                                        removeTag(fn, fn_error, tagName);
 
                                                         // Complete
                                                         return;
