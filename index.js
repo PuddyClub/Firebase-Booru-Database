@@ -1103,8 +1103,8 @@ class booru_manager {
 
                                                         // Don't Exist Added Items
                                                         if (
-                                                            !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
-                                                            !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
+                                                            (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
+                                                            (!objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
                                                         ) {
                                                             removeTagsItem(prepare_removeTag, fn_error, tagName);
                                                         }
