@@ -1022,6 +1022,9 @@ class booru_manager {
                                     // Removed Items List
                                     const removedItems = [];
 
+                                    // Firebase Escape
+                                    const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+
                                     // For Promise
                                     forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
 
@@ -1077,7 +1080,8 @@ class booru_manager {
                                             prepareRemovetags.run(function (tag, fn, fn_error) {
 
                                                 // Get Tag Name
-                                                const tagName = oldItems[item][tinythis.tagList][tag];
+                                                let tagName = oldItems[item][tinythis.tagList][tag];
+                                                if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape.escape(tagName); } else { tagName = null; }
 
                                                 // Validator
                                                 const theTagisNotString = (typeof tagName !== "string");
