@@ -1049,11 +1049,11 @@ class booru_manager {
                                 else {
 
                                     // Add Tag
-                                    tinythis.addItem(data)({
+                                    tinythis.addItem({
                                         itemID: itemID,
                                         data: data[item],
                                         allowPath: allowPath
-                                    }, notAddData)
+                                    })
 
                                         // Result
                                         .then(() => { tagInsertResult(fn); return; })
