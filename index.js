@@ -450,7 +450,7 @@ class booru_manager {
     // Tags
 
     // Add Item
-    addItem(data, escapeResult, tagItem = null) {
+    addItem(data, escapeResult = null, tagItem = null) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -459,6 +459,7 @@ class booru_manager {
 
             // Fix Database Tag Item
             if (!tagItem) { tagItem = tinythis.dbItems.tagData.child(escapeResult.tagName).child(escapeResult.itemID); }
+            if (!escapeResult) { escapeResult = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath); }
 
             // Set Data
             itemData.set(data.data)
@@ -1048,7 +1049,7 @@ class booru_manager {
                                 else {
 
                                     // Add Tag
-                                    tinythis.addTagItem({
+                                    tinythis.addItem(data)({
                                         itemID: itemID,
                                         data: data[item],
                                         allowPath: allowPath
