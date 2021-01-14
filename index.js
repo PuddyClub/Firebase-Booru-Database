@@ -464,69 +464,82 @@ class booru_manager {
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
                 const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
 
-                // Set Data
-                tagItem.set(data.itemID)
+                // Add Tag Result
+                const addTagResult = function () {
 
-                    // Success
-                    .then(() => {
+                    // Set Data
+                    itemData.set(data.data)
 
-                        // Result Data
-                        const resolveData = {
-                            data: data.data,
-                            db: {
-                                tag: tagItem,
-                                item: itemData
-                            },
-                            values: {
-                                normal: {
-                                    tag: data.tag,
-                                    itemID: data.itemID
+                        // Success
+                        .then(() => {
+
+                            // Send Result
+                            resolve({
+                                data: data.data,
+                                db: {
+                                    tag: tagItem,
+                                    item: itemData
                                 },
-                                escape: {
-                                    tag: resultCheck.escaped.tagName,
-                                    itemID: resultCheck.escaped.itemID
+                                values: {
+                                    normal: {
+                                        tag: data.tag,
+                                        itemID: data.itemID
+                                    },
+                                    escape: {
+                                        tag: resultCheck.escaped.tagName,
+                                        itemID: resultCheck.escaped.itemID
+                                    }
                                 }
-                            }
-                        };
+                            });
 
-                        // Add Adata
-                        if (!notAddData) {
+                            // Complete
+                            return;
 
-                            // Set Data
-                            itemData.set(data.data)
+                        })
 
-                                // Success
-                                .then(() => {
+                        // Error
+                        .catch(err => {
+                            reject(err);
+                            return;
+                        });
 
-                                    // Send Result
-                                    resolve(resolveData);
+                    // Complete
+                    return;
 
-                                    // Complete
-                                    return;
+                };
 
-                                })
+                // Add data
+                if (!notAddData) {
 
-                                // Error
-                                .catch(err => {
-                                    reject(err);
-                                    return;
-                                });
+                    // Set Data
+                    tagItem.set(data.itemID)
 
-                        }
+                        // Success
+                        .then(() => {
 
-                        // Nope
-                        else { resolve(resolveData); }
+                            // Add Tag
+                            addTagResult();
 
-                        // Complete
-                        return;
+                            // Complete
+                            return;
 
-                    })
+                        })
 
-                    // Error
-                    .catch(err => {
-                        reject(err);
-                        return;
-                    });
+                        // Error
+                        .catch(err => {
+                            reject(err);
+                            return;
+                        });
+
+                }
+
+                // Nope
+                else {
+
+                    // Add Tag
+                    addTagResult();
+
+                }
 
             }
 
@@ -607,68 +620,81 @@ class booru_manager {
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
                 const itemData = tinythis.dbItems.tagData.child(resultCheck.escaped.itemID);
 
-                // Set Data
-                tagItem.rempve()
+                // Remove Tag Result
+                const removeTagResult = function () {
 
-                    // Success
-                    .then(() => {
+                    // Set Data
+                    tagItem.remove()
 
-                        // Result Data
-                        const resolveData = {
-                            db: {
-                                tag: tagItem,
-                                item: itemData
-                            },
-                            values: {
-                                normal: {
-                                    tag: data.tag,
-                                    itemID: data.itemID
+                        // Success
+                        .then(() => {
+
+                            // Send Result
+                            resolve({
+                                db: {
+                                    tag: tagItem,
+                                    item: itemData
                                 },
-                                escape: {
-                                    tag: resultCheck.escaped.tagName,
-                                    itemID: resultCheck.escaped.itemID
+                                values: {
+                                    normal: {
+                                        tag: data.tag,
+                                        itemID: data.itemID
+                                    },
+                                    escape: {
+                                        tag: resultCheck.escaped.tagName,
+                                        itemID: resultCheck.escaped.itemID
+                                    }
                                 }
-                            }
-                        };
+                            });
 
-                        // Add Adata
-                        if (!notRemoveData) {
+                            // Complete
+                            return;
 
-                            // Set Data
-                            itemData.remove()
+                        })
 
-                                // Success
-                                .then(() => {
+                        // Error
+                        .catch(err => {
+                            reject(err);
+                            return;
+                        });
 
-                                    // Send Result
-                                    resolve(resolveData);
+                    // Complete
+                    return;
 
-                                    // Complete
-                                    return;
+                };
 
-                                })
+                // Remove data
+                if (!notRemoveData) {
 
-                                // Error
-                                .catch(err => {
-                                    reject(err);
-                                    return;
-                                });
+                    // Set Data
+                    itemData.remove()
 
-                        }
+                        // Success
+                        .then(() => {
 
-                        // Nope
-                        else { resolve(resolveData); }
+                            // Remove
+                            removeTagResult();
 
-                        // Complete
-                        return;
+                            // Complete
+                            return;
 
-                    })
+                        })
 
-                    // Error
-                    .catch(err => {
-                        reject(err);
-                        return;
-                    });
+                        // Error
+                        .catch(err => {
+                            reject(err);
+                            return;
+                        });
+
+                }
+
+                // Nope
+                else {
+
+                    // Remove
+                    removeTagResult();
+
+                }
 
             }
 
