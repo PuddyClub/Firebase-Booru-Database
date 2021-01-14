@@ -136,10 +136,16 @@ class booru_manager {
                                     module_name: this.db[this.firstDBLine]('module_name'),
 
                                     // Tag List
-                                    tag: this.db[this.firstDBLine]('tag').child('data'),
+                                    tagData: this.db[this.firstDBLine]('tag').child('data'),
 
                                     // Total Tags
-                                    totalTags: this.db[this.firstDBLine]('tag').child('total')
+                                    tagTotal: this.db[this.firstDBLine]('tag').child('total'),
+
+                                    // Total Items
+                                    itemTotal: this.db[this.firstDBLine]('item').child('total'),
+
+                                    // Total Items
+                                    itemData: this.db[this.firstDBLine]('item').child('data')
 
                                 };
 
@@ -445,7 +451,7 @@ class booru_manager {
             if (resultCheck.allowed) {
 
                 // Get Tag
-                const tagItem = tinythis.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.set(data.data)
