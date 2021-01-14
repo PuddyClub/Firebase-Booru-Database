@@ -136,7 +136,10 @@ class booru_manager {
                                     module_name: this.db[this.firstDBLine]('module_name'),
 
                                     // Tag List
-                                    tag: this.db[this.firstDBLine]('tag')
+                                    tag: this.db[this.firstDBLine]('tag').child('data'),
+
+                                    // Total Tags
+                                    totalTags: this.db[this.firstDBLine]('tag').child('total')
 
                                 };
 
