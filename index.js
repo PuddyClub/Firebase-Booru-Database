@@ -922,142 +922,75 @@ class booru_manager {
                 // Get OLD Data
                 tinythis.getItems().then(oldItems => {
 
-                    // Prepare MD5
-                    const md5 = require('md5');
+                    // Get OLD Tags
+                    tinythis.getTags().then(oldTags => {
 
-                    // Exist OLD
-                    const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
+                        // Prepare MD5
+                        const md5 = require('md5');
 
-                    // Item List
-                    const itemList = {};
+                        // Exist OLD
+                        const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
-                    // For Promise
-                    const forPromise = require('for-promise');
+                        // Item List
+                        const itemList = {};
 
-                    // For Promise
-                    forPromise({ data: data }, function (item, fn, fn_error, extra) {
+                        // For Promise
+                        const forPromise = require('for-promise');
 
-                        // Item ID
-                        const itemID = data[item][tinythis.idVar];
+                        // For Promise
+                        forPromise({ data: data }, function (item, fn, fn_error, extra) {
 
-                        // Check Exist Options
-                        if (Array.isArray(data[item][tinythis.tagList])) {
+                            // Item ID
+                            const itemID = data[item][tinythis.idVar];
 
-                            // Read Tags
-                            const readTags = extra({ data: data[item][tinythis.tagList] });
-                            readTags.run(function (tagIndex, fn, fn_error) {
+                            // Check Exist Options
+                            if (Array.isArray(data[item][tinythis.tagList])) {
 
-                                // Tag Name
-                                const tagName = data[item][tinythis.tagList][tagIndex];
+                                // Read Tags
+                                const readTags = extra({ data: data[item][tinythis.tagList] });
+                                readTags.run(function (tagIndex, fn, fn_error) {
 
-                                // Check Tag Name
-                                if (typeof tagName === "string" && tagName.length > 0) {
+                                    // Tag Name
+                                    const tagName = data[item][tinythis.tagList][tagIndex];
 
-                                    // Add Tag
-                                    tinythis.addTagItem({
-                                        tag: tagName,
-                                        itemID: itemID,
-                                        data: data[item],
-                                        allowPath: allowPath
-                                    }, notAddData)
+                                    // Check Tag Name
+                                    if (typeof tagName === "string" && tagName.length > 0) {
 
-                                        // Result
-                                        .then(() => {
+                                        // Add Tag
+                                        tinythis.addTagItem({
+                                            tag: tagName,
+                                            itemID: itemID,
+                                            data: data[item],
+                                            allowPath: allowPath
+                                        }, notAddData)
 
-                                            // Firebase Escape
-                                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-                                            const escaped_values = {
-                                                tagName: databaseEscape(tagName, allowPath),
-                                                itemID: databaseEscape(itemID, allowPath)
-                                            };
+                                            // Result
+                                            .then(() => {
 
-                                            // Create Tag
-                                            if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
+                                                // Firebase Escape
+                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                const escaped_values = {
+                                                    tagName: databaseEscape(tagName, allowPath),
+                                                    itemID: databaseEscape(itemID, allowPath)
+                                                };
 
-                                            // Insert Item in the Tag
-                                            itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
+                                                // Create Tag
+                                                if (!itemList[escaped_values.tagName]) { itemList[escaped_values.tagName] = {}; }
 
-                                            // Complete
-                                            fn();
-                                            return;
+                                                // Insert Item in the Tag
+                                                itemList[escaped_values.tagName][escaped_values.itemID] = data[item];
 
-                                        })
-
-                                        // Error
-                                        .catch(err => {
-                                            fn_error(err);
-                                            return;
-                                        });
-
-                                }
-
-                                // Nope
-                                else { fn(); }
-
-                                // Complete
-                                return;
-
-                            });
-
-                        }
-
-                        // Complete
-                        fn();
-                        return;
-
-                    })
-
-                        // Result
-                        .then(() => {
-
-                            // Obj Type
-                            const objType = require('@tinypudding/puddy-lib/get/objType');
-                            if (existOLD) {
-
-                                // For Promise
-                                forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
-
-                                    // Validator
-                                    const notObject = (!objType(oldItems[item], 'object'));
-                                    let notStringorNumber = false;
-                                    if (!notObject) { (typeof oldItems[item][tinythis.idVar] !== "string" && typeof oldItems[item][tinythis.idVar] !== "number"); }
-
-                                    const dontExistNewTag = (!itemList[tag]);
-                                    let dontExistNewTagItem = false;
-                                    if (!dontExistNewTag) { dontExistNewTagItem = (!itemList[tag][item]); }
-
-                                    // Can Delete
-                                    if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
-
-                                        // Action Remove Item
-                                        const removeTagsItem = function () {
-
-                                            // Remover
-                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                                // Complete
                                                 fn();
                                                 return;
-                                            }).catch(err => {
+
+                                            })
+
+                                            // Error
+                                            .catch(err => {
                                                 fn_error(err);
                                                 return;
                                             });
-
-                                            // Complete
-                                            return;
-
-                                        };
-
-                                        // Prepare to Remove Tags
-                                        if (Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
-                                            const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
-                                            prepareRemovetags.run(function (tag, fn, fn_error) {
-
-
-
-                                            });
-                                        }
-
-                                        // Nope
-                                        else { removeTagsItem(); }
 
                                     }
 
@@ -1067,29 +1000,112 @@ class booru_manager {
                                     // Complete
                                     return;
 
-                                })
-
-                                    // Finished
-                                    .then(() => {
-                                        resolve(itemList);
-                                        return;
-                                    }).catch(err => {
-                                        reject(err);
-                                        return;
-                                    });
+                                });
 
                             }
 
-                            // Nope
-                            else { resolve(itemList); }
-
                             // Complete
+                            fn();
                             return;
 
-                        }).catch(err => {
-                            reject(err);
-                            return;
-                        });
+                        })
+
+                            // Result
+                            .then(() => {
+
+                                // Obj Type
+                                const objType = require('@tinypudding/puddy-lib/get/objType');
+                                if (existOLD) {
+
+                                    // For Promise
+                                    forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
+
+                                        // Validator
+                                        const notObject = (!objType(oldItems[item], 'object'));
+                                        let notStringorNumber = false;
+                                        if (!notObject) { (typeof oldItems[item][tinythis.idVar] !== "string" && typeof oldItems[item][tinythis.idVar] !== "number"); }
+
+                                        const dontExistNewTag = (!itemList[tag]);
+                                        let dontExistNewTagItem = false;
+                                        if (!dontExistNewTag) { dontExistNewTagItem = (!itemList[tag][item]); }
+
+                                        // Can Delete
+                                        if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
+
+                                            // Action Remove Item
+                                            const removeTagsItem = function () {
+
+                                                // Remover
+                                                tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                                    fn();
+                                                    return;
+                                                }).catch(err => {
+                                                    fn_error(err);
+                                                    return;
+                                                });
+
+                                                // Complete
+                                                return;
+
+                                            };
+
+                                            // Prepare to Remove Tags
+                                            if (Array.isArray(oldItems[item][tinythis.tagList]) && oldItems[item][tinythis.tagList].length > 0) {
+                                                const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
+                                                prepareRemovetags.run(function (tag, fn, fn_error) {
+
+                                                    // Validator
+                                                    const notString = (typeof oldItems[item][tinythis.tagList][tag] !== "string");
+
+
+                                                    // Complete
+                                                    return;
+
+                                                });
+                                            }
+
+                                            // Nope
+                                            else { removeTagsItem(); }
+
+                                        }
+
+                                        // Nope
+                                        else { fn(); }
+
+                                        // Complete
+                                        return;
+
+                                    })
+
+                                        // Finished
+                                        .then(() => {
+                                            resolve(itemList);
+                                            return;
+                                        }).catch(err => {
+                                            reject(err);
+                                            return;
+                                        });
+
+                                }
+
+                                // Nope
+                                else { resolve(itemList); }
+
+                                // Complete
+                                return;
+
+                            }).catch(err => {
+                                reject(err);
+                                return;
+                            });
+
+                        // Complete
+                        return;
+
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
 
                     // Complete
                     return;
