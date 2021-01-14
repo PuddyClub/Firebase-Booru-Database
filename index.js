@@ -142,10 +142,10 @@ class booru_manager {
                                     tagTotal: this.db[this.firstDBLine]('tag').child('total'),
 
                                     // Total Items
-                                    itemTotal: this.db[this.firstDBLine]('item').child('total'),
+                                    itemData: this.db[this.firstDBLine]('item').child('data'),
 
                                     // Total Items
-                                    itemData: this.db[this.firstDBLine]('item').child('data')
+                                    itemTotal: this.db[this.firstDBLine]('item').child('total')
 
                                 };
 
@@ -345,12 +345,22 @@ class booru_manager {
 
     // Get Tag
     getTag(tag_name) {
-        return this.getItemTemplate(tag_name, 'tag');
+        return this.getItemTemplate(tag_name, 'tagData');
     }
 
     // Get Tags
     getTags(itemsList) {
-        return this.getItemsTemplate(itemsList, 'tag');
+        return this.getItemsTemplate(itemsList, 'tagData');
+    }
+
+    // Get Tag
+    getItem(tag_name) {
+        return this.getItemTemplate(tag_name, 'itemData');
+    }
+
+    // Get Tags
+    getItems(itemsList) {
+        return this.getItemsTemplate(itemsList, 'itemData');
     }
 
     // Get Error
@@ -561,7 +571,7 @@ class booru_manager {
             if (resultCheck.allowed) {
 
                 // Get Tag
-                const tagItem = tinythis.dbItems.tag.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
+                const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
 
                 // Set Data
                 tagItem.rempve()
@@ -938,7 +948,7 @@ class booru_manager {
                                             if (notObject || notStringorNumber || dontExistNewTag || dontExistNewTagItem) {
 
                                                 // Remover
-                                                tinythis.dbItems.tag.child(tag).child(item).remove().then(() => {
+                                                tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
                                                     fn();
                                                     return;
                                                 }).catch(err => {
