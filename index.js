@@ -709,6 +709,60 @@ class booru_manager {
         });
     }
 
+    // Check Error
+    checkError() {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            // Get Errors
+            tinythis.getErrors().then(errors => {
+
+                // Result
+                const result = { error: false };
+
+                // Check Timeout
+                if (errors && typeof errors.timeout === "number" && errors.timeout > 0) {
+                    result.error = true;
+                    result.data = errors;
+                }
+
+                // Send Result
+                resolve(result);
+
+                // Complete
+                return;
+
+            }).catch(err => {
+                reject(err);
+                return;
+            });
+
+            // Complete
+            return;
+
+        });
+    }
+
+    // Remove Error
+    removeError() {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            // Insert Data
+            tinythis.dbItems.error.remove().then(() => {
+                resolve();
+                return;
+            }).catch(err => {
+                reject(err);
+                return;
+            });
+
+            // Complete
+            return;
+
+        });
+    }
+
     // Update Database
     updateDatabase(data, allowPath = false) {
         const tinythis = this;
