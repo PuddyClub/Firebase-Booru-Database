@@ -449,6 +449,59 @@ class booru_manager {
 
     // Tags
 
+    // Add Item
+    addItem(data, escapeResult, tagItem = null) {
+        const tinythis = this;
+        return new Promise(function (resolve, reject) {
+
+            // Prepare Item Data
+            const itemData = tinythis.dbItems.itemData.child(escapeResult.itemID);
+
+            // Fix Database Tag Item
+            if (!tagItem) { tagItem = tinythis.dbItems.tagData.child(escapeResult.tagName).child(escapeResult.itemID); }
+
+            // Set Data
+            itemData.set(data.data)
+
+                // Success
+                .then(() => {
+
+                    // Send Result
+                    resolve({
+                        data: data.data,
+                        db: {
+                            tag: tagItem,
+                            item: itemData
+                        },
+                        values: {
+                            normal: {
+                                tag: data.tag,
+                                itemID: data.itemID
+                            },
+                            escape: {
+                                tag: escapeResult.tagName,
+                                itemID: escapeResult.itemID
+                            }
+                        }
+                    });
+
+                    // Complete
+                    return;
+
+                })
+
+                // Error
+                .catch(err => {
+                    reject(err);
+                    return;
+                });
+
+            // Complete
+            return;
+
+        });
+    }
+
     // Add
     addTagItem(data, notAddData = false) {
         const tinythis = this;
@@ -462,51 +515,6 @@ class booru_manager {
 
                 // Get Tag
                 const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
-                const itemData = tinythis.dbItems.itemData.child(resultCheck.escaped.itemID);
-
-                // Add Tag Result
-                const addTagResult = function () {
-
-                    // Set Data
-                    itemData.set(data.data)
-
-                        // Success
-                        .then(() => {
-
-                            // Send Result
-                            resolve({
-                                data: data.data,
-                                db: {
-                                    tag: tagItem,
-                                    item: itemData
-                                },
-                                values: {
-                                    normal: {
-                                        tag: data.tag,
-                                        itemID: data.itemID
-                                    },
-                                    escape: {
-                                        tag: resultCheck.escaped.tagName,
-                                        itemID: resultCheck.escaped.itemID
-                                    }
-                                }
-                            });
-
-                            // Complete
-                            return;
-
-                        })
-
-                        // Error
-                        .catch(err => {
-                            reject(err);
-                            return;
-                        });
-
-                    // Complete
-                    return;
-
-                };
 
                 // Add data
                 if (!notAddData) {
@@ -518,7 +526,13 @@ class booru_manager {
                         .then(() => {
 
                             // Add Tag
-                            addTagResult();
+                            tinythis.addItem(data, resultCheck.escaped, tagItem).then(data => {
+                                resolve(data);
+                                return;
+                            }).catch(err => {
+                                reject(err);
+                                return;
+                            });
 
                             // Complete
                             return;
@@ -534,7 +548,15 @@ class booru_manager {
                 }
 
                 // Nope
-                else { addTagResult(); }
+                else {
+                    tinythis.addItem(data, resultCheck.escaped, tagItem).then(data => {
+                        resolve(data);
+                        return;
+                    }).catch(err => {
+                        reject(err);
+                        return;
+                    });
+                }
 
             }
 
