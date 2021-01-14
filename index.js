@@ -550,7 +550,7 @@ class booru_manager {
     }
 
     // Add Multiple Tags
-    addTagItems(items) {
+    addTagItems(items, notAddData = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -564,7 +564,7 @@ class booru_manager {
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
                     // Add Tag
-                    tinythis.addTagItem(items[item]).then((result) => {
+                    tinythis.addTagItem(items[item], notAddData).then((result) => {
                         itemList[items[item].tag] = result;
                         fn();
                         return;
@@ -700,7 +700,7 @@ class booru_manager {
     }
 
     // Remove Multiple Tags
-    removeTagItems(items) {
+    removeTagItems(items, notRemoveData = false) {
         const tinythis = this;
         return new Promise(function (resolve, reject) {
 
@@ -714,7 +714,7 @@ class booru_manager {
                 require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
                     // Remove Tag
-                    tinythis.removeTagItem(items[item]).then((result) => {
+                    tinythis.removeTagItem(items[item], notRemoveData).then((result) => {
                         itemList[items[item].tag] = result;
                         fn();
                         return;
@@ -902,7 +902,7 @@ class booru_manager {
     }
 
     // Update Database
-    updateDatabase(data, allowPath = false) {
+    updateDatabase(data, allowPath = false, notAddData = false) {
         const tinythis = this;
         return new Promise(async function (resolve, reject) {
 
@@ -953,7 +953,7 @@ class booru_manager {
                                         itemID: itemID,
                                         data: data[item],
                                         allowPath: allowPath
-                                    })
+                                    }, notAddData)
 
                                         // Result
                                         .then(() => {
