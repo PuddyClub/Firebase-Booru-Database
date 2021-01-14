@@ -1081,6 +1081,7 @@ class booru_manager {
                                                 let tagName = oldItems[item][tinythis.tagList][tag];
                                                 if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName, notAddData); } else { tagName = null; }
 
+                                                console.group();
                                                 // Exist Tag
                                                 if (typeof tagName === "string") {
 
@@ -1096,13 +1097,17 @@ class booru_manager {
                                                     };
 
                                                     // Exist OLD Tag
-                                                    if (typeof oldTags[tagName] === "string" && oldTags[tagName].length > 0) {
+                                                    if (
+                                                        (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
+                                                        (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
+                                                    ) {
 
                                                         // Don't Exist Added Items
                                                         if (
                                                             !objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName]) &&
                                                             !objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item])
                                                         ) {
+                                                            console.log('mio 3');
                                                             removeTagsItem(prepare_removeTag, fn_error, tagName);
                                                         }
                                                         else { fn(); }
@@ -1110,6 +1115,7 @@ class booru_manager {
                                                     } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
 
                                                 } else { removeTagsItem(fn, fn_error); }
+                                                console.groupEnd();
 
                                                 // Complete
                                                 return;
