@@ -31,7 +31,7 @@ class booru_manager {
     getDBItems() { return this.dbItems; }
 
     // Get DB Item
-    getDBItems(item) {
+    getDBItem(item) {
         if (typeof item === "string" && item.length > 0 && this.dbItems[item]) {
             return this.dbItems[item];
         } else {
