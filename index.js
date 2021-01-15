@@ -40,6 +40,76 @@ class booru_manager {
                     // URL
                     if (typeof data.url === "string" && data.url.length > 0 && validUrl.isUri(data.url)) {
 
+                        // Unknown Tag
+                        this.unknownTag = 'UNKNOWNTAG';
+
+                        // Insert ID
+                        this.id = data.id;
+
+                        // Insert ID
+                        this.name = data.name;
+
+                        // Insert URL
+                        this.url = data.url;
+
+                        // Insert URL
+                        this.module_name = data.module_name;
+
+                        // Custom Tag Path
+                        if (typeof data.tagListVar === "string" && data.tagListVar.length > 0) {
+                            this.tagList = data.tagListVar;
+                        } else {
+                            this.tagList = 'tags';
+                        }
+
+                        // Custom ID Path
+                        if (typeof data.idVar === "string" && data.idVar.length > 0) {
+                            this.idVar = data.idVar;
+                        } else {
+                            this.idVar = 'id';
+                        }
+
+                        // Prepare Limit Items
+                        this.byteLimit = {
+
+                            // JSON
+                            json: {
+
+                                // Tag
+                                tag: 1048576,
+
+                                // Error
+                                error: 1048576
+
+                            }
+
+                        };
+
+                        // Limits
+                        if (objType(data.byteLimit, 'object')) {
+
+                            // Check Limit
+                            const checkNumberLimit = function (where, theValue) {
+                                return (typeof data.byteLimit[where][theValue] === "number" && !isNaN(data.byteLimit[where][theValue]) && data.byteLimit[where][theValue] > 0);
+                            };
+
+                            // Json
+                            if (objType(data.byteLimit.json, 'object')) {
+
+                                // Tag
+                                if (checkNumberLimit('json', 'tag')) {
+                                    this.byteLimit.json.tag = data.byteLimit.json.tag;
+                                }
+
+                                // Error
+                                if (checkNumberLimit('json', 'error')) {
+                                    this.byteLimit.json.error = data.byteLimit.json.error;
+                                }
+
+                            }
+
+                        }
+
                         // Insert Entire Database Info
                         if (objType(data.db, 'object') && objType(data.db.data, 'object') && typeof data.db.type === "string" && data.db.type.length) {
 
@@ -982,7 +1052,7 @@ class booru_manager {
                                                                 // Prepare Pack
                                                                 const pack_items = {};
                                                                 const insert_old_pack = function (obj) {
-                                                                    for(const item in obj) {
+                                                                    for (const item in obj) {
                                                                         pack_items[item] = obj[item];
                                                                     }
                                                                 };
@@ -1169,76 +1239,6 @@ class booru_manager {
 
                                     });
                                 };
-
-                            }
-
-                        }
-
-                        // Unknown Tag
-                        this.unknownTag = 'UNKNOWNTAG';
-
-                        // Insert ID
-                        this.id = data.id;
-
-                        // Insert ID
-                        this.name = data.name;
-
-                        // Insert URL
-                        this.url = data.url;
-
-                        // Insert URL
-                        this.module_name = data.module_name;
-
-                        // Custom Tag Path
-                        if (typeof data.tagListVar === "string" && data.tagListVar.length > 0) {
-                            this.tagList = data.tagListVar;
-                        } else {
-                            this.tagList = 'tags';
-                        }
-
-                        // Custom ID Path
-                        if (typeof data.idVar === "string" && data.idVar.length > 0) {
-                            this.idVar = data.idVar;
-                        } else {
-                            this.idVar = 'id';
-                        }
-
-                        // Prepare Limit Items
-                        this.byteLimit = {
-
-                            // JSON
-                            json: {
-
-                                // Tag
-                                tag: 1048576,
-
-                                // Error
-                                error: 1048576
-
-                            }
-
-                        };
-
-                        // Limits
-                        if (objType(data.byteLimit, 'object')) {
-
-                            // Check Limit
-                            const checkNumberLimit = function (where, theValue) {
-                                return (typeof data.byteLimit[where][theValue] === "number" && !isNaN(data.byteLimit[where][theValue]) && data.byteLimit[where][theValue] > 0);
-                            };
-
-                            // Json
-                            if (objType(data.byteLimit.json, 'object')) {
-
-                                // Tag
-                                if (checkNumberLimit('json', 'tag')) {
-                                    this.byteLimit.json.tag = data.byteLimit.json.tag;
-                                }
-
-                                // Error
-                                if (checkNumberLimit('json', 'error')) {
-                                    this.byteLimit.json.error = data.byteLimit.json.error;
-                                }
 
                             }
 
