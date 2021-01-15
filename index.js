@@ -1183,7 +1183,10 @@ class booru_manager {
                                                                 const pack_items = {};
                                                                 const insert_old_pack = function (obj) {
                                                                     for (const item in obj) {
-                                                                        pack_items[item] = obj[item];
+                                                                        for (const item2 in obj[item]) {
+                                                                            if (!pack_items[item]) { pack_items[item] = {}; }
+                                                                            pack_items[item][item2] = obj[item][item2];
+                                                                        }
                                                                     }
                                                                 };
 
@@ -1267,11 +1270,14 @@ class booru_manager {
 
                                                                                 };
 
+                                                                                console.group(`${tagName} | ${item}`);
                                                                                 // Exist OLD Tag
                                                                                 if (
                                                                                     (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
                                                                                     (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                                                 ) {
+
+                                                                                    console.log('start');
 
                                                                                     // Exist Tag
                                                                                     const existTag = (objType(pack_items[tagName], 'object') || Array.isArray(pack_items[tagName]));
@@ -1283,7 +1289,9 @@ class booru_manager {
                                                                                     }
 
                                                                                     // Don't Exist Tag
-                                                                                    if (!existTag) {
+                                                                                    if (!existTag || !existTagItem) {
+
+                                                                                        console.log('Tag Not Exist');
 
                                                                                         // Exist Other Tags
                                                                                         let existOtherTags = false;
@@ -1295,22 +1303,20 @@ class booru_manager {
                                                                                         }
 
                                                                                         // Don't Exist Other Tags
-                                                                                        if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+                                                                                        if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
 
                                                                                         // Exist
-                                                                                        else { prepare_removeTag(); }
+                                                                                        else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
 
                                                                                     }
 
                                                                                     // Don't Exist Tag Item
-                                                                                    else if (!existTagItem) {
-                                                                                        removeTagsItem(fn, fn_error, tagName);
+                                                                                    else {
+                                                                                        fn(); console.log('Nothing');
                                                                                     }
 
-                                                                                    // Nothing
-                                                                                    else { fn(); }
-
                                                                                 } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+                                                                                console.groupEnd();
 
                                                                             } else { removeTagsItem(fn, fn_error); }
 
