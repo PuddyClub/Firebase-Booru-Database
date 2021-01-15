@@ -1273,11 +1273,17 @@ class booru_manager {
                                                                                     (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
                                                                                 ) {
 
-                                                                                    // Don't Exist Added Items
-                                                                                    if (
-                                                                                        (!objType(pack_items[tagName], 'object') && !Array.isArray(pack_items[tagName])) ||
-                                                                                        (!objType(pack_items[tagName][item], 'object') && !Array.isArray(pack_items[tagName][item]))
-                                                                                    ) {
+                                                                                    // Exist Tag
+                                                                                    const existTag = (objType(pack_items[tagName], 'object') || Array.isArray(pack_items[tagName]));
+
+                                                                                    // Exist Tag Item
+                                                                                    let existTagItem = false;
+                                                                                    if (existTag) {
+                                                                                        existTagItem = (objType(pack_items[tagName][item], 'object') || Array.isArray(pack_items[tagName][item]));
+                                                                                    }
+
+                                                                                    // Don't Exist Tag
+                                                                                    if (!existTag) {
 
                                                                                         // Exist Other Tags
                                                                                         let existOtherTags = false;
@@ -1293,7 +1299,15 @@ class booru_manager {
 
                                                                                         // Exist
                                                                                         else { prepare_removeTag(); }
+
                                                                                     }
+
+                                                                                    // Don't Exist Tag Item
+                                                                                    else if (!existTagItem) {
+                                                                                        removeTagsItem(fn, fn_error, tagName);
+                                                                                    }
+
+                                                                                    // Nothing
                                                                                     else { fn(); }
 
                                                                                 } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
