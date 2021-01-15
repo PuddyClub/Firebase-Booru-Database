@@ -1080,9 +1080,6 @@ class booru_manager {
                                                                             // Default Value
                                                                             let functionType = 'addTagItem';
 
-                                                                            // Update Item
-                                                                            if (isNew === 2) { functionType = 'updateTagItem'; }
-
                                                                             // Add Tag
                                                                             tinythis[functionType]({
                                                                                 tag: tagName,
@@ -1138,9 +1135,6 @@ class booru_manager {
 
                                                                     // Default Value
                                                                     let functionType = 'addItem';
-
-                                                                    // Update Item
-                                                                    if (isNew === 2) { functionType = 'updateItem'; }
 
                                                                     // Add Tag
                                                                     tinythis[functionType]({
