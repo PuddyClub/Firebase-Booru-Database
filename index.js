@@ -110,6 +110,24 @@ class booru_manager {
                         // ID Var
                         this.getIdVar = function () { return this.idVar; }
 
+                        // Get Byte Limit Items
+                        this.getbyteLimitItems = function () { return this.byteLimit; };
+
+                        // Get Byte Limit Item
+                        this.getbyteLimitItem = function (item, item2) {
+                            if (typeof item === "string" && item.length > 0 && this.byteLimit[item]) {
+
+                                if (typeof item2 === "string" && item2.length > 0 && this.byteLimit[item][item2]) {
+                                    return this.byteLimit[item][item2];
+                                } else {
+                                    return this.byteLimit[item];
+                                }
+
+                            } else {
+                                return null;
+                            }
+                        };
+
                         // Insert Entire Database Info
                         if (objType(data.db, 'object') && objType(data.db.data, 'object') && typeof data.db.type === "string" && data.db.type.length) {
 
