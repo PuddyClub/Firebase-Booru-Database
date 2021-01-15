@@ -1157,7 +1157,6 @@ class booru_manager {
 
                                                     };
 
-                                                    console.group(`${item} | ${tagName}`);
                                                     // Exist OLD Tag
                                                     if (
                                                         (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
@@ -1188,7 +1187,6 @@ class booru_manager {
                                                         else { fn(); }
 
                                                     } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
-                                                    console.groupEnd();
 
                                                 } else { removeTagsItem(fn, fn_error); }
 
