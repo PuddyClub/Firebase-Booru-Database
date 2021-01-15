@@ -937,7 +937,7 @@ class booru_manager {
                                                     const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
                                                     // Item List
-                                                    const itemList = { added: {}, removed: {}, old: {} };
+                                                    const itemList = { added: {}, removed: {}, old: {}, updated: {} };
 
                                                     // For Promise
                                                     const forPromise = require('for-promise');
@@ -964,7 +964,7 @@ class booru_manager {
                                                             // Create New Detector
                                                             let isNew = 0;
 
-                                                            if((!existOLD || !oldItems[escaped_values.itemID])) {
+                                                            if ((!existOLD || !oldItems[escaped_values.itemID])) {
                                                                 isNew = 1;
                                                             }
 
@@ -982,8 +982,6 @@ class booru_manager {
 
                                                             }
 
-                                                            console.log(escaped_values, isNew);
-
                                                             // Tag Insert Result
                                                             const tagInsertResult = (fn, tagName) => {
 
@@ -991,13 +989,29 @@ class booru_manager {
                                                                 escaped_values.tagName = databaseEscape(tagName, allowPath);
 
                                                                 // Is New
-                                                                if (isNew) {
+                                                                if (isNew > 0) {
 
-                                                                    // Create Tag
-                                                                    if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
+                                                                    // Added
+                                                                    if (isNew === 1) {
 
-                                                                    // Insert Item in the Tag
-                                                                    itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
+                                                                        // Create Tag
+                                                                        if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
+
+                                                                        // Insert Item in the Tag
+                                                                        itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
+
+                                                                    }
+
+                                                                    // Updated
+                                                                    else if (isNew === 2) {
+
+                                                                        // Create Tag
+                                                                        if (!itemList.updated[escaped_values.tagName]) { itemList.updated[escaped_values.tagName] = {}; }
+
+                                                                        // Insert Item in the Tag
+                                                                        itemList.updated[escaped_values.tagName][escaped_values.itemID] = data[item];
+
+                                                                    }
 
                                                                 }
 
@@ -1140,6 +1154,7 @@ class booru_manager {
 
                                                                 insert_old_pack(itemList.old);
                                                                 insert_old_pack(itemList.added);
+                                                                insert_old_pack(itemList.updated);
 
                                                                 // Firebase Escape
                                                                 const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
