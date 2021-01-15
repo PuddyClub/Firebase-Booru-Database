@@ -840,7 +840,7 @@ class booru_manager {
                                                     const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
 
                                                     // Item List
-                                                    const itemList = { added: {}, removed: {} };
+                                                    const itemList = { added: {}, removed: {}, old: {} };
 
                                                     // For Promise
                                                     const forPromise = require('for-promise');
@@ -873,11 +873,27 @@ class booru_manager {
                                                                     escaped_values.tagName = tinythis.unknownTag;
                                                                 }
 
-                                                                // Create Tag
-                                                                if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
+                                                                // Is New
+                                                                if (!oldItems[escaped_values.itemID]) {
 
-                                                                // Insert Item in the Tag
-                                                                itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
+                                                                    // Create Tag
+                                                                    if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
+
+                                                                    // Insert Item in the Tag
+                                                                    itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
+
+                                                                }
+
+                                                                // Is OLD
+                                                                else {
+
+                                                                    // Create Tag
+                                                                    if (!itemList.old[escaped_values.tagName]) { itemList.old[escaped_values.tagName] = {}; }
+
+                                                                    // Insert Item in the Tag
+                                                                    itemList.old[escaped_values.tagName][escaped_values.itemID] = data[item];
+
+                                                                }
 
                                                                 // Complete
                                                                 fn();
