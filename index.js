@@ -23,6 +23,9 @@ class booru_manager {
                         // Unknown Tag
                         this.unknownTag = 'UNKNOWNTAG';
 
+                        // Exist DB
+                        this.existDB = false;
+
                         // Insert ID
                         this.id = data.id;
 
@@ -91,6 +94,9 @@ class booru_manager {
                         }
 
                         // Get Values
+
+                        // Exist DB
+                        this.checkExistDB = function () { return this.existDB; }
 
                         // Name
                         this.getName = function () { return this.name; }
@@ -191,6 +197,9 @@ class booru_manager {
                                     itemTotal: this.db[this.firstDBLine]('item').child('total')
 
                                 };
+
+                                // Exist DB Checked
+                                this.existDB = true;
 
                                 // DB
                                 this.getDB = function () { return this.db; };
