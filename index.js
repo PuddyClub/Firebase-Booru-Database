@@ -951,27 +951,40 @@ class booru_manager {
                                                         // Check Exist Options
                                                         if (Array.isArray(data[item][tinythis.tagList])) {
 
+                                                            // Prepare MD5
+                                                            const hash = require('object-hash');
+
+                                                            // Firebase Escape
+                                                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                            const escaped_values = {
+                                                                itemID: databaseEscape(itemID, allowPath),
+                                                                md5: { old: null, new: null }
+                                                            };
+
+                                                            // Is New
+                                                            let isNew = (!existOLD || !oldItems[escaped_values.itemID]);
+
+                                                            // Set MD5
+                                                            if (!isNew) {
+
+                                                                // Set MD5
+                                                                escaped_values.md5.new = hash(data[item]);
+                                                                escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
+
+                                                                isNew = (escaped_values.md5.new !== escaped_values.md5.old);
+
+                                                            }
+
+                                                            console.log(escaped_values, isNew);
+
                                                             // Tag Insert Result
-                                                            const tagInsertResult = (fn, tagName = null) => {
+                                                            const tagInsertResult = (fn, tagName) => {
 
-                                                                // Firebase Escape
-                                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-                                                                const escaped_values = {
-                                                                    itemID: databaseEscape(itemID, allowPath)
-                                                                };
-
-                                                                // Check Exist Tag Name
-                                                                if (typeof tagName === "string") {
-                                                                    escaped_values.tagName = databaseEscape(tagName, allowPath);
-                                                                }
-
-                                                                // Nope
-                                                                else {
-                                                                    escaped_values.tagName = tinythis.unknownTag;
-                                                                }
+                                                                // Escape Tag Name
+                                                                escaped_values.tagName = databaseEscape(tagName, allowPath);
 
                                                                 // Is New
-                                                                if (!oldItems || !oldItems[escaped_values.itemID]) {
+                                                                if (isNew) {
 
                                                                     // Create Tag
                                                                     if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
@@ -1011,22 +1024,43 @@ class booru_manager {
                                                                     // Check Tag Name
                                                                     if (typeof tagName === "string" && tagName.length > 0) {
 
-                                                                        // Add Tag
-                                                                        tinythis.addTagItem({
-                                                                            tag: tagName,
-                                                                            itemID: itemID,
-                                                                            data: data[item],
-                                                                            allowPath: allowPath
-                                                                        }, notAddData)
+                                                                        // Add New Item
+                                                                        if (isNew) {
 
-                                                                            // Result
-                                                                            .then(() => { tagInsertResult(fn, tagName); return; })
+                                                                            // Add Tag
+                                                                            tinythis.addTagItem({
+                                                                                tag: tagName,
+                                                                                itemID: itemID,
+                                                                                data: data[item],
+                                                                                allowPath: allowPath
+                                                                            }, notAddData)
 
-                                                                            // Error
-                                                                            .catch(err => {
-                                                                                fn_error(err);
-                                                                                return;
-                                                                            });
+                                                                                // Result
+                                                                                .then(() => {
+
+                                                                                    // Insert Tag
+                                                                                    tagInsertResult(fn, tagName);
+
+                                                                                    // Complete
+                                                                                    return;
+
+                                                                                })
+
+                                                                                // Error
+                                                                                .catch(err => {
+                                                                                    fn_error(err);
+                                                                                    return;
+                                                                                });
+
+                                                                        }
+
+                                                                        // Nope
+                                                                        else {
+
+                                                                            // Insert Tag
+                                                                            tagInsertResult(fn, tagName);
+
+                                                                        }
 
                                                                     }
 
@@ -1043,22 +1077,35 @@ class booru_manager {
                                                             // Nope
                                                             else {
 
-                                                                // Add Tag
-                                                                tinythis.addItem({
-                                                                    tag: tinythis.unknownTag,
-                                                                    itemID: itemID,
-                                                                    data: data[item],
-                                                                    allowPath: allowPath
-                                                                })
+                                                                // Add New Item
+                                                                if (isNew) {
 
-                                                                    // Result
-                                                                    .then(() => { tagInsertResult(fn); return; })
+                                                                    // Add Tag
+                                                                    tinythis.addItem({
+                                                                        tag: tinythis.unknownTag,
+                                                                        itemID: itemID,
+                                                                        data: data[item],
+                                                                        allowPath: allowPath
+                                                                    })
 
-                                                                    // Error
-                                                                    .catch(err => {
-                                                                        fn_error(err);
-                                                                        return;
-                                                                    });
+                                                                        // Result
+                                                                        .then(() => { tagInsertResult(fn, tinythis.unknownTag); return; })
+
+                                                                        // Error
+                                                                        .catch(err => {
+                                                                            fn_error(err);
+                                                                            return;
+                                                                        });
+
+                                                                }
+
+                                                                // Nope
+                                                                else {
+
+                                                                    // Insert Result
+                                                                    tagInsertResult(fn, tinythis.unknownTag);
+
+                                                                }
 
                                                             }
 
