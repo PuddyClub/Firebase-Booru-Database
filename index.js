@@ -1271,51 +1271,50 @@ class booru_manager {
                                                                                 };
 
                                                                                 console.group(`${tagName} | ${item}`);
+                                                                                console.log('start');
+
                                                                                 // Exist OLD Tag
-                                                                                if (
+                                                                                const existOLDTag = (
                                                                                     (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
                                                                                     (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
-                                                                                ) {
+                                                                                );
 
-                                                                                    console.log('start');
+                                                                                // Exist Tag
+                                                                                const existTag = (objType(pack_items[tagName], 'object') || Array.isArray(pack_items[tagName]));
 
-                                                                                    // Exist Tag
-                                                                                    const existTag = (objType(pack_items[tagName], 'object') || Array.isArray(pack_items[tagName]));
+                                                                                // Exist Tag Item
+                                                                                let existTagItem = false;
+                                                                                if (existTag) {
+                                                                                    existTagItem = (objType(pack_items[tagName][item], 'object') || Array.isArray(pack_items[tagName][item]));
+                                                                                }
 
-                                                                                    // Exist Tag Item
-                                                                                    let existTagItem = false;
-                                                                                    if (existTag) {
-                                                                                        existTagItem = (objType(pack_items[tagName][item], 'object') || Array.isArray(pack_items[tagName][item]));
-                                                                                    }
+                                                                                // Don't Exist Tag
+                                                                                if (!existTag || !existTagItem) {
 
-                                                                                    // Don't Exist Tag
-                                                                                    if (!existTag || !existTagItem) {
+                                                                                    console.log('Tag Not Exist');
 
-                                                                                        console.log('Tag Not Exist');
-
-                                                                                        // Exist Other Tags
-                                                                                        let existOtherTags = false;
-                                                                                        for (const tinyTag in pack_items) {
-                                                                                            if (objType(pack_items[tinyTag][item], 'object') || Array.isArray(pack_items[tinyTag][item])) {
-                                                                                                existOtherTags = true;
-                                                                                                break;
-                                                                                            }
+                                                                                    // Exist Other Tags
+                                                                                    let existOtherTags = false;
+                                                                                    for (const tinyTag in pack_items) {
+                                                                                        if (objType(pack_items[tinyTag][item], 'object') || Array.isArray(pack_items[tinyTag][item])) {
+                                                                                            existOtherTags = true;
+                                                                                            break;
                                                                                         }
-
-                                                                                        // Don't Exist Other Tags
-                                                                                        if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
-
-                                                                                        // Exist
-                                                                                        else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
-
                                                                                     }
 
-                                                                                    // Don't Exist Tag Item
-                                                                                    else {
-                                                                                        fn(); console.log('Nothing');
-                                                                                    }
+                                                                                    // Don't Exist Other Tags
+                                                                                    if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
 
-                                                                                } else { removeTagsItem(prepare_removeTag, fn_error, tagName); }
+                                                                                    // Exist
+                                                                                    else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
+
+                                                                                }
+
+                                                                                // Don't Exist Tag Item
+                                                                                else {
+                                                                                    fn(); console.log('Nothing');
+                                                                                }
+
                                                                                 console.groupEnd();
 
                                                                             } else { removeTagsItem(fn, fn_error); }
