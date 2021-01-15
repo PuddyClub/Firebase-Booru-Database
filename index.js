@@ -431,8 +431,8 @@ class booru_manager {
 
                                 // Tags
 
-                                // Add Item
-                                this.addItem = function (data, escapeResult = null, tagItem = null) {
+                                // Add Item Template
+                                this.addItemTemplate = function (data, escapeResult = null, tagItem = null, type) {
                                     const tinythis = this;
                                     return new Promise(function (resolve, reject) {
 
@@ -444,7 +444,7 @@ class booru_manager {
                                         const itemData = tinythis.dbItems.itemData.child(escapeResult.itemID);
 
                                         // Set Data
-                                        itemData.set(data.data)
+                                        itemData[type](data.data)
 
                                             // Success
                                             .then(() => {
@@ -485,8 +485,18 @@ class booru_manager {
                                     });
                                 };
 
-                                // Add
-                                this.addTagItem = function (data, notAddData = false) {
+                                // Add Item
+                                this.addItem = function (data, escapeResult = null, tagItem = null) {
+                                    return this.addItemTemplate(data, escapeResult, tagItem, 'set');
+                                };
+
+                                // Update Item
+                                this.updateItem = function (data, escapeResult = null, tagItem = null) {
+                                    return this.addItemTemplate(data, escapeResult, tagItem, 'update');
+                                };
+
+                                // Add Template
+                                this.addTagItemTemplate = function (data, notAddData = false, type) {
                                     const tinythis = this;
                                     return new Promise(function (resolve, reject) {
 
@@ -503,7 +513,7 @@ class booru_manager {
                                             if (!notAddData) {
 
                                                 // Set Data
-                                                tagItem.set(data.itemID)
+                                                tagItem[type](data.itemID)
 
                                                     // Success
                                                     .then(() => {
@@ -532,7 +542,7 @@ class booru_manager {
 
                                             // Nope
                                             else {
-                                                tinythis.addItem(data, resultCheck.escaped, tagItem).then(data => {
+                                                tinythis.addItemTemplate(data, resultCheck.escaped, tagItem, type).then(data => {
                                                     resolve(data);
                                                     return;
                                                 }).catch(err => {
@@ -554,8 +564,18 @@ class booru_manager {
                                     });
                                 };
 
-                                // Add Multiple Tags
-                                this.addTagItems = function (items, notAddData = false) {
+                                // Add
+                                this.addTagItem = function (data, notAddData = false) {
+                                    return this.addTagItemTemplate(data, notAddData, 'set');
+                                };
+
+                                // Update
+                                this.updateTagItem = function (data, notAddData = false) {
+                                    return this.addTagItemTemplate(data, notAddData, 'update');
+                                };
+
+                                // Add Tag Items Template
+                                this.addTagItemsTemplate = function (items, notAddData = false, type) {
                                     const tinythis = this;
                                     return new Promise(function (resolve, reject) {
 
@@ -569,7 +589,7 @@ class booru_manager {
                                             require('for-promise')({ data: items }, function (item, fn, fn_error) {
 
                                                 // Add Tag
-                                                tinythis.addTagItem(items[item], notAddData).then((result) => {
+                                                tinythis.addTagItemTemplate(items[item], notAddData, type).then((result) => {
                                                     itemList[items[item].tag] = result;
                                                     fn();
                                                     return;
@@ -603,6 +623,15 @@ class booru_manager {
                                         return;
 
                                     });
+                                };
+
+                                // Add Multiple Tags
+                                this.addTagItems = function (items, notAddData = false) {
+                                    return this.addTagItemsTemplate(items, notAddData, 'set');
+                                };
+
+                                this.updateTagItems = function (items, notAddData = false) {
+                                    return this.addTagItemsTemplate(items, notAddData, 'update');
                                 };
 
                                 // Remove
@@ -1046,10 +1075,16 @@ class booru_manager {
                                                                     if (typeof tagName === "string" && tagName.length > 0) {
 
                                                                         // Add New Item
-                                                                        if (isNew) {
+                                                                        if (isNew > 0) {
+
+                                                                            // Default Value
+                                                                            let functionType = 'addTagItem';
+
+                                                                            // Update Item
+                                                                            if (isNew === 2) { functionType = 'updateTagItem'; }
 
                                                                             // Add Tag
-                                                                            tinythis.addTagItem({
+                                                                            tinythis[functionType]({
                                                                                 tag: tagName,
                                                                                 itemID: itemID,
                                                                                 data: data[item],
@@ -1099,10 +1134,16 @@ class booru_manager {
                                                             else {
 
                                                                 // Add New Item
-                                                                if (isNew) {
+                                                                if (isNew > 0) {
+
+                                                                    // Default Value
+                                                                    let functionType = 'addItem';
+
+                                                                    // Update Item
+                                                                    if (isNew === 2) { functionType = 'updateItem'; }
 
                                                                     // Add Tag
-                                                                    tinythis.addItem({
+                                                                    tinythis[functionType]({
                                                                         tag: tinythis.unknownTag,
                                                                         itemID: itemID,
                                                                         data: data[item],
