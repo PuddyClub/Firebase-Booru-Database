@@ -961,17 +961,24 @@ class booru_manager {
                                                                 md5: { old: null, new: null }
                                                             };
 
-                                                            // Is New
-                                                            let isNew = (!existOLD || !oldItems[escaped_values.itemID]);
+                                                            // Create New Detector
+                                                            let isNew = 0;
+
+                                                            if((!existOLD || !oldItems[escaped_values.itemID])) {
+                                                                isNew = 1;
+                                                            }
 
                                                             // Set MD5
-                                                            if (!isNew) {
+                                                            if (isNew === 0) {
 
                                                                 // Set MD5
                                                                 escaped_values.md5.new = hash(data[item]);
                                                                 escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
 
-                                                                isNew = (escaped_values.md5.new !== escaped_values.md5.old);
+                                                                // Is Update
+                                                                if (escaped_values.md5.new !== escaped_values.md5.old) {
+                                                                    isNew = 2;
+                                                                }
 
                                                             }
 
