@@ -1,26 +1,6 @@
 // Module Base
 class booru_manager {
 
-    // Get Values
-
-    // Name
-    getName() { return this.name; }
-
-    // ID
-    getId() { return this.id; }
-
-    // URL
-    getUrl() { return this.url; }
-
-    // Module Name
-    getModuleName() { return this.module_name; }
-
-    // Tag List Var
-    getTagListVar() { return this.tagList; }
-
-    // ID Var
-    getIdVar() { return this.idVar; }
-
     // Constructor
     constructor(data) {
 
@@ -109,6 +89,26 @@ class booru_manager {
                             }
 
                         }
+
+                        // Get Values
+
+                        // Name
+                        this.getName = function () { return this.name; }
+
+                        // ID
+                        this.getId = function () { return this.id; }
+
+                        // URL
+                        this.getUrl = function () { return this.url; }
+
+                        // Module Name
+                        this.getModuleName = function () { return this.module_name; }
+
+                        // Tag List Var
+                        this.getTagListVar = function () { return this.tagList; }
+
+                        // ID Var
+                        this.getIdVar = function () { return this.idVar; }
 
                         // Insert Entire Database Info
                         if (objType(data.db, 'object') && objType(data.db.data, 'object') && typeof data.db.type === "string" && data.db.type.length) {
