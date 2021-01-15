@@ -874,7 +874,7 @@ class booru_manager {
                                                                 }
 
                                                                 // Is New
-                                                                if (!oldItems[escaped_values.itemID]) {
+                                                                if (!oldItems || !oldItems[escaped_values.itemID]) {
 
                                                                     // Create Tag
                                                                     if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
@@ -979,6 +979,17 @@ class booru_manager {
                                                             // Exist OLD Checker
                                                             if (existOLD) {
 
+                                                                // Prepare Pack
+                                                                const pack_items = {};
+                                                                const insert_old_pack = function (obj) {
+                                                                    for(const item in obj) {
+                                                                        pack_items[item] = obj[item];
+                                                                    }
+                                                                };
+
+                                                                insert_old_pack(itemList.old);
+                                                                insert_old_pack(itemList.added);
+
                                                                 // Firebase Escape
                                                                 const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
 
@@ -1055,6 +1066,8 @@ class booru_manager {
 
                                                                                 };
 
+
+
                                                                                 // Exist OLD Tag
                                                                                 if (
                                                                                     (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
@@ -1063,14 +1076,14 @@ class booru_manager {
 
                                                                                     // Don't Exist Added Items
                                                                                     if (
-                                                                                        (!objType(itemList.added[tagName], 'object') && !Array.isArray(itemList.added[tagName])) ||
-                                                                                        (!objType(itemList.added[tagName][item], 'object') && !Array.isArray(itemList.added[tagName][item]))
+                                                                                        (!objType(pack_items[tagName], 'object') && !Array.isArray(pack_items[tagName])) ||
+                                                                                        (!objType(pack_items[tagName][item], 'object') && !Array.isArray(pack_items[tagName][item]))
                                                                                     ) {
 
                                                                                         // Exist Other Tags
                                                                                         let existOtherTags = false;
-                                                                                        for (const tinyTag in itemList.added) {
-                                                                                            if (objType(itemList.added[tinyTag][item], 'object') || Array.isArray(itemList.added[tinyTag][item])) {
+                                                                                        for (const tinyTag in pack_items) {
+                                                                                            if (objType(pack_items[tinyTag][item], 'object') || Array.isArray(pack_items[tinyTag][item])) {
                                                                                                 existOtherTags = true;
                                                                                                 break;
                                                                                             }
