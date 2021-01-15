@@ -1136,8 +1136,6 @@ class booru_manager {
 
                                                                                 };
 
-
-
                                                                                 // Exist OLD Tag
                                                                                 if (
                                                                                     (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
