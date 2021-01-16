@@ -1230,7 +1230,7 @@ class booru_manager {
                                                                                                 // Remove the Item and Tag from the Remover List
 
                                                                                                 // Insert Total
-                                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data).length; }
+                                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
 
                                                                                                 // Delete
                                                                                                 try {
@@ -1262,6 +1262,8 @@ class booru_manager {
 
                                                                     }
                                                                 }
+
+                                                                console.log(toRemove);
 
                                                                 // For Promise to Remover
                                                                 forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
