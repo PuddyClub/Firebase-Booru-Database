@@ -1211,6 +1211,7 @@ class booru_manager {
                                                                     return;
                                                                 };
 
+                                                                // Insert Pack
                                                                 insert_old_pack(itemList.old);
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
@@ -1238,43 +1239,45 @@ class booru_manager {
                                                                 // Tag
                                                                 console.group('Tag');
                                                                 for (const tag in pack_items.tag) {
-                                                                    console.group(tag);
-                                                                    for (const item in pack_items.tag[tag]) {
-                                                                        console.group(item);
-                                                                        if (objType(oldTags[tag], 'object')) {
+                                                                    if (objType(oldTags[tag], 'object')) {
+                                                                        console.group(tag);
+                                                                        for (const item in pack_items.tag[tag]) {
+                                                                            if (typeof oldTags[tag][item] === "string") {
+                                                                                console.group(item);
 
-                                                                            // Remove the Item and Tag from the Remover List
+                                                                                // Remove the Item and Tag from the Remover List
 
-                                                                            // Insert Total
-                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+                                                                                // Insert Total
+                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
 
-                                                                            // Delete
-                                                                            if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
-                                                                                try {
-                                                                                    delete toRemove.tag.data[tag][item];
-                                                                                    toRemove.tag.count[tag]--;
-                                                                                    console.log('OLD Tag Item Saved');
+                                                                                // Delete
+                                                                                if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
+                                                                                    try {
+                                                                                        delete toRemove.tag.data[tag][item];
+                                                                                        toRemove.tag.count[tag]--;
+                                                                                        console.log('OLD Tag Item Saved');
+                                                                                    }
+                                                                                    catch (err) { }
                                                                                 }
-                                                                                catch (err) { }
-                                                                            }
 
-                                                                            // Check Size
-                                                                            if (toRemove.tag.count[tag] < 1) {
+                                                                                // Check Size
+                                                                                if (toRemove.tag.count[tag] < 1) {
 
-                                                                                // Delete Tag
-                                                                                try {
-                                                                                    delete toRemove.tag.data[tag];
-                                                                                    console.log('OLD Tag Saved');
-                                                                                    itemSaved.tag.push(tag);
+                                                                                    // Delete Tag
+                                                                                    try {
+                                                                                        delete toRemove.tag.data[tag];
+                                                                                        console.log('OLD Tag Saved');
+                                                                                        itemSaved.tag.push(tag);
+                                                                                    }
+                                                                                    catch (err) { }
+
                                                                                 }
-                                                                                catch (err) { }
 
+                                                                                console.groupEnd();
                                                                             }
-
                                                                         }
                                                                         console.groupEnd();
                                                                     }
-                                                                    console.groupEnd();
                                                                 }
                                                                 console.groupEnd();
 
