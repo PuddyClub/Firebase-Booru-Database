@@ -1215,8 +1215,10 @@ class booru_manager {
                                                                         if (objType(oldItems[item], 'object')) {
 
                                                                             // Item
-                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
-                                                                            catch (err) { }
+                                                                            if (toRemove.item[item]) {
+                                                                                try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
+                                                                                catch (err) { }
+                                                                            }
 
                                                                             // Check OLD Tags
                                                                             for (const oldTag in oldTags) {
@@ -1236,12 +1238,14 @@ class booru_manager {
                                                                                             if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
 
                                                                                             // Delete
-                                                                                            try {
-                                                                                                delete toRemove.tag.data[tag][item];
-                                                                                                toRemove.tag.count[tag]--;
-                                                                                                console.log('OLD Tag Item Saved');
+                                                                                            if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
+                                                                                                try {
+                                                                                                    delete toRemove.tag.data[tag][item];
+                                                                                                    toRemove.tag.count[tag]--;
+                                                                                                    console.log('OLD Tag Item Saved');
+                                                                                                }
+                                                                                                catch (err) { }
                                                                                             }
-                                                                                            catch (err) { }
 
                                                                                             // Check Size
                                                                                             if (toRemove.tag.count[tag] < 1) {
