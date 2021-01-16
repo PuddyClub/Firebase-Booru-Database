@@ -1216,10 +1216,33 @@ class booru_manager {
                                                                                 if (objType(oldTags[oldTag], 'object') || Array.isArray(oldTags[oldTag])) {
                                                                                     for (const oldTagItem in oldTags[oldTag]) {
                                                                                         if (oldTagItem === item) {
-                                                                                            
-                                                                                            // Remove From from List the Item that Exist
-                                                                                            
-                                                                                            
+
+                                                                                            // Remove the Item and Tag from the Remover List
+
+                                                                                            // Tag
+
+                                                                                            // Object
+                                                                                            if (!Array.isArray(toRemove.tag)) {
+
+                                                                                            }
+
+                                                                                            // Array
+                                                                                            else {
+
+                                                                                            }
+
+                                                                                            // Item
+
+                                                                                            // Object
+                                                                                            if (!Array.isArray(toRemove.item)) {
+                                                                                                delete toRemove.item[item];
+                                                                                            }
+
+                                                                                            // Array
+                                                                                            else {
+
+                                                                                            }
+
                                                                                             // Break Line
                                                                                             break;
 
