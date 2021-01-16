@@ -1063,7 +1063,11 @@ class booru_manager {
 
                                                             // Set MD5
                                                             escaped_values.md5.new = hash(data[item]);
-                                                            escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
+                                                            if (existOLDItems) {
+                                                                escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
+                                                            } else {
+                                                                escaped_values.md5.old = '';
+                                                            }
 
                                                             // Is Update
                                                             if (escaped_values.md5.new !== escaped_values.md5.old) {
@@ -1230,7 +1234,11 @@ class booru_manager {
                                                                 const extend = require('object-extend');
 
                                                                 // Remove Items
-                                                                const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
+                                                                const toRemove = { item: {}, tag: { data: {}, count: {} } };
+
+                                                                // Clone Items
+                                                                if (existOLDItems) { toRemove.item = clone(oldItems); }
+                                                                if (existOLDTags) { toRemove.tag.data = clone(oldTags); }
 
                                                                 // Prepare Pack
                                                                 let pack_items = extend({ item: {}, tag: {} }, itemList.old);
@@ -1241,7 +1249,7 @@ class booru_manager {
 
                                                                 // Item
                                                                 for (const item in pack_items.item) {
-                                                                    if (objType(oldItems[item], 'object')) {
+                                                                    if (existOLDItems && objType(oldItems[item], 'object')) {
 
                                                                         // Item
                                                                         if (toRemove.item[item]) {
@@ -1254,7 +1262,7 @@ class booru_manager {
 
                                                                 // Tag
                                                                 for (const tag in pack_items.tag) {
-                                                                    if (objType(oldTags[tag], 'object')) {
+                                                                    if (existOLDTags && objType(oldTags[tag], 'object')) {
                                                                         for (const item in pack_items.tag[tag]) {
                                                                             if (typeof oldTags[tag][item] === "string") {
 
