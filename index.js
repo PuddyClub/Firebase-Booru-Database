@@ -1204,6 +1204,7 @@ class booru_manager {
                                                                 insert_old_pack(itemList.old);
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
+                                                                console.log(pack_items);
 
                                                                 // For
                                                                 for (const tag in pack_items) {
