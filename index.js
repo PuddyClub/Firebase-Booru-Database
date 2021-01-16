@@ -969,7 +969,7 @@ class booru_manager {
                                                     const existOLDTags = (objType(oldTags, 'object'));
 
                                                     // Item List
-                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: { item: {}, tag: {} } }, updated: { item: {}, tag: {} } };
+                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: {} }, updated: { item: {}, tag: {} } };
                                                     const addToList = function (type, escaped_values, dataInsert, itemID) {
 
                                                         // Insert Tag
@@ -1191,6 +1191,7 @@ class booru_manager {
                                                                 // Prepare Pack
                                                                 const pack_items = {};
                                                                 const insert_old_pack = function (obj) {
+                                                                    console.log(obj);
                                                                     for (const item in obj) {
                                                                         if (objType(obj[item], 'object')) {
                                                                             for (const item2 in obj[item]) {
@@ -1212,9 +1213,14 @@ class booru_manager {
                                                                 };
 
                                                                 // Insert Pack
+                                                                console.log('old');
                                                                 insert_old_pack(itemList.old);
+                                                                console.log('added');
                                                                 insert_old_pack(itemList.added);
+                                                                console.log('updated');
                                                                 insert_old_pack(itemList.updated);
+
+                                                                console.log('final');
                                                                 console.log(pack_items);
 
                                                                 // For
