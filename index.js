@@ -1036,8 +1036,14 @@ class booru_manager {
 
                                                     };
 
+                                                    // Extra Runs
+                                                    const extraRuns = [];
+
                                                     // For Promise
                                                     forPromise({ data: data }, function (item, fn, fn_error, extra) {
+
+                                                        // Extra Items
+                                                        item = Number(item);
 
                                                         // Item ID
                                                         const itemID = data[item][tinythis.idVar];
@@ -1074,64 +1080,12 @@ class booru_manager {
 
                                                             // Read Tags
                                                             extraUsed = true;
-                                                            const readTags = extra({ data: data[item][tinythis.tagList] });
-                                                            readTags.run(function (tagIndex, fn, fn_error) {
-
-                                                                // Tag Name
-                                                                const tagName = data[item][tinythis.tagList][tagIndex];
-
-                                                                // Check Tag Name
-                                                                if (typeof tagName === "string" && tagName.length > 0) {
-
-                                                                    // Add New Item
-                                                                    if (isNew > 0) {
-
-                                                                        // Default Value
-                                                                        let functionType = 'addTagItem';
-
-                                                                        // Add Tag
-                                                                        tinythis[functionType]({
-                                                                            tag: tagName,
-                                                                            itemID: itemID,
-                                                                            data: data[item],
-                                                                            allowPath: allowPath
-                                                                        }, notAddData)
-
-                                                                            // Result
-                                                                            .then(() => {
-
-                                                                                // Insert Tag
-                                                                                tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
-
-                                                                                // Complete
-                                                                                return;
-
-                                                                            })
-
-                                                                            // Error
-                                                                            .catch(err => {
-                                                                                fn_error(err);
-                                                                                return;
-                                                                            });
-
-                                                                    }
-
-                                                                    // Nope
-                                                                    else {
-
-                                                                        // Insert Tag
-                                                                        tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
-
-                                                                    }
-
-                                                                }
-
-                                                                // Nope
-                                                                else { fn(); }
-
-                                                                // Complete
-                                                                return;
-
+                                                            extraRuns.push({
+                                                                itemID: itemID,
+                                                                escaped_values: escaped_values,
+                                                                isNew: isNew,
+                                                                extra: extra({ data: data[item][tinythis.tagList] }),
+                                                                item: item
                                                             });
 
                                                         }
@@ -1154,14 +1108,14 @@ class booru_manager {
                                                                 })
 
                                                                     // Result
-                                                                    .then(() => { 
-                                                                        
+                                                                    .then(() => {
+
                                                                         // Insert Result
-                                                                        tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew); 
-                                                                        
+                                                                        tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
+
                                                                         // Complete
-                                                                        return; 
-                                                                    
+                                                                        return;
+
                                                                     })
 
                                                                     // Error
@@ -1183,7 +1137,85 @@ class booru_manager {
                                                         }
 
                                                         // Force FN
-                                                        if (!extraUsed && item >= totalData) { fn(true); }
+                                                        if (item >= totalData) {
+
+                                                            // Run Extras
+                                                            if (extraUsed) {
+                                                                for (const extraTag in extraRuns) {
+
+                                                                    // Prepare Item
+                                                                    const item = extraRuns[extraTag].item;
+                                                                    const itemID = extraRuns[extraTag].itemID;
+                                                                    const escaped_values = extraRuns[extraTag].escaped_values;
+                                                                    const isNew = extraRuns[extraTag].isNew;
+
+                                                                    // Run Extra
+                                                                    extraRuns[extraTag].extra.run(function (tagIndex, fn, fn_error) {
+
+                                                                        // Tag Name
+                                                                        const tagName = data[item][tinythis.tagList][tagIndex];
+
+                                                                        // Check Tag Name
+                                                                        if (typeof tagName === "string" && tagName.length > 0) {
+
+                                                                            // Add New Item
+                                                                            if (isNew > 0) {
+
+                                                                                // Default Value
+                                                                                let functionType = 'addTagItem';
+
+                                                                                // Add Tag
+                                                                                tinythis[functionType]({
+                                                                                    tag: tagName,
+                                                                                    itemID: itemID,
+                                                                                    data: data[item],
+                                                                                    allowPath: allowPath
+                                                                                }, notAddData)
+
+                                                                                    // Result
+                                                                                    .then(() => {
+
+                                                                                        // Insert Tag
+                                                                                        tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
+
+                                                                                        // Complete
+                                                                                        return;
+
+                                                                                    })
+
+                                                                                    // Error
+                                                                                    .catch(err => {
+                                                                                        fn_error(err);
+                                                                                        return;
+                                                                                    });
+
+                                                                            }
+
+                                                                            // Nope
+                                                                            else {
+
+                                                                                // Insert Tag
+                                                                                tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
+
+                                                                            }
+
+                                                                        }
+
+                                                                        // Nope
+                                                                        else { fn(); }
+
+                                                                        // Complete
+                                                                        return;
+
+                                                                    });
+
+                                                                }
+                                                            }
+
+                                                            // Extra Not Used
+                                                            else { fn(true); }
+
+                                                        }
 
                                                         // Complete
                                                         return;
