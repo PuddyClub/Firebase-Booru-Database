@@ -1231,7 +1231,6 @@ class booru_manager {
 
                                                                 // Remove Items
                                                                 const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
-                                                                const itemSaved = { item: [], tag: [] };
 
                                                                 // Prepare Pack
                                                                 let pack_items = extend({ item: {}, tag: {} }, itemList.old);
@@ -1246,7 +1245,7 @@ class booru_manager {
 
                                                                         // Item
                                                                         if (toRemove.item[item]) {
-                                                                            try { delete toRemove.item[item]; itemSaved.item.push(item); }
+                                                                            try { delete toRemove.item[item]; }
                                                                             catch (err) { }
                                                                         }
 
@@ -1279,7 +1278,6 @@ class booru_manager {
                                                                                     // Delete Tag
                                                                                     try {
                                                                                         delete toRemove.tag.data[tag];
-                                                                                        itemSaved.tag.push(tag);
                                                                                     }
                                                                                     catch (err) { }
 
