@@ -1210,19 +1210,24 @@ class booru_manager {
                                                                 for (const tag in pack_items) {
                                                                     for (const item in pack_items[tag]) {
 
-                                                                        // Exist Item
+                                                                        // Exist OLD Item
                                                                         if (objType(oldItems[item], 'object')) {
 
-                                                                            // Exist Other Tags
+
+                                                                            // Item
+                                                                            try { delete toRemove.item[item]; }
+                                                                            catch (err) { }
+
+                                                                            // Check OLD Tags
                                                                             for (const oldTag in oldTags) {
                                                                                 if (objType(oldTags[oldTag], 'object')) {
-                                                                                    for (const oldTagItem in oldTags[oldTag]) {
-                                                                                        if (oldTagItem === item) {
+                                                                                    if (oldTag === tag) {
 
-                                                                                            // Remove the Item and Tag from the Remover List
+                                                                                        // Check OLD Tag Items
+                                                                                        for (const oldTagItem in oldTags[oldTag]) {
+                                                                                            if (oldTagItem === item) {
 
-                                                                                            // Tag
-                                                                                            if (toRemove.tag.data[tag]) {
+                                                                                                // Remove the Item and Tag from the Remover List
 
                                                                                                 // Insert Total
                                                                                                 if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data).length; }
@@ -1246,13 +1251,6 @@ class booru_manager {
                                                                                                 }
 
                                                                                             }
-
-                                                                                            // Item
-                                                                                            try { delete toRemove.item[item]; }
-                                                                                            catch (err) { }
-
-                                                                                            // Break Line
-                                                                                            break;
 
                                                                                         }
 
