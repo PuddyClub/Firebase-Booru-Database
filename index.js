@@ -1252,14 +1252,14 @@ class booru_manager {
 
                                                                             // Nope
                                                                             if(!existIteminTags) {
-                                                                                insertRemoverItem(tag, item, fn, fn_error,);
+                                                                                insertRemoverItem(tag, item, fn, fn_error);
                                                                             }
 
                                                                         }
 
                                                                         // Nope
                                                                         else {
-                                                                            insertRemoverItem(null, item, fn, fn_error,);
+                                                                            insertRemoverItem(null, item, fn, fn_error);
                                                                         }
 
                                                                         // Complete
