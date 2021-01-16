@@ -1187,8 +1187,7 @@ class booru_manager {
 
                                                                 // Remove Items
                                                                 const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
-
-
+                                                                const itemSaved = { item: {}, tag: {} };
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1208,63 +1207,74 @@ class booru_manager {
 
                                                                 // For
                                                                 for (const tag in pack_items) {
+                                                                    console.group(tag);
                                                                     for (const item in pack_items[tag]) {
+                                                                        console.group(item);
 
                                                                         // Exist OLD Item
                                                                         if (objType(oldItems[item], 'object')) {
 
-
                                                                             // Item
-                                                                            console.log(item);
-                                                                            try { delete toRemove.item[item]; }
+                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item[item] = item; }
                                                                             catch (err) { }
 
                                                                             // Check OLD Tags
                                                                             for (const oldTag in oldTags) {
-                                                                                if (objType(oldTags[oldTag], 'object')) {
-                                                                                    if (oldTag === tag) {
+                                                                                console.group(`OLD: ${oldTag}`);
 
-                                                                                        // Check OLD Tag Items
-                                                                                        for (const oldTagItem in oldTags[oldTag]) {
-                                                                                            if (oldTagItem === item) {
+                                                                                if (objType(oldTags[oldTag], 'object') && oldTag === tag) {
 
-                                                                                                // Remove the Item and Tag from the Remover List
+                                                                                    // Check OLD Tag Items
+                                                                                    for (const oldTagItem in oldTags[oldTag]) {
+                                                                                        console.group(`OLD: ${oldTagItem}`);
 
-                                                                                                // Insert Total
-                                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+                                                                                        if (oldTagItem === item) {
 
-                                                                                                // Delete
+                                                                                            // Remove the Item and Tag from the Remover List
+
+                                                                                            // Insert Total
+                                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+
+                                                                                            // Delete
+                                                                                            try {
+                                                                                                delete toRemove.tag.data[tag][item];
+                                                                                                toRemove.tag.count[tag]--;
+                                                                                                console.log('OLD Tag Item Saved');
+                                                                                            }
+                                                                                            catch (err) { }
+
+                                                                                            // Check Size
+                                                                                            if (toRemove.tag.count[tag] < 1) {
+
+                                                                                                // Delete Tag
                                                                                                 try {
-                                                                                                    delete toRemove.tag.data[tag][item];
-                                                                                                    toRemove.tag.count[tag]--;
+                                                                                                    delete toRemove.tag.data[tag];
+                                                                                                    console.log('OLD Tag Saved');
+                                                                                                    itemSaved.tag[tag] = tag;
                                                                                                 }
                                                                                                 catch (err) { }
-
-                                                                                                // Check Size
-                                                                                                if (toRemove.tag.count[tag] < 1) {
-
-                                                                                                    // Delete Tag
-                                                                                                    try {
-                                                                                                        delete toRemove.tag.data[tag];
-                                                                                                    }
-                                                                                                    catch (err) { }
-
-                                                                                                }
 
                                                                                             }
 
                                                                                         }
 
+                                                                                        console.groupEnd();
                                                                                     }
+
                                                                                 }
+
+                                                                                console.groupEnd();
                                                                             }
 
                                                                         }
 
+                                                                        console.groupEnd();
                                                                     }
+                                                                    console.groupEnd();
                                                                 }
 
                                                                 console.log(toRemove);
+                                                                console.log(itemSaved);
 
                                                                 // For Promise to Remover
                                                                 forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
