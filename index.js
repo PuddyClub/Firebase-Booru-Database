@@ -1177,11 +1177,37 @@ class booru_manager {
                                                         // Result
                                                         .then(() => {
 
-                                                            // Prepare Remover
-                                                            const removeItems = {};
-
                                                             // Exist OLD Checker
                                                             if (existOLDItems || existOLDTags) {
+
+                                                                // Prepare Remover
+                                                                const insertRemoverItem = function (tag, item, fn, fn_error) {
+
+                                                                    // Exist Tag
+                                                                    if (typeof tag === "string" && tag.length > 0) {
+
+                                                                        // Exist Item in the Tag
+                                                                        if (typeof item === "string" && item.length > 0) {
+
+
+
+                                                                        }
+
+                                                                    }
+
+                                                                    // Nope
+                                                                    else {
+
+                                                                        // Remove Unknown Item
+                                                                        if (typeof item === "string" && item.length > 0) {
+
+
+
+                                                                        }
+
+                                                                    }
+                                                                    return;
+                                                                };
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1192,6 +1218,7 @@ class booru_manager {
                                                                             pack_items[item][item2] = obj[item][item2];
                                                                         }
                                                                     }
+                                                                    return;
                                                                 };
 
                                                                 insert_old_pack(itemList.old);
@@ -1205,15 +1232,11 @@ class booru_manager {
                                                                     const prepareRemovetags = extra({ data: pack_items[tag] });
                                                                     prepareRemovetags.run(function (item, fn, fn_error) {
 
-                                                                        console.group(`${tag} | ${item}`);
-                                                                        console.log('start');
-
-                                                                        // Exist Item in Tag
-                                                                        let existIteminTags = false;
-
                                                                         // Exist Item
-                                                                        let existItem = (objType(oldItems[item], 'object') || Array.isArray(oldItems[item]));
-                                                                        if (existItem) {
+                                                                        if (objType(oldItems[item], 'object') || Array.isArray(oldItems[item])) {
+
+                                                                            // Exist Item in Tag
+                                                                            let existIteminTags = false;
 
                                                                             // Exist Other Tags
                                                                             for (const oldTag in oldTags) {
@@ -1227,29 +1250,17 @@ class booru_manager {
                                                                                 }
                                                                             }
 
-                                                                        }
-
-                                                                        // Don't Exist Tag
-                                                                        if (!existItem) {
-
-                                                                            console.log('Tag Not Exist');
-
-
-
-                                                                            // Don't Exist Other Tags
-                                                                            if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
-
-                                                                            // Exist
-                                                                            else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
+                                                                            // Nope
+                                                                            if(!existIteminTags) {
+                                                                                insertRemoverItem(tag, item, fn, fn_error,);
+                                                                            }
 
                                                                         }
 
-                                                                        // Don't Exist Tag Item
+                                                                        // Nope
                                                                         else {
-                                                                            removeTagsItem(fn, fn_error, tagName); console.log('Other Tags not found');
+                                                                            insertRemoverItem(null, item, fn, fn_error,);
                                                                         }
-
-                                                                        console.groupEnd();
 
                                                                         // Complete
                                                                         return;
