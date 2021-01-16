@@ -997,6 +997,9 @@ class booru_manager {
                                                     // For Promise
                                                     const forPromise = require('for-promise');
 
+                                                    // Total Items
+                                                    const totalData = data.length - 1;
+
                                                     // For Promise
                                                     forPromise({ data: data }, function (item, fn, fn_error, extra) {
 
@@ -1045,11 +1048,13 @@ class booru_manager {
                                                                     // Added
                                                                     if (isNew === 1) {
                                                                         addToList('added', escaped_values, data[item], itemID);
+                                                                        console.log('ADDED!');
                                                                     }
 
                                                                     // Updated
                                                                     else if (isNew === 2) {
                                                                         addToList('updated', escaped_values, data[item], itemID);
+                                                                        console.log('UPDATED!', itemList.updated.item.tiny_test_2);
                                                                     }
 
                                                                 }
@@ -1057,6 +1062,7 @@ class booru_manager {
                                                                 // Is OLD
                                                                 else {
                                                                     addToList('old', escaped_values, data[item], itemID);
+                                                                    console.log('OLD!');
                                                                 }
 
                                                                 // Complete
@@ -1171,8 +1177,8 @@ class booru_manager {
 
                                                         }
 
-                                                        // Nope
-                                                        else { fn(); }
+                                                        // Force FN
+                                                        if (item >= totalData) { fn(true); }
 
                                                         // Complete
                                                         return;
