@@ -1215,6 +1215,7 @@ class booru_manager {
 
 
                                                                             // Item
+                                                                            console.log(item);
                                                                             try { delete toRemove.item[item]; }
                                                                             catch (err) { }
 
