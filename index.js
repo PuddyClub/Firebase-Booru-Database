@@ -1186,7 +1186,9 @@ class booru_manager {
                                                                 const clone = require('clone');
 
                                                                 // Remove Items
-                                                                const toRemove = { item: clone(oldItems), tag: clone(oldTags) };
+                                                                const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
+
+
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1204,6 +1206,9 @@ class booru_manager {
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
 
+                                                                const tagsIsArray = (Array.isArray(toRemove.tag));
+                                                                const ItemsIsArray = (Array.isArray(toRemove.tag));
+
                                                                 // For
                                                                 for (const tag in pack_items) {
                                                                     for (const item in pack_items[tag]) {
@@ -1220,22 +1225,50 @@ class booru_manager {
                                                                                             // Remove the Item and Tag from the Remover List
 
                                                                                             // Tag
+                                                                                            if (toRemove.tag.data[tag]) {
 
-                                                                                            // Object
-                                                                                            if (!Array.isArray(toRemove.tag)) {
+                                                                                                // Object
+                                                                                                if (!tagsIsArray) {
 
-                                                                                            }
+                                                                                                    // Insert Total
+                                                                                                    if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data).length; }
 
-                                                                                            // Array
-                                                                                            else {
+                                                                                                    // Delete
+                                                                                                    try {
+                                                                                                        delete toRemove.tag.data[tag][item];
+                                                                                                        toRemove.tag.count[tag]--;
+                                                                                                    }
+                                                                                                    catch (err) { }
+
+                                                                                                    // Check Size
+                                                                                                    if(toRemove.tag.count[tag] < 1) {
+
+                                                                                                        // Delete Tag
+                                                                                                        try {
+                                                                                                            delete toRemove.tag.data[tag];
+                                                                                                        }
+                                                                                                        catch (err) { }
+
+                                                                                                    }
+
+                                                                                                }
+
+                                                                                                // Array
+                                                                                                else {
+
+                                                                                                    // Insert Total
+                                                                                                    if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = toRemove.tag.data.length; }
+
+                                                                                                }
 
                                                                                             }
 
                                                                                             // Item
 
                                                                                             // Object
-                                                                                            if (!Array.isArray(toRemove.item)) {
-                                                                                                delete toRemove.item[item];
+                                                                                            if (!ItemsIsArray) {
+                                                                                                try { delete toRemove.item[item]; }
+                                                                                                catch (err) { }
                                                                                             }
 
                                                                                             // Array
