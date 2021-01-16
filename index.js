@@ -963,7 +963,8 @@ class booru_manager {
                                                     const objType = require('@tinypudding/puddy-lib/get/objType');
 
                                                     // Exist OLD
-                                                    const existOLD = (objType(oldItems, 'object') || Array.isArray(oldItems));
+                                                    const existOLDItems = (objType(oldItems, 'object') || Array.isArray(oldItems));
+                                                    const existOLDTags = (objType(oldTags, 'object') || Array.isArray(oldTags));
 
                                                     // Item List
                                                     const itemList = { added: {}, removed: {}, old: {}, updated: {} };
@@ -993,7 +994,7 @@ class booru_manager {
                                                             // Create New Detector
                                                             let isNew = 0;
 
-                                                            if ((!existOLD || !oldItems[escaped_values.itemID])) {
+                                                            if ((!existOLDItems || !oldItems[escaped_values.itemID])) {
                                                                 isNew = 1;
                                                             }
 
@@ -1176,8 +1177,11 @@ class booru_manager {
                                                         // Result
                                                         .then(() => {
 
+                                                            // Prepare Remover
+                                                            const removeItems = {};
+
                                                             // Exist OLD Checker
-                                                            if (existOLD) {
+                                                            if (existOLDItems || existOLDTags) {
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1194,143 +1198,66 @@ class booru_manager {
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
 
-                                                                // Firebase Escape
-                                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
-
                                                                 // For Promise
-                                                                forPromise({ data: oldItems }, function (item, fn, fn_error, extra) {
+                                                                forPromise({ data: pack_items }, function (tag, fn, fn_error, extra) {
 
-                                                                    // Action Remove Item
-                                                                    const removeTagsItem = function (fn, fn_error, tag) {
+                                                                    // Add the Extra and Run the Extra
+                                                                    const prepareRemovetags = extra({ data: pack_items[tag] });
+                                                                    prepareRemovetags.run(function (item, fn, fn_error) {
 
-                                                                        // Remover
-                                                                        tinythis.dbItems.itemData.child(item).remove().then(() => {
+                                                                        console.group(`${tag} | ${item}`);
+                                                                        console.log('start');
 
-                                                                            // Tag Name Add List
-                                                                            if (typeof tag === "string" && tag.length > 0) {
+                                                                        // Exist Item in Tag
+                                                                        let existIteminTags = false;
 
-                                                                                // Create Item
-                                                                                if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
-                                                                                itemList.removed[tag][item] = oldItems[item];
+                                                                        // Exist Item
+                                                                        let existItem = (objType(oldItems[item], 'object') || Array.isArray(oldItems[item]));
+                                                                        if (existItem) {
 
-                                                                            }
-
-                                                                            // Complete
-                                                                            fn();
-                                                                            return;
-
-                                                                        }).catch(err => {
-                                                                            fn_error(err);
-                                                                            return;
-                                                                        });
-
-                                                                        // Complete
-                                                                        return;
-
-                                                                    };
-
-                                                                    // Action Remove Tag
-                                                                    const removeTag = function (fn, fn_error, tagName) {
-
-                                                                        tinythis.dbItems.tagData.child(tagName).child(item).remove().then(() => {
-                                                                            fn();
-                                                                            return;
-                                                                        }).catch(err => {
-                                                                            fn_error(err);
-                                                                            return;
-                                                                        });
-
-                                                                        // Complete
-                                                                        return;
-
-                                                                    };
-
-                                                                    // Check OLD Data
-                                                                    if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item][tinythis.tagList])) {
-
-                                                                        // Add the Extra and Run the Extra
-                                                                        const prepareRemovetags = extra({ data: oldItems[item][tinythis.tagList] });
-                                                                        prepareRemovetags.run(function (tag, fn, fn_error) {
-
-                                                                            // Get Tag Name
-                                                                            let tagName = oldItems[item][tinythis.tagList][tag];
-                                                                            if (typeof tagName === "string" && tagName.length > 0) { tagName = databaseEscape(tagName, notAddData); } else { tagName = null; }
-
-                                                                            // Exist Tag
-                                                                            if (typeof tagName === "string") {
-
-                                                                                // Prepare Remove Tag
-                                                                                const prepare_removeTag = function () {
-
-                                                                                    // Remover Tag
-                                                                                    removeTag(fn, fn_error, tagName);
-
-                                                                                    // Complete
-                                                                                    return;
-
-                                                                                };
-
-                                                                                console.group(`${tagName} | ${item}`);
-                                                                                console.log('start');
-
-                                                                                // Exist OLD Tag
-                                                                                const existOLDTag = (
-                                                                                    (objType(oldTags[tagName], 'object') && Object.keys(oldTags[tagName]).length > 0) ||
-                                                                                    (Array.isArray(oldTags[tagName]) && oldTags[tagName].length > 0)
-                                                                                );
-
-                                                                                // Exist Tag
-                                                                                const existTag = (objType(pack_items[tagName], 'object') || Array.isArray(pack_items[tagName]));
-
-                                                                                // Exist Tag Item
-                                                                                let existTagItem = false;
-                                                                                if (existTag) {
-                                                                                    existTagItem = (objType(pack_items[tagName][item], 'object') || Array.isArray(pack_items[tagName][item]));
-                                                                                }
-
-                                                                                // Don't Exist Tag
-                                                                                if (!existTag || !existTagItem) {
-
-                                                                                    console.log('Tag Not Exist');
-
-                                                                                    // Exist Other Tags
-                                                                                    let existOtherTags = false;
-                                                                                    for (const tinyTag in pack_items) {
-                                                                                        if (objType(pack_items[tinyTag][item], 'object') || Array.isArray(pack_items[tinyTag][item])) {
-                                                                                            existOtherTags = true;
+                                                                            // Exist Other Tags
+                                                                            for (const oldTag in oldTags) {
+                                                                                if (objType(oldTags[oldTag], 'object') || Array.isArray(oldTags[oldTag])) {
+                                                                                    for (const oldTagItem in oldTags[oldTag]) {
+                                                                                        if (oldTags[oldTag][oldTagItem] === tag) {
+                                                                                            existIteminTags = true;
                                                                                             break;
                                                                                         }
                                                                                     }
-
-                                                                                    // Don't Exist Other Tags
-                                                                                    if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
-
-                                                                                    // Exist
-                                                                                    else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
-
                                                                                 }
+                                                                            }
 
-                                                                                // Don't Exist Tag Item
-                                                                                else {
-                                                                                    fn(); console.log('Nothing');
-                                                                                }
+                                                                        }
 
-                                                                                console.groupEnd();
+                                                                        // Don't Exist Tag
+                                                                        if (!existItem) {
 
-                                                                            } else { removeTagsItem(fn, fn_error); }
+                                                                            console.log('Tag Not Exist');
 
-                                                                            // Complete
-                                                                            return;
 
-                                                                        });
+
+                                                                            // Don't Exist Other Tags
+                                                                            if (!existOtherTags) { removeTagsItem(prepare_removeTag, fn_error, tagName); console.log('Other Tags not found'); }
+
+                                                                            // Exist
+                                                                            else { prepare_removeTag(); console.log('Other tags found. Remove the tag only'); }
+
+                                                                        }
+
+                                                                        // Don't Exist Tag Item
+                                                                        else {
+                                                                            removeTagsItem(fn, fn_error, tagName); console.log('Other Tags not found');
+                                                                        }
+
+                                                                        console.groupEnd();
 
                                                                         // Complete
-                                                                        fn();
+                                                                        return;
 
-                                                                    }
+                                                                    });
 
-                                                                    // Nope
-                                                                    else { removeTagsItem(fn, fn_error); }
+                                                                    // Complete
+                                                                    fn();
 
                                                                     // Complete
                                                                     return;
