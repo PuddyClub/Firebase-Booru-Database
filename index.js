@@ -1001,6 +1001,41 @@ class booru_manager {
                                                     const totalData = data.length - 1;
                                                     let extraUsed = false;
 
+                                                    // Tag Insert Result
+                                                    const tagInsertResult = (fn, tagName, escaped_values, item, itemID, isNew) => {
+
+                                                        // Escape Tag Name
+                                                        escaped_values.tagName = databaseEscape(tagName, allowPath);
+
+                                                        // Is New
+                                                        if (isNew > 0) {
+
+                                                            // Added
+                                                            if (isNew === 1) {
+                                                                addToList('added', escaped_values, data[item], itemID);
+                                                                console.log('ADDED!');
+                                                            }
+
+                                                            // Updated
+                                                            else if (isNew === 2) {
+                                                                addToList('updated', escaped_values, data[item], itemID);
+                                                                console.log('UPDATED!', itemList.updated.item.tiny_test_2);
+                                                            }
+
+                                                        }
+
+                                                        // Is OLD
+                                                        else {
+                                                            addToList('old', escaped_values, data[item], itemID);
+                                                            console.log('OLD!');
+                                                        }
+
+                                                        // Complete
+                                                        fn();
+                                                        return;
+
+                                                    };
+
                                                     // For Promise
                                                     forPromise({ data: data }, function (item, fn, fn_error, extra) {
 
@@ -1034,41 +1069,6 @@ class booru_manager {
 
                                                         }
 
-                                                        // Tag Insert Result
-                                                        const tagInsertResult = (fn, tagName) => {
-
-                                                            // Escape Tag Name
-                                                            escaped_values.tagName = databaseEscape(tagName, allowPath);
-
-                                                            // Is New
-                                                            if (isNew > 0) {
-
-                                                                // Added
-                                                                if (isNew === 1) {
-                                                                    addToList('added', escaped_values, data[item], itemID);
-                                                                    console.log('ADDED!');
-                                                                }
-
-                                                                // Updated
-                                                                else if (isNew === 2) {
-                                                                    addToList('updated', escaped_values, data[item], itemID);
-                                                                    console.log('UPDATED!', itemList.updated.item.tiny_test_2);
-                                                                }
-
-                                                            }
-
-                                                            // Is OLD
-                                                            else {
-                                                                addToList('old', escaped_values, data[item], itemID);
-                                                                console.log('OLD!');
-                                                            }
-
-                                                            // Complete
-                                                            fn();
-                                                            return;
-
-                                                        };
-
                                                         // Check Exist Options
                                                         if (Array.isArray(data[item][tinythis.tagList]) && data[item][tinythis.tagList].length > 0) {
 
@@ -1101,7 +1101,7 @@ class booru_manager {
                                                                             .then(() => {
 
                                                                                 // Insert Tag
-                                                                                tagInsertResult(fn, tagName);
+                                                                                tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
 
                                                                                 // Complete
                                                                                 return;
@@ -1120,7 +1120,7 @@ class booru_manager {
                                                                     else {
 
                                                                         // Insert Tag
-                                                                        tagInsertResult(fn, tagName);
+                                                                        tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
 
                                                                     }
 
@@ -1154,7 +1154,15 @@ class booru_manager {
                                                                 })
 
                                                                     // Result
-                                                                    .then(() => { tagInsertResult(fn, tinythis.unknownTag); return; })
+                                                                    .then(() => { 
+                                                                        
+                                                                        // Insert Result
+                                                                        tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew); 
+                                                                        
+                                                                        // Complete
+                                                                        return; 
+                                                                    
+                                                                    })
 
                                                                     // Error
                                                                     .catch(err => {
@@ -1168,7 +1176,7 @@ class booru_manager {
                                                             else {
 
                                                                 // Insert Result
-                                                                tagInsertResult(fn, tinythis.unknownTag);
+                                                                tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
 
                                                             }
 
