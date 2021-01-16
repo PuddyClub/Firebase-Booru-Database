@@ -969,7 +969,7 @@ class booru_manager {
                                                     const existOLDTags = (objType(oldTags, 'object'));
 
                                                     // Item List
-                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: { item: {}, tag: {} } }, updated: {} };
+                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: { item: {}, tag: {} } }, updated: { item: {}, tag: {} } };
                                                     const addToList = function (type, escaped_values, dataInsert, itemID) {
 
                                                         // Insert Tag
@@ -1244,10 +1244,10 @@ class booru_manager {
                                                                         if (objType(oldTags[tag], 'object')) {
 
                                                                             // Remove the Item and Tag from the Remover List
-    
+
                                                                             // Insert Total
                                                                             if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
-    
+
                                                                             // Delete
                                                                             if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
                                                                                 try {
@@ -1257,10 +1257,10 @@ class booru_manager {
                                                                                 }
                                                                                 catch (err) { }
                                                                             }
-    
+
                                                                             // Check Size
                                                                             if (toRemove.tag.count[tag] < 1) {
-    
+
                                                                                 // Delete Tag
                                                                                 try {
                                                                                     delete toRemove.tag.data[tag];
@@ -1268,9 +1268,9 @@ class booru_manager {
                                                                                     itemSaved.tag.push(tag);
                                                                                 }
                                                                                 catch (err) { }
-    
+
                                                                             }
-    
+
                                                                         }
                                                                         console.groupEnd();
                                                                     }
