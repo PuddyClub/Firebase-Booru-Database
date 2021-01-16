@@ -1013,13 +1013,11 @@ class booru_manager {
                                                             // Added
                                                             if (isNew === 1) {
                                                                 addToList('added', escaped_values, data[item], itemID);
-                                                                console.log('ADDED!');
                                                             }
 
                                                             // Updated
                                                             else if (isNew === 2) {
                                                                 addToList('updated', escaped_values, data[item], itemID);
-                                                                console.log('UPDATED!', itemList.updated.item.tiny_test_2);
                                                             }
 
                                                         }
@@ -1027,7 +1025,6 @@ class booru_manager {
                                                         // Is OLD
                                                         else {
                                                             addToList('old', escaped_values, data[item], itemID);
-                                                            console.log('OLD!');
                                                         }
 
                                                         // Complete
@@ -1240,43 +1237,27 @@ class booru_manager {
                                                                 let pack_items = extend({ item: {}, tag: {} }, itemList.old);
                                                                 pack_items = extend(pack_items, itemList.added);
                                                                 pack_items = extend(pack_items, itemList.updated);
-                                                                console.log(itemList.updated.item.tiny_test_2);
-
-                                                                // Insert Pack
-                                                                console.log('old', itemList.old);
-                                                                console.log('added', itemList.added);
-                                                                console.log('updated', itemList.updated);
-
-                                                                console.log('final');
-                                                                console.log(pack_items);
 
                                                                 // For
 
                                                                 // Item
-                                                                console.group('Item');
                                                                 for (const item in pack_items.item) {
-                                                                    console.group(item);
                                                                     if (objType(oldItems[item], 'object')) {
 
                                                                         // Item
                                                                         if (toRemove.item[item]) {
-                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
+                                                                            try { delete toRemove.item[item]; itemSaved.item.push(item); }
                                                                             catch (err) { }
                                                                         }
 
                                                                     }
-                                                                    console.groupEnd();
                                                                 }
-                                                                console.groupEnd();
 
                                                                 // Tag
-                                                                console.group('Tag');
                                                                 for (const tag in pack_items.tag) {
                                                                     if (objType(oldTags[tag], 'object')) {
-                                                                        console.group(tag);
                                                                         for (const item in pack_items.tag[tag]) {
                                                                             if (typeof oldTags[tag][item] === "string") {
-                                                                                console.group(item);
 
                                                                                 // Remove the Item and Tag from the Remover List
 
@@ -1288,7 +1269,6 @@ class booru_manager {
                                                                                     try {
                                                                                         delete toRemove.tag.data[tag][item];
                                                                                         toRemove.tag.count[tag]--;
-                                                                                        console.log('OLD Tag Item Saved');
                                                                                     }
                                                                                     catch (err) { }
                                                                                 }
@@ -1299,23 +1279,16 @@ class booru_manager {
                                                                                     // Delete Tag
                                                                                     try {
                                                                                         delete toRemove.tag.data[tag];
-                                                                                        console.log('OLD Tag Saved');
                                                                                         itemSaved.tag.push(tag);
                                                                                     }
                                                                                     catch (err) { }
 
                                                                                 }
 
-                                                                                console.groupEnd();
                                                                             }
                                                                         }
-                                                                        console.groupEnd();
                                                                     }
                                                                 }
-                                                                console.groupEnd();
-
-                                                                console.log(toRemove);
-                                                                console.log(itemSaved);
 
                                                                 // For Promise to Remover
                                                                 forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
