@@ -1269,7 +1269,7 @@ class booru_manager {
                                                                 forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
 
                                                                     // Items
-                                                                    const items = extra(toRemove.item);
+                                                                    const items = extra({ data: toRemove.item });
                                                                     items.run(function (item, fn, fn_error) {
 
                                                                         // Remove
@@ -1299,7 +1299,7 @@ class booru_manager {
 
                                                                     // Tags
                                                                     for (const tag in toRemove.tag.data) {
-                                                                        const tagItems = extra(toRemove.tag.data[tag]);
+                                                                        const tagItems = extra({ data: toRemove.tag.data[tag] });
                                                                         tagItems.run(function (item, fn, fn_error) {
 
                                                                             // Remove
