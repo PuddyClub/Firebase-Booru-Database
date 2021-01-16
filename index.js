@@ -1187,7 +1187,7 @@ class booru_manager {
 
                                                                 // Remove Items
                                                                 const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
-                                                                const itemSaved = { item: {}, tag: {} };
+                                                                const itemSaved = { item: [], tag: [] };
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1215,7 +1215,7 @@ class booru_manager {
                                                                         if (objType(oldItems[item], 'object')) {
 
                                                                             // Item
-                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item[item] = item; }
+                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
                                                                             catch (err) { }
 
                                                                             // Check OLD Tags
@@ -1250,7 +1250,7 @@ class booru_manager {
                                                                                                 try {
                                                                                                     delete toRemove.tag.data[tag];
                                                                                                     console.log('OLD Tag Saved');
-                                                                                                    itemSaved.tag[tag] = tag;
+                                                                                                    itemSaved.tag.push(tag);
                                                                                                 }
                                                                                                 catch (err) { }
 
