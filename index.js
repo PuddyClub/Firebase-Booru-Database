@@ -1,3 +1,5 @@
+const clone = require('clone');
+
 // Module Base
 class booru_manager {
 
@@ -1180,34 +1182,11 @@ class booru_manager {
                                                             // Exist OLD Checker
                                                             if (existOLDItems || existOLDTags) {
 
-                                                                // Prepare Remover
-                                                                const insertRemoverItem = function (tag, item, fn, fn_error) {
+                                                                // Tag Module
+                                                                const clone = require('clone');
 
-                                                                    // Exist Tag
-                                                                    if (typeof tag === "string" && tag.length > 0) {
-
-                                                                        // Exist Item in the Tag
-                                                                        if (typeof item === "string" && item.length > 0) {
-
-
-
-                                                                        }
-
-                                                                    }
-
-                                                                    // Nope
-                                                                    else {
-
-                                                                        // Remove Unknown Item
-                                                                        if (typeof item === "string" && item.length > 0) {
-
-
-
-                                                                        }
-
-                                                                    }
-                                                                    return;
-                                                                };
+                                                                // Remove Items
+                                                                const toRemove = { item: clone(oldItems), tag: clone(oldTags) };
 
                                                                 // Prepare Pack
                                                                 const pack_items = {};
@@ -1225,53 +1204,40 @@ class booru_manager {
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
 
-                                                                // For Promise
-                                                                forPromise({ data: pack_items }, function (tag, fn, fn_error, extra) {
-
-                                                                    // Add the Extra and Run the Extra
-                                                                    const prepareRemovetags = extra({ data: pack_items[tag] });
-                                                                    prepareRemovetags.run(function (item, fn, fn_error) {
+                                                                // For
+                                                                for (const tag in pack_items) {
+                                                                    for (const item in pack_items[tag]) {
 
                                                                         // Exist Item
-                                                                        if (objType(oldItems[item], 'object') || Array.isArray(oldItems[item])) {
-
-                                                                            // Exist Item in Tag
-                                                                            let existIteminTags = false;
+                                                                        if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item])) {
 
                                                                             // Exist Other Tags
                                                                             for (const oldTag in oldTags) {
                                                                                 if (objType(oldTags[oldTag], 'object') || Array.isArray(oldTags[oldTag])) {
                                                                                     for (const oldTagItem in oldTags[oldTag]) {
-                                                                                        if (oldTags[oldTag][oldTagItem] === tag) {
-                                                                                            existIteminTags = true;
+                                                                                        if (oldTagItem === item) {
+                                                                                            
+                                                                                            // Remove From from List the Item that Exist
+                                                                                            
+                                                                                            
+                                                                                            // Break Line
                                                                                             break;
+
                                                                                         }
+
                                                                                     }
                                                                                 }
                                                                             }
 
-                                                                            // Nope
-                                                                            if(!existIteminTags) {
-                                                                                insertRemoverItem(tag, item, fn, fn_error);
-                                                                            }
-
                                                                         }
 
-                                                                        // Nope
-                                                                        else {
-                                                                            insertRemoverItem(null, item, fn, fn_error);
-                                                                        }
+                                                                    }
+                                                                }
 
-                                                                        // Complete
-                                                                        return;
+                                                                // For Promise
+                                                                forPromise({ data: pack_items }, function (tag, fn, fn_error, extra) {
 
-                                                                    });
-
-                                                                    // Complete
                                                                     fn();
-
-                                                                    // Complete
-                                                                    return;
 
                                                                 })
 
