@@ -1,6 +1,6 @@
 {
   "name": "@tinypudding/firebase-booru-database",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Script to synchronize data from booru websites with Firebase Database Realtime.",
   "main": "index.js",
   "scripts": {
@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/TinyPudding/Firebase-Booru-Database#readme",
   "dependencies": {
-    "@tinypudding/puddy-lib": "^1.0.2",
+    "@tinypudding/puddy-lib": "^1.0.7",
     "clone": "^2.1.2",
     "for-promise": "^1.3.2",
     "json-sizeof": "^1.3.0",
