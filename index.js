@@ -1324,7 +1324,9 @@ class booru_manager {
                                                                             tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
 
                                                                                 // Add to Remove List
-                                                                                addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                if (toRemove.item[item]) {
+                                                                                    addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                }
 
                                                                                 // Complete
                                                                                 fn();
