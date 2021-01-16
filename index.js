@@ -1181,7 +1181,7 @@ class booru_manager {
                                                             // Exist OLD Checker
                                                             if (existOLDItems || existOLDTags) {
 
-                                                                // Tag Module
+                                                                // Prepare Module
                                                                 const clone = require('clone');
 
                                                                 // Remove Items
@@ -1189,36 +1189,12 @@ class booru_manager {
                                                                 const itemSaved = { item: [], tag: [] };
 
                                                                 // Prepare Pack
-                                                                const pack_items = {};
-                                                                const insert_old_pack = function (obj) {
-                                                                    console.log(obj);
-                                                                    for (const item in obj) {
-                                                                        if (objType(obj[item], 'object')) {
-                                                                            for (const item2 in obj[item]) {
-                                                                                if (objType(obj[item][item2], 'object')) {
-                                                                                    for (const item3 in obj[item][item2]) {
-                                                                                        if (!pack_items[item]) { pack_items[item] = {}; }
-                                                                                        if (!pack_items[item][item2]) { pack_items[item][item2] = {}; }
-                                                                                        pack_items[item][item2][item3] = obj[item][item2][item3];
-                                                                                    }
-                                                                                } else {
-                                                                                    pack_items[item][item2] = obj[item][item2];
-                                                                                }
-                                                                            }
-                                                                        } else {
-                                                                            pack_items[item] = obj[item];
-                                                                        }
-                                                                    }
-                                                                    return;
-                                                                };
+                                                                const pack_items = Object.assign({ item: {}, tag: {} }, itemList.old, itemList.added, itemList.updated);
 
                                                                 // Insert Pack
-                                                                console.log('old');
-                                                                insert_old_pack(itemList.old);
-                                                                console.log('added');
-                                                                insert_old_pack(itemList.added);
-                                                                console.log('updated');
-                                                                insert_old_pack(itemList.updated);
+                                                                console.log('old', itemList.old);
+                                                                console.log('added', itemList.added);
+                                                                console.log('updated', itemList.updated);
 
                                                                 console.log('final');
                                                                 console.log(pack_items);
