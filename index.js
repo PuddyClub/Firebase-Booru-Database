@@ -988,6 +988,12 @@ class booru_manager {
 
                                                     };
 
+                                                    // Firebase Escape
+                                                    const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+
+                                                    // Prepare MD5
+                                                    const hash = require('object-hash');
+
                                                     // For Promise
                                                     const forPromise = require('for-promise');
 
@@ -1000,11 +1006,7 @@ class booru_manager {
                                                         // Check Exist Options
                                                         if (Array.isArray(data[item][tinythis.tagList])) {
 
-                                                            // Prepare MD5
-                                                            const hash = require('object-hash');
-
-                                                            // Firebase Escape
-                                                            const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                            // Escape Values
                                                             const escaped_values = {
                                                                 itemID: databaseEscape(itemID, allowPath),
                                                                 md5: { old: null, new: null }
@@ -1169,8 +1171,10 @@ class booru_manager {
 
                                                         }
 
+                                                        // Nope
+                                                        else { fn(); }
+
                                                         // Complete
-                                                        fn();
                                                         return;
 
                                                     })
@@ -1183,13 +1187,17 @@ class booru_manager {
 
                                                                 // Prepare Module
                                                                 const clone = require('clone');
+                                                                const extend = require('object-extend');
 
                                                                 // Remove Items
                                                                 const toRemove = { item: clone(oldItems), tag: { data: clone(oldTags), count: {} } };
                                                                 const itemSaved = { item: [], tag: [] };
 
                                                                 // Prepare Pack
-                                                                const pack_items = Object.assign({ item: {}, tag: {} }, itemList.old, itemList.added, itemList.updated);
+                                                                let pack_items = extend({ item: {}, tag: {} }, itemList.old);
+                                                                pack_items = extend(pack_items, itemList.added);
+                                                                pack_items = extend(pack_items, itemList.updated);
+                                                                console.log(itemList.updated.item.tiny_test_2);
 
                                                                 // Insert Pack
                                                                 console.log('old', itemList.old);
