@@ -965,8 +965,8 @@ class booru_manager {
                                                     const objType = require('@tinypudding/puddy-lib/get/objType');
 
                                                     // Exist OLD
-                                                    const existOLDItems = (objType(oldItems, 'object') || Array.isArray(oldItems));
-                                                    const existOLDTags = (objType(oldTags, 'object') || Array.isArray(oldTags));
+                                                    const existOLDItems = (objType(oldItems, 'object'));
+                                                    const existOLDTags = (objType(oldTags, 'object'));
 
                                                     // Item List
                                                     const itemList = { added: {}, removed: {}, old: {}, updated: {} };
@@ -1206,19 +1206,16 @@ class booru_manager {
                                                                 insert_old_pack(itemList.added);
                                                                 insert_old_pack(itemList.updated);
 
-                                                                const tagsIsArray = (Array.isArray(toRemove.tag));
-                                                                const ItemsIsArray = (Array.isArray(toRemove.tag));
-
                                                                 // For
                                                                 for (const tag in pack_items) {
                                                                     for (const item in pack_items[tag]) {
 
                                                                         // Exist Item
-                                                                        if (objType(oldItems[item], 'object') && Array.isArray(oldItems[item])) {
+                                                                        if (objType(oldItems[item], 'object')) {
 
                                                                             // Exist Other Tags
                                                                             for (const oldTag in oldTags) {
-                                                                                if (objType(oldTags[oldTag], 'object') || Array.isArray(oldTags[oldTag])) {
+                                                                                if (objType(oldTags[oldTag], 'object')) {
                                                                                     for (const oldTagItem in oldTags[oldTag]) {
                                                                                         if (oldTagItem === item) {
 
@@ -1227,54 +1224,32 @@ class booru_manager {
                                                                                             // Tag
                                                                                             if (toRemove.tag.data[tag]) {
 
-                                                                                                // Object
-                                                                                                if (!tagsIsArray) {
+                                                                                                // Insert Total
+                                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data).length; }
 
-                                                                                                    // Insert Total
-                                                                                                    if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data).length; }
+                                                                                                // Delete
+                                                                                                try {
+                                                                                                    delete toRemove.tag.data[tag][item];
+                                                                                                    toRemove.tag.count[tag]--;
+                                                                                                }
+                                                                                                catch (err) { }
 
-                                                                                                    // Delete
+                                                                                                // Check Size
+                                                                                                if (toRemove.tag.count[tag] < 1) {
+
+                                                                                                    // Delete Tag
                                                                                                     try {
-                                                                                                        delete toRemove.tag.data[tag][item];
-                                                                                                        toRemove.tag.count[tag]--;
+                                                                                                        delete toRemove.tag.data[tag];
                                                                                                     }
                                                                                                     catch (err) { }
-
-                                                                                                    // Check Size
-                                                                                                    if(toRemove.tag.count[tag] < 1) {
-
-                                                                                                        // Delete Tag
-                                                                                                        try {
-                                                                                                            delete toRemove.tag.data[tag];
-                                                                                                        }
-                                                                                                        catch (err) { }
-
-                                                                                                    }
-
-                                                                                                }
-
-                                                                                                // Array
-                                                                                                else {
-
-                                                                                                    // Insert Total
-                                                                                                    if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = toRemove.tag.data.length; }
 
                                                                                                 }
 
                                                                                             }
 
                                                                                             // Item
-
-                                                                                            // Object
-                                                                                            if (!ItemsIsArray) {
-                                                                                                try { delete toRemove.item[item]; }
-                                                                                                catch (err) { }
-                                                                                            }
-
-                                                                                            // Array
-                                                                                            else {
-
-                                                                                            }
+                                                                                            try { delete toRemove.item[item]; }
+                                                                                            catch (err) { }
 
                                                                                             // Break Line
                                                                                             break;
@@ -1290,10 +1265,61 @@ class booru_manager {
                                                                     }
                                                                 }
 
-                                                                // For Promise
-                                                                forPromise({ data: pack_items }, function (tag, fn, fn_error, extra) {
+                                                                // For Promise to Remover
+                                                                forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
 
-                                                                    fn();
+                                                                    // Items
+                                                                    const items = extra(toRemove.item);
+                                                                    items.run(function (item, fn, fn_error) {
+
+                                                                        // Remove
+                                                                        tinythis.dbItems.itemData.child(item).remove().then(() => {
+
+                                                                            // Create Item
+                                                                            if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
+                                                                                for (const tag in toRemove.item[item][tinythis.tagList]) {
+                                                                                    if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
+                                                                                    itemList.removed[tag][item] = oldItems[item];
+                                                                                }
+                                                                            }
+
+                                                                            // Complete
+                                                                            fn();
+                                                                            return;
+
+                                                                        }).catch(err => {
+                                                                            fn_error(err);
+                                                                            return;
+                                                                        });
+
+                                                                        // Complete
+                                                                        return;
+
+                                                                    });
+
+                                                                    // Tags
+                                                                    for (const tag in toRemove.tag.data) {
+                                                                        const tagItems = extra(toRemove.tag.data[tag]);
+                                                                        tagItems.run(function (item, fn, fn_error) {
+
+                                                                            // Remove
+                                                                            tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+                                                                                fn();
+                                                                                return;
+                                                                            }).catch(err => {
+                                                                                fn_error(err);
+                                                                                return;
+                                                                            });
+
+                                                                            // Complete
+                                                                            return;
+
+                                                                        });
+                                                                    }
+
+                                                                    // Complete
+                                                                    fn(true);
+                                                                    return;
 
                                                                 })
 
