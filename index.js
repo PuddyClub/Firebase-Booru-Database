@@ -969,7 +969,24 @@ class booru_manager {
                                                     const existOLDTags = (objType(oldTags, 'object'));
 
                                                     // Item List
-                                                    const itemList = { added: {}, removed: {}, old: {}, updated: {} };
+                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: { item: {}, tag: {} } }, updated: {} };
+                                                    const addToList = function (type, escaped_values, dataInsert, itemID) {
+
+                                                        // Insert Tag
+                                                        if (escaped_values.tagName && escaped_values.itemID && itemID) {
+                                                            if (!itemList[type].tag[escaped_values.tagName]) { itemList[type].tag[escaped_values.tagName] = {}; }
+                                                            itemList[type].tag[escaped_values.tagName][escaped_values.itemID] = itemID;
+                                                        }
+
+                                                        // Insert Item
+                                                        if (escaped_values.itemID && dataInsert) {
+                                                            itemList[type].item[escaped_values.itemID] = dataInsert;
+                                                        }
+
+                                                        // Complete
+                                                        return;
+
+                                                    };
 
                                                     // For Promise
                                                     const forPromise = require('for-promise');
@@ -1025,37 +1042,19 @@ class booru_manager {
 
                                                                     // Added
                                                                     if (isNew === 1) {
-
-                                                                        // Create Tag
-                                                                        if (!itemList.added[escaped_values.tagName]) { itemList.added[escaped_values.tagName] = {}; }
-
-                                                                        // Insert Item in the Tag
-                                                                        itemList.added[escaped_values.tagName][escaped_values.itemID] = data[item];
-
+                                                                        addToList('added', escaped_values, data[item], itemID);
                                                                     }
 
                                                                     // Updated
                                                                     else if (isNew === 2) {
-
-                                                                        // Create Tag
-                                                                        if (!itemList.updated[escaped_values.tagName]) { itemList.updated[escaped_values.tagName] = {}; }
-
-                                                                        // Insert Item in the Tag
-                                                                        itemList.updated[escaped_values.tagName][escaped_values.itemID] = data[item];
-
+                                                                        addToList('updated', escaped_values, data[item], itemID);
                                                                     }
 
                                                                 }
 
                                                                 // Is OLD
                                                                 else {
-
-                                                                    // Create Tag
-                                                                    if (!itemList.old[escaped_values.tagName]) { itemList.old[escaped_values.tagName] = {}; }
-
-                                                                    // Insert Item in the Tag
-                                                                    itemList.old[escaped_values.tagName][escaped_values.itemID] = data[item];
-
+                                                                    addToList('old', escaped_values, data[item], itemID);
                                                                 }
 
                                                                 // Complete
@@ -1193,9 +1192,20 @@ class booru_manager {
                                                                 const pack_items = {};
                                                                 const insert_old_pack = function (obj) {
                                                                     for (const item in obj) {
-                                                                        for (const item2 in obj[item]) {
-                                                                            if (!pack_items[item]) { pack_items[item] = {}; }
-                                                                            pack_items[item][item2] = obj[item][item2];
+                                                                        if (objType(obj[item], 'object')) {
+                                                                            for (const item2 in obj[item]) {
+                                                                                if (objType(obj[item][item2], 'object')) {
+                                                                                    for (const item3 in obj[item][item2]) {
+                                                                                        if (!pack_items[item]) { pack_items[item] = {}; }
+                                                                                        if (!pack_items[item][item2]) { pack_items[item][item2] = {}; }
+                                                                                        pack_items[item][item2][item3] = obj[item][item2][item3];
+                                                                                    }
+                                                                                } else {
+                                                                                    pack_items[item][item2] = obj[item][item2];
+                                                                                }
+                                                                            }
+                                                                        } else {
+                                                                            pack_items[item] = obj[item];
                                                                         }
                                                                     }
                                                                     return;
@@ -1207,76 +1217,66 @@ class booru_manager {
                                                                 console.log(pack_items);
 
                                                                 // For
-                                                                for (const tag in pack_items) {
-                                                                    console.group(tag);
-                                                                    for (const item in pack_items[tag]) {
-                                                                        console.group(item);
 
-                                                                        // Exist OLD Item
-                                                                        if (objType(oldItems[item], 'object')) {
+                                                                // Item
+                                                                console.group('Item');
+                                                                for (const item in pack_items.item) {
+                                                                    console.group(item);
+                                                                    if (objType(oldItems[item], 'object')) {
 
-                                                                            // Item
-                                                                            if (toRemove.item[item]) {
-                                                                                try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
-                                                                                catch (err) { }
-                                                                            }
-
-                                                                            // Check OLD Tags
-                                                                            for (const oldTag in oldTags) {
-                                                                                console.group(`OLD: ${oldTag}`);
-
-                                                                                if (objType(oldTags[oldTag], 'object') && oldTag === tag) {
-
-                                                                                    // Check OLD Tag Items
-                                                                                    for (const oldTagItem in oldTags[oldTag]) {
-                                                                                        console.group(`OLD: ${oldTagItem}`);
-
-                                                                                        if (oldTagItem === item) {
-
-                                                                                            // Remove the Item and Tag from the Remover List
-
-                                                                                            // Insert Total
-                                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
-
-                                                                                            // Delete
-                                                                                            if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
-                                                                                                try {
-                                                                                                    delete toRemove.tag.data[tag][item];
-                                                                                                    toRemove.tag.count[tag]--;
-                                                                                                    console.log('OLD Tag Item Saved');
-                                                                                                }
-                                                                                                catch (err) { }
-                                                                                            }
-
-                                                                                            // Check Size
-                                                                                            if (toRemove.tag.count[tag] < 1) {
-
-                                                                                                // Delete Tag
-                                                                                                try {
-                                                                                                    delete toRemove.tag.data[tag];
-                                                                                                    console.log('OLD Tag Saved');
-                                                                                                    itemSaved.tag.push(tag);
-                                                                                                }
-                                                                                                catch (err) { }
-
-                                                                                            }
-
-                                                                                        }
-
-                                                                                        console.groupEnd();
-                                                                                    }
-
-                                                                                }
-
-                                                                                console.groupEnd();
-                                                                            }
-
+                                                                        // Item
+                                                                        if (toRemove.item[item]) {
+                                                                            try { delete toRemove.item[item]; console.log('OLD Item Saved'); itemSaved.item.push(item); }
+                                                                            catch (err) { }
                                                                         }
 
+                                                                    }
+                                                                    console.groupEnd();
+                                                                }
+                                                                console.groupEnd();
+
+                                                                // Tag
+                                                                console.group('Tag');
+                                                                for (const tag in pack_items.tag) {
+                                                                    console.group(tag);
+                                                                    for (const item in pack_items.tag[tag]) {
+                                                                        console.group(item);
+                                                                        if (objType(oldTags[tag], 'object')) {
+
+                                                                            // Remove the Item and Tag from the Remover List
+    
+                                                                            // Insert Total
+                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+    
+                                                                            // Delete
+                                                                            if (toRemove.tag.data[tag] && toRemove.tag.data[tag][tagItem]) {
+                                                                                try {
+                                                                                    delete toRemove.tag.data[tag][tagItem];
+                                                                                    toRemove.tag.count[tag]--;
+                                                                                    console.log('OLD Tag Item Saved');
+                                                                                }
+                                                                                catch (err) { }
+                                                                            }
+    
+                                                                            // Check Size
+                                                                            if (toRemove.tag.count[tag] < 1) {
+    
+                                                                                // Delete Tag
+                                                                                try {
+                                                                                    delete toRemove.tag.data[tag];
+                                                                                    console.log('OLD Tag Saved');
+                                                                                    itemSaved.tag.push(tag);
+                                                                                }
+                                                                                catch (err) { }
+    
+                                                                            }
+    
+                                                                        }
                                                                         console.groupEnd();
                                                                     }
                                                                     console.groupEnd();
                                                                 }
+                                                                console.groupEnd();
 
                                                                 console.log(toRemove);
                                                                 console.log(itemSaved);
@@ -1291,14 +1291,8 @@ class booru_manager {
                                                                         // Remove
                                                                         tinythis.dbItems.itemData.child(item).remove().then(() => {
 
-                                                                            // Create Item
-                                                                            if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
-                                                                                for (const tag in toRemove.item[item][tinythis.tagList]) {
-                                                                                    const tagName = toRemove.item[item][tinythis.tagList][tag];
-                                                                                    if (!itemList.removed[tagName]) { itemList.removed[tagName] = {}; }
-                                                                                    itemList.removed[tagName][item] = oldItems[item];
-                                                                                }
-                                                                            }
+                                                                            // Add to Remove List
+                                                                            addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
 
                                                                             // Complete
                                                                             fn();
@@ -1321,8 +1315,14 @@ class booru_manager {
 
                                                                             // Remove
                                                                             tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+
+                                                                                // Add to Remove List
+                                                                                addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+
+                                                                                // Complete
                                                                                 fn();
                                                                                 return;
+
                                                                             }).catch(err => {
                                                                                 fn_error(err);
                                                                                 return;
