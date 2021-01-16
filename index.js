@@ -1278,8 +1278,9 @@ class booru_manager {
                                                                             // Create Item
                                                                             if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
                                                                                 for (const tag in toRemove.item[item][tinythis.tagList]) {
-                                                                                    if (!itemList.removed[tag]) { itemList.removed[tag] = {}; }
-                                                                                    itemList.removed[tag][item] = oldItems[item];
+                                                                                    const tagName = toRemove.item[item][tinythis.tagList][tag];
+                                                                                    if (!itemList.removed[tagName]) { itemList.removed[tagName] = {}; }
+                                                                                    itemList.removed[tagName][item] = oldItems[item];
                                                                                 }
                                                                             }
 
