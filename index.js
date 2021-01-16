@@ -999,6 +999,7 @@ class booru_manager {
 
                                                     // Total Items
                                                     const totalData = data.length - 1;
+                                                    let extraUsed = false;
 
                                                     // For Promise
                                                     forPromise({ data: data }, function (item, fn, fn_error, extra) {
@@ -1006,179 +1007,175 @@ class booru_manager {
                                                         // Item ID
                                                         const itemID = data[item][tinythis.idVar];
 
-                                                        // Check Exist Options
-                                                        if (Array.isArray(data[item][tinythis.tagList])) {
+                                                        // Escape Values
+                                                        const escaped_values = {
+                                                            itemID: databaseEscape(itemID, allowPath),
+                                                            md5: { old: null, new: null }
+                                                        };
 
-                                                            // Escape Values
-                                                            const escaped_values = {
-                                                                itemID: databaseEscape(itemID, allowPath),
-                                                                md5: { old: null, new: null }
-                                                            };
+                                                        // Create New Detector
+                                                        let isNew = 0;
 
-                                                            // Create New Detector
-                                                            let isNew = 0;
+                                                        if ((!existOLDItems || !oldItems[escaped_values.itemID])) {
+                                                            isNew = 1;
+                                                        }
 
-                                                            if ((!existOLDItems || !oldItems[escaped_values.itemID])) {
-                                                                isNew = 1;
-                                                            }
+                                                        // Set MD5
+                                                        if (isNew === 0) {
 
                                                             // Set MD5
-                                                            if (isNew === 0) {
+                                                            escaped_values.md5.new = hash(data[item]);
+                                                            escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
 
-                                                                // Set MD5
-                                                                escaped_values.md5.new = hash(data[item]);
-                                                                escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
+                                                            // Is Update
+                                                            if (escaped_values.md5.new !== escaped_values.md5.old) {
+                                                                isNew = 2;
+                                                            }
 
-                                                                // Is Update
-                                                                if (escaped_values.md5.new !== escaped_values.md5.old) {
-                                                                    isNew = 2;
+                                                        }
+
+                                                        // Tag Insert Result
+                                                        const tagInsertResult = (fn, tagName) => {
+
+                                                            // Escape Tag Name
+                                                            escaped_values.tagName = databaseEscape(tagName, allowPath);
+
+                                                            // Is New
+                                                            if (isNew > 0) {
+
+                                                                // Added
+                                                                if (isNew === 1) {
+                                                                    addToList('added', escaped_values, data[item], itemID);
+                                                                    console.log('ADDED!');
+                                                                }
+
+                                                                // Updated
+                                                                else if (isNew === 2) {
+                                                                    addToList('updated', escaped_values, data[item], itemID);
+                                                                    console.log('UPDATED!', itemList.updated.item.tiny_test_2);
                                                                 }
 
                                                             }
 
-                                                            // Tag Insert Result
-                                                            const tagInsertResult = (fn, tagName) => {
+                                                            // Is OLD
+                                                            else {
+                                                                addToList('old', escaped_values, data[item], itemID);
+                                                                console.log('OLD!');
+                                                            }
 
-                                                                // Escape Tag Name
-                                                                escaped_values.tagName = databaseEscape(tagName, allowPath);
+                                                            // Complete
+                                                            fn();
+                                                            return;
 
-                                                                // Is New
-                                                                if (isNew > 0) {
+                                                        };
 
-                                                                    // Added
-                                                                    if (isNew === 1) {
-                                                                        addToList('added', escaped_values, data[item], itemID);
-                                                                        console.log('ADDED!');
-                                                                    }
+                                                        // Check Exist Options
+                                                        if (Array.isArray(data[item][tinythis.tagList]) && data[item][tinythis.tagList].length > 0) {
 
-                                                                    // Updated
-                                                                    else if (isNew === 2) {
-                                                                        addToList('updated', escaped_values, data[item], itemID);
-                                                                        console.log('UPDATED!', itemList.updated.item.tiny_test_2);
-                                                                    }
+                                                            // Read Tags
+                                                            extraUsed = true;
+                                                            const readTags = extra({ data: data[item][tinythis.tagList] });
+                                                            readTags.run(function (tagIndex, fn, fn_error) {
 
-                                                                }
+                                                                // Tag Name
+                                                                const tagName = data[item][tinythis.tagList][tagIndex];
 
-                                                                // Is OLD
-                                                                else {
-                                                                    addToList('old', escaped_values, data[item], itemID);
-                                                                    console.log('OLD!');
-                                                                }
+                                                                // Check Tag Name
+                                                                if (typeof tagName === "string" && tagName.length > 0) {
 
-                                                                // Complete
-                                                                fn();
-                                                                return;
+                                                                    // Add New Item
+                                                                    if (isNew > 0) {
 
-                                                            };
+                                                                        // Default Value
+                                                                        let functionType = 'addTagItem';
 
-                                                            // Check Array Amount
-                                                            if (data[item][tinythis.tagList].length > 0) {
+                                                                        // Add Tag
+                                                                        tinythis[functionType]({
+                                                                            tag: tagName,
+                                                                            itemID: itemID,
+                                                                            data: data[item],
+                                                                            allowPath: allowPath
+                                                                        }, notAddData)
 
-                                                                // Read Tags
-                                                                const readTags = extra({ data: data[item][tinythis.tagList] });
-                                                                readTags.run(function (tagIndex, fn, fn_error) {
+                                                                            // Result
+                                                                            .then(() => {
 
-                                                                    // Tag Name
-                                                                    const tagName = data[item][tinythis.tagList][tagIndex];
+                                                                                // Insert Tag
+                                                                                tagInsertResult(fn, tagName);
 
-                                                                    // Check Tag Name
-                                                                    if (typeof tagName === "string" && tagName.length > 0) {
+                                                                                // Complete
+                                                                                return;
 
-                                                                        // Add New Item
-                                                                        if (isNew > 0) {
+                                                                            })
 
-                                                                            // Default Value
-                                                                            let functionType = 'addTagItem';
-
-                                                                            // Add Tag
-                                                                            tinythis[functionType]({
-                                                                                tag: tagName,
-                                                                                itemID: itemID,
-                                                                                data: data[item],
-                                                                                allowPath: allowPath
-                                                                            }, notAddData)
-
-                                                                                // Result
-                                                                                .then(() => {
-
-                                                                                    // Insert Tag
-                                                                                    tagInsertResult(fn, tagName);
-
-                                                                                    // Complete
-                                                                                    return;
-
-                                                                                })
-
-                                                                                // Error
-                                                                                .catch(err => {
-                                                                                    fn_error(err);
-                                                                                    return;
-                                                                                });
-
-                                                                        }
-
-                                                                        // Nope
-                                                                        else {
-
-                                                                            // Insert Tag
-                                                                            tagInsertResult(fn, tagName);
-
-                                                                        }
+                                                                            // Error
+                                                                            .catch(err => {
+                                                                                fn_error(err);
+                                                                                return;
+                                                                            });
 
                                                                     }
 
                                                                     // Nope
-                                                                    else { fn(); }
+                                                                    else {
 
-                                                                    // Complete
-                                                                    return;
+                                                                        // Insert Tag
+                                                                        tagInsertResult(fn, tagName);
 
-                                                                });
+                                                                    }
+
+                                                                }
+
+                                                                // Nope
+                                                                else { fn(); }
+
+                                                                // Complete
+                                                                return;
+
+                                                            });
+
+                                                        }
+
+                                                        // Nope
+                                                        else {
+
+                                                            // Add New Item
+                                                            if (isNew > 0) {
+
+                                                                // Default Value
+                                                                let functionType = 'addItem';
+
+                                                                // Add Tag
+                                                                tinythis[functionType]({
+                                                                    tag: tinythis.unknownTag,
+                                                                    itemID: itemID,
+                                                                    data: data[item],
+                                                                    allowPath: allowPath
+                                                                })
+
+                                                                    // Result
+                                                                    .then(() => { tagInsertResult(fn, tinythis.unknownTag); return; })
+
+                                                                    // Error
+                                                                    .catch(err => {
+                                                                        fn_error(err);
+                                                                        return;
+                                                                    });
 
                                                             }
 
                                                             // Nope
                                                             else {
 
-                                                                // Add New Item
-                                                                if (isNew > 0) {
-
-                                                                    // Default Value
-                                                                    let functionType = 'addItem';
-
-                                                                    // Add Tag
-                                                                    tinythis[functionType]({
-                                                                        tag: tinythis.unknownTag,
-                                                                        itemID: itemID,
-                                                                        data: data[item],
-                                                                        allowPath: allowPath
-                                                                    })
-
-                                                                        // Result
-                                                                        .then(() => { tagInsertResult(fn, tinythis.unknownTag); return; })
-
-                                                                        // Error
-                                                                        .catch(err => {
-                                                                            fn_error(err);
-                                                                            return;
-                                                                        });
-
-                                                                }
-
-                                                                // Nope
-                                                                else {
-
-                                                                    // Insert Result
-                                                                    tagInsertResult(fn, tinythis.unknownTag);
-
-                                                                }
+                                                                // Insert Result
+                                                                tagInsertResult(fn, tinythis.unknownTag);
 
                                                             }
 
                                                         }
 
                                                         // Force FN
-                                                        if (item >= totalData) { fn(true); }
+                                                        if (!extraUsed && item >= totalData) { fn(true); }
 
                                                         // Complete
                                                         return;
