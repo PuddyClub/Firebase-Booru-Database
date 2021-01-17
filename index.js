@@ -1321,6 +1321,9 @@ class booru_manager {
                                                                         });
                                                                     }
 
+                                                                    // Complete
+                                                                    fn();
+
                                                                     // Run Items
                                                                     for (const extraItem in extraRuns.items) {
                                                                         extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
@@ -1374,8 +1377,7 @@ class booru_manager {
                                                                         });
                                                                     }
 
-                                                                    // Complete
-                                                                    fn();
+                                                                    // Return
                                                                     return;
 
                                                                 })
