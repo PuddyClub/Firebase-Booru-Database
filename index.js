@@ -1302,8 +1302,6 @@ class booru_manager {
                                                                     tags: []
                                                                 };
 
-                                                                const totalData = data.length - 1;
-
                                                                 // For Promise to Remover
                                                                 forPromise({ data: 1 }, function (index, fn, fn_error, extra) {
 
