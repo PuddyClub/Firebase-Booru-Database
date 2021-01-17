@@ -186,12 +186,6 @@ class booru_manager {
                                     // Module Name
                                     module_name: this.db[this.firstDBLine]('module_name'),
 
-                                    // Tag List
-                                    tagData: this.db[this.firstDBLine]('tag').child('data'),
-
-                                    // Total Tags
-                                    tagTotal: this.db[this.firstDBLine]('tag').child('total'),
-
                                     // Total Items
                                     itemData: this.db[this.firstDBLine]('item').child('data'),
 
@@ -239,7 +233,7 @@ class booru_manager {
 
                                         // Ops
                                         else {
-                                            reject(new Error('Invalid Tag Name!'));
+                                            reject(new Error('Invalid "' + database_name + '" Name!'));
                                         }
 
                                         // Complete
@@ -327,22 +321,12 @@ class booru_manager {
                                     });
                                 };
 
-                                // Get Tag
-                                this.getTag = function (tag_name) {
-                                    return this.getItemTemplate(tag_name, 'tagData');
-                                };
-
-                                // Get Tags
-                                this.getTags = function (itemsList) {
-                                    return this.getItemsTemplate(itemsList, 'tagData');
-                                };
-
-                                // Get Tag
+                                // Get Item
                                 this.getItem = function (tag_name) {
                                     return this.getItemTemplate(tag_name, 'itemData');
                                 };
 
-                                // Get Tags
+                                // Get Items
                                 this.getItems = function (itemsList) {
                                     return this.getItemsTemplate(itemsList, 'itemData');
                                 };
@@ -434,13 +418,12 @@ class booru_manager {
                                 // Tags
 
                                 // Add Item Template
-                                this.addItemTemplate = function (data, escapeResult = null, tagItem = null, type) {
+                                this.addItemTemplate = function (data, escapeResult = null, type) {
                                     const tinythis = this;
                                     return new Promise(function (resolve, reject) {
 
                                         // Fix Database Tag Item
                                         if (!escapeResult) { escapeResult = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath).escaped; }
-                                        if (!tagItem) { tagItem = tinythis.dbItems.tagData.child(escapeResult.tagName).child(escapeResult.itemID); }
 
                                         // Prepare Item Data
                                         const itemData = tinythis.dbItems.itemData.child(escapeResult.itemID);
@@ -455,7 +438,6 @@ class booru_manager {
                                                 resolve({
                                                     data: data.data,
                                                     db: {
-                                                        tag: tagItem,
                                                         item: itemData
                                                     },
                                                     values: {
@@ -488,13 +470,13 @@ class booru_manager {
                                 };
 
                                 // Add Item
-                                this.addItem = function (data, escapeResult = null, tagItem = null) {
-                                    return this.addItemTemplate(data, escapeResult, tagItem, 'set');
+                                this.addItem = function (data, escapeResult = null) {
+                                    return this.addItemTemplate(data, escapeResult, 'set');
                                 };
 
                                 // Update Item
-                                this.updateItem = function (data, escapeResult = null, tagItem = null) {
-                                    return this.addItemTemplate(data, escapeResult, tagItem, 'update');
+                                this.updateItem = function (data, escapeResult = null) {
+                                    return this.addItemTemplate(data, escapeResult, 'update');
                                 };
 
                                 // Add Template
@@ -508,43 +490,23 @@ class booru_manager {
                                         // Allowed
                                         if (resultCheck.allowed) {
 
-                                            // Get Tag
-                                            const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
-
                                             // Add data
                                             if (!notAddData) {
 
-                                                // Set Data
-                                                tagItem[type](data.itemID)
-
-                                                    // Success
-                                                    .then(() => {
-
-                                                        // Add Tag
-                                                        tinythis.addItem(data, resultCheck.escaped, tagItem).then(data => {
-                                                            resolve(data);
-                                                            return;
-                                                        }).catch(err => {
-                                                            reject(err);
-                                                            return;
-                                                        });
-
-                                                        // Complete
-                                                        return;
-
-                                                    })
-
-                                                    // Error
-                                                    .catch(err => {
-                                                        reject(err);
-                                                        return;
-                                                    });
+                                                // Add Tag
+                                                tinythis.addItem(data, resultCheck.escaped).then(data => {
+                                                    resolve(data);
+                                                    return;
+                                                }).catch(err => {
+                                                    reject(err);
+                                                    return;
+                                                });
 
                                             }
 
                                             // Nope
                                             else {
-                                                tinythis.addItemTemplate(data, resultCheck.escaped, tagItem, type).then(data => {
+                                                tinythis.addItemTemplate(data, resultCheck.escaped, type).then(data => {
                                                     resolve(data);
                                                     return;
                                                 }).catch(err => {
@@ -634,156 +596,6 @@ class booru_manager {
 
                                 this.updateTagItems = function (items, notAddData = false) {
                                     return this.addTagItemsTemplate(items, notAddData, 'update');
-                                };
-
-                                // Remove
-                                this.removeTagItem = function (data, notRemoveData = false) {
-                                    const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
-
-                                        // Check
-                                        const resultCheck = tinythis.tagItemChecker(data.tag, data.itemID, null, data.allowPath, true);
-
-                                        // Allowed
-                                        if (resultCheck.allowed) {
-
-                                            // Get Tag
-                                            const tagItem = tinythis.dbItems.tagData.child(resultCheck.escaped.tagName).child(resultCheck.escaped.itemID);
-                                            const itemData = tinythis.dbItems.itemData.child(resultCheck.escaped.itemID);
-
-                                            // Remove Tag Result
-                                            const removeTagResult = function () {
-
-                                                // Set Data
-                                                tagItem.remove()
-
-                                                    // Success
-                                                    .then(() => {
-
-                                                        // Send Result
-                                                        resolve({
-                                                            db: {
-                                                                tag: tagItem,
-                                                                item: itemData
-                                                            },
-                                                            values: {
-                                                                normal: {
-                                                                    tag: data.tag,
-                                                                    itemID: data.itemID
-                                                                },
-                                                                escape: {
-                                                                    tag: resultCheck.escaped.tagName,
-                                                                    itemID: resultCheck.escaped.itemID
-                                                                }
-                                                            }
-                                                        });
-
-                                                        // Complete
-                                                        return;
-
-                                                    })
-
-                                                    // Error
-                                                    .catch(err => {
-                                                        reject(err);
-                                                        return;
-                                                    });
-
-                                                // Complete
-                                                return;
-
-                                            };
-
-                                            // Remove data
-                                            if (!notRemoveData) {
-
-                                                // Set Data
-                                                itemData.remove()
-
-                                                    // Success
-                                                    .then(() => {
-
-                                                        // Remove
-                                                        removeTagResult();
-
-                                                        // Complete
-                                                        return;
-
-                                                    })
-
-                                                    // Error
-                                                    .catch(err => {
-                                                        reject(err);
-                                                        return;
-                                                    });
-
-                                            }
-
-                                            // Nope
-                                            else { removeTagResult(); }
-
-                                        }
-
-                                        // Nope
-                                        else {
-                                            reject(resultCheck.err);
-                                        }
-
-                                        // Complete
-                                        return;
-
-                                    });
-                                };
-
-                                // Remove Multiple Tags
-                                this.removeTagItems = function (items, notRemoveData = false) {
-                                    const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
-
-                                        // Item List
-                                        const itemList = {};
-
-                                        // Array Validator
-                                        if (Array.isArray(items)) {
-
-                                            // For Promise
-                                            require('for-promise')({ data: items }, function (item, fn, fn_error) {
-
-                                                // Remove Tag
-                                                tinythis.removeTagItem(items[item], notRemoveData).then((result) => {
-                                                    itemList[items[item].tag] = result;
-                                                    fn();
-                                                    return;
-                                                }).catch(err => {
-                                                    fn_error(err);
-                                                    return;
-                                                });
-
-                                                // Complete
-                                                return;
-
-                                            })
-
-                                                // Result
-                                                .then(() => {
-                                                    resolve(itemList);
-                                                    return;
-                                                }).catch(err => {
-                                                    reject(err);
-                                                    return;
-                                                });
-
-                                        }
-
-                                        // Nope
-                                        else {
-                                            reject(new Error('The Tag List data is not a array!'));
-                                        }
-
-                                        // Complete
-                                        return;
-
-                                    });
                                 };
 
                                 // Send Error
@@ -958,457 +770,416 @@ class booru_manager {
                                             // Get OLD Data
                                             tinythis.getItems().then(oldItems => {
 
-                                                // Get OLD Tags
-                                                tinythis.getTags().then(oldTags => {
+                                                // Obj Type
+                                                const objType = require('@tinypudding/puddy-lib/get/objType');
 
-                                                    // Obj Type
-                                                    const objType = require('@tinypudding/puddy-lib/get/objType');
+                                                // Exist OLD
+                                                const existOLDItems = (objType(oldItems, 'object'));
 
-                                                    // Exist OLD
-                                                    const existOLDItems = (objType(oldItems, 'object'));
-                                                    const existOLDTags = (objType(oldTags, 'object'));
+                                                // Item List
+                                                const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: {} }, updated: { item: {}, tag: {} } };
+                                                const addToList = function (type, escaped_values, dataInsert, itemID) {
 
-                                                    // Item List
-                                                    const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: {} }, updated: { item: {}, tag: {} } };
-                                                    const addToList = function (type, escaped_values, dataInsert, itemID) {
+                                                    // Insert Tag
+                                                    if (escaped_values.tagName && escaped_values.itemID && itemID) {
+                                                        if (!itemList[type].tag[escaped_values.tagName]) { itemList[type].tag[escaped_values.tagName] = {}; }
+                                                        itemList[type].tag[escaped_values.tagName][escaped_values.itemID] = itemID;
+                                                    }
 
-                                                        // Insert Tag
-                                                        if (escaped_values.tagName && escaped_values.itemID && itemID) {
-                                                            if (!itemList[type].tag[escaped_values.tagName]) { itemList[type].tag[escaped_values.tagName] = {}; }
-                                                            itemList[type].tag[escaped_values.tagName][escaped_values.itemID] = itemID;
+                                                    // Insert Item
+                                                    if (escaped_values.itemID && dataInsert) {
+                                                        itemList[type].item[escaped_values.itemID] = dataInsert;
+                                                    }
+
+                                                    // Complete
+                                                    return;
+
+                                                };
+
+                                                // Firebase Escape
+                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+
+                                                // Prepare MD5
+                                                const hash = require('object-hash');
+
+                                                // For Promise
+                                                const forPromise = require('for-promise');
+
+                                                // Total Items
+                                                const totalData = data.length - 1;
+                                                let extraUsed = false;
+
+                                                // Tag Insert Result
+                                                const tagInsertResult = (fn, tagName, escaped_values, item, itemID, isNew) => {
+
+                                                    // Escape Tag Name
+                                                    escaped_values.tagName = databaseEscape(tagName, allowPath);
+
+                                                    // Is New
+                                                    if (isNew > 0) {
+
+                                                        // Added
+                                                        if (isNew === 1) {
+                                                            addToList('added', escaped_values, data[item], itemID);
                                                         }
 
-                                                        // Insert Item
-                                                        if (escaped_values.itemID && dataInsert) {
-                                                            itemList[type].item[escaped_values.itemID] = dataInsert;
+                                                        // Updated
+                                                        else if (isNew === 2) {
+                                                            addToList('updated', escaped_values, data[item], itemID);
                                                         }
 
-                                                        // Complete
-                                                        return;
+                                                    }
 
+                                                    // Is OLD
+                                                    else {
+                                                        addToList('old', escaped_values, data[item], itemID);
+                                                    }
+
+                                                    // Complete
+                                                    fn();
+                                                    return;
+
+                                                };
+
+                                                // Extra Runs
+                                                const extraRuns = [];
+
+                                                // For Promise
+                                                forPromise({ data: data }, function (item, fn, fn_error, extra) {
+
+                                                    // Extra Items
+                                                    item = Number(item);
+
+                                                    // Item ID
+                                                    const itemID = data[item][tinythis.idVar];
+
+                                                    // Escape Values
+                                                    const escaped_values = {
+                                                        itemID: databaseEscape(itemID, allowPath),
+                                                        md5: { old: null, new: null }
                                                     };
 
-                                                    // Firebase Escape
-                                                    const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                    // Create New Detector
+                                                    let isNew = 0;
 
-                                                    // Prepare MD5
-                                                    const hash = require('object-hash');
+                                                    if ((!existOLDItems || !oldItems[escaped_values.itemID])) {
+                                                        isNew = 1;
+                                                    }
 
-                                                    // For Promise
-                                                    const forPromise = require('for-promise');
-
-                                                    // Total Items
-                                                    const totalData = data.length - 1;
-                                                    let extraUsed = false;
-
-                                                    // Tag Insert Result
-                                                    const tagInsertResult = (fn, tagName, escaped_values, item, itemID, isNew) => {
-
-                                                        // Escape Tag Name
-                                                        escaped_values.tagName = databaseEscape(tagName, allowPath);
-
-                                                        // Is New
-                                                        if (isNew > 0) {
-
-                                                            // Added
-                                                            if (isNew === 1) {
-                                                                addToList('added', escaped_values, data[item], itemID);
-                                                            }
-
-                                                            // Updated
-                                                            else if (isNew === 2) {
-                                                                addToList('updated', escaped_values, data[item], itemID);
-                                                            }
-
-                                                        }
-
-                                                        // Is OLD
-                                                        else {
-                                                            addToList('old', escaped_values, data[item], itemID);
-                                                        }
-
-                                                        // Complete
-                                                        fn();
-                                                        return;
-
-                                                    };
-
-                                                    // Extra Runs
-                                                    const extraRuns = [];
-
-                                                    // For Promise
-                                                    forPromise({ data: data }, function (item, fn, fn_error, extra) {
-
-                                                        // Extra Items
-                                                        item = Number(item);
-
-                                                        // Item ID
-                                                        const itemID = data[item][tinythis.idVar];
-
-                                                        // Escape Values
-                                                        const escaped_values = {
-                                                            itemID: databaseEscape(itemID, allowPath),
-                                                            md5: { old: null, new: null }
-                                                        };
-
-                                                        // Create New Detector
-                                                        let isNew = 0;
-
-                                                        if ((!existOLDItems || !oldItems[escaped_values.itemID])) {
-                                                            isNew = 1;
-                                                        }
+                                                    // Set MD5
+                                                    if (isNew === 0) {
 
                                                         // Set MD5
-                                                        if (isNew === 0) {
-
-                                                            // Set MD5
-                                                            escaped_values.md5.new = hash(data[item]);
-                                                            if (existOLDItems) {
-                                                                escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
-                                                            } else {
-                                                                escaped_values.md5.old = '';
-                                                            }
-
-                                                            // Is Update
-                                                            if (escaped_values.md5.new !== escaped_values.md5.old) {
-                                                                isNew = 2;
-                                                            }
-
+                                                        escaped_values.md5.new = hash(data[item]);
+                                                        if (existOLDItems) {
+                                                            escaped_values.md5.old = hash(oldItems[escaped_values.itemID]);
+                                                        } else {
+                                                            escaped_values.md5.old = '';
                                                         }
 
-                                                        // Check Exist Options
-                                                        if (Array.isArray(data[item][tinythis.tagList]) && data[item][tinythis.tagList].length > 0) {
+                                                        // Is Update
+                                                        if (escaped_values.md5.new !== escaped_values.md5.old) {
+                                                            isNew = 2;
+                                                        }
 
-                                                            // Read Tags
-                                                            extraUsed = true;
-                                                            extraRuns.push({
+                                                    }
+
+                                                    // Check Exist Options
+                                                    if (Array.isArray(data[item][tinythis.tagList]) && data[item][tinythis.tagList].length > 0) {
+
+                                                        // Read Tags
+                                                        extraUsed = true;
+                                                        extraRuns.push({
+                                                            itemID: itemID,
+                                                            escaped_values: escaped_values,
+                                                            isNew: isNew,
+                                                            extra: extra({ data: data[item][tinythis.tagList] }),
+                                                            item: item
+                                                        });
+
+                                                    }
+
+                                                    // Nope
+                                                    else {
+
+                                                        // Add New Item
+                                                        if (isNew > 0) {
+
+                                                            // Default Value
+                                                            let functionType = 'addItem';
+
+                                                            // Add Tag
+                                                            tinythis[functionType]({
+                                                                tag: tinythis.unknownTag,
                                                                 itemID: itemID,
-                                                                escaped_values: escaped_values,
-                                                                isNew: isNew,
-                                                                extra: extra({ data: data[item][tinythis.tagList] }),
-                                                                item: item
-                                                            });
+                                                                data: data[item],
+                                                                allowPath: allowPath
+                                                            })
+
+                                                                // Result
+                                                                .then(() => {
+
+                                                                    // Insert Result
+                                                                    tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
+
+                                                                    // Complete
+                                                                    return;
+
+                                                                })
+
+                                                                // Error
+                                                                .catch(err => {
+                                                                    fn_error(err);
+                                                                    return;
+                                                                });
 
                                                         }
 
                                                         // Nope
                                                         else {
 
-                                                            // Add New Item
-                                                            if (isNew > 0) {
-
-                                                                // Default Value
-                                                                let functionType = 'addItem';
-
-                                                                // Add Tag
-                                                                tinythis[functionType]({
-                                                                    tag: tinythis.unknownTag,
-                                                                    itemID: itemID,
-                                                                    data: data[item],
-                                                                    allowPath: allowPath
-                                                                })
-
-                                                                    // Result
-                                                                    .then(() => {
-
-                                                                        // Insert Result
-                                                                        tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
-
-                                                                        // Complete
-                                                                        return;
-
-                                                                    })
-
-                                                                    // Error
-                                                                    .catch(err => {
-                                                                        fn_error(err);
-                                                                        return;
-                                                                    });
-
-                                                            }
-
-                                                            // Nope
-                                                            else {
-
-                                                                // Insert Result
-                                                                tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
-
-                                                            }
+                                                            // Insert Result
+                                                            tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
 
                                                         }
 
-                                                        // Force FN
-                                                        if (item >= totalData) {
+                                                    }
 
-                                                            // Run Extras
-                                                            if (extraUsed) {
-                                                                for (const extraTag in extraRuns) {
+                                                    // Force FN
+                                                    if (item >= totalData) {
 
-                                                                    // Prepare Item
-                                                                    const item = extraRuns[extraTag].item;
-                                                                    const itemID = extraRuns[extraTag].itemID;
-                                                                    const escaped_values = extraRuns[extraTag].escaped_values;
-                                                                    const isNew = extraRuns[extraTag].isNew;
+                                                        // Run Extras
+                                                        if (extraUsed) {
+                                                            for (const extraTag in extraRuns) {
 
-                                                                    // Run Extra
-                                                                    extraRuns[extraTag].extra.run(function (tagIndex, fn, fn_error) {
+                                                                // Prepare Item
+                                                                const item = extraRuns[extraTag].item;
+                                                                const itemID = extraRuns[extraTag].itemID;
+                                                                const escaped_values = extraRuns[extraTag].escaped_values;
+                                                                const isNew = extraRuns[extraTag].isNew;
 
-                                                                        // Tag Name
-                                                                        const tagName = data[item][tinythis.tagList][tagIndex];
+                                                                // Run Extra
+                                                                extraRuns[extraTag].extra.run(function (tagIndex, fn, fn_error) {
 
-                                                                        // Check Tag Name
-                                                                        if (typeof tagName === "string" && tagName.length > 0) {
+                                                                    // Tag Name
+                                                                    const tagName = data[item][tinythis.tagList][tagIndex];
 
-                                                                            // Add New Item
-                                                                            if (isNew > 0) {
+                                                                    // Check Tag Name
+                                                                    if (typeof tagName === "string" && tagName.length > 0) {
 
-                                                                                // Default Value
-                                                                                let functionType = 'addTagItem';
+                                                                        // Add New Item
+                                                                        if (isNew > 0) {
 
-                                                                                // Add Tag
-                                                                                tinythis[functionType]({
-                                                                                    tag: tagName,
-                                                                                    itemID: itemID,
-                                                                                    data: data[item],
-                                                                                    allowPath: allowPath
-                                                                                }, notAddData)
+                                                                            // Default Value
+                                                                            let functionType = 'addTagItem';
 
-                                                                                    // Result
-                                                                                    .then(() => {
+                                                                            // Add Tag
+                                                                            tinythis[functionType]({
+                                                                                tag: tagName,
+                                                                                itemID: itemID,
+                                                                                data: data[item],
+                                                                                allowPath: allowPath
+                                                                            }, notAddData)
 
-                                                                                        // Insert Tag
-                                                                                        tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
+                                                                                // Result
+                                                                                .then(() => {
 
-                                                                                        // Complete
-                                                                                        return;
+                                                                                    // Insert Tag
+                                                                                    tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
 
-                                                                                    })
+                                                                                    // Complete
+                                                                                    return;
 
-                                                                                    // Error
-                                                                                    .catch(err => {
-                                                                                        fn_error(err);
-                                                                                        return;
-                                                                                    });
+                                                                                })
 
-                                                                            }
-
-                                                                            // Nope
-                                                                            else {
-
-                                                                                // Insert Tag
-                                                                                tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
-
-                                                                            }
+                                                                                // Error
+                                                                                .catch(err => {
+                                                                                    fn_error(err);
+                                                                                    return;
+                                                                                });
 
                                                                         }
 
                                                                         // Nope
-                                                                        else { fn(); }
+                                                                        else {
+
+                                                                            // Insert Tag
+                                                                            tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
+
+                                                                        }
+
+                                                                    }
+
+                                                                    // Nope
+                                                                    else { fn(); }
+
+                                                                    // Complete
+                                                                    return;
+
+                                                                });
+
+                                                            }
+                                                        }
+
+                                                        // Extra Not Used
+                                                        else { fn(true); }
+
+                                                    }
+
+                                                    // Complete
+                                                    return;
+
+                                                })
+
+                                                    // Result
+                                                    .then(() => {
+
+                                                        // Exist OLD Checker
+                                                        if (existOLDItems) {
+
+                                                            // Prepare Module
+                                                            const clone = require('clone');
+                                                            const extend = require('object-extend');
+
+                                                            // Remove Items
+                                                            const toRemove = { item: {}, tag: { data: {}, count: {} } };
+
+                                                            // Clone Items
+                                                            if (existOLDItems) { toRemove.item = clone(oldItems); }
+
+                                                            // Prepare Pack
+                                                            let pack_items = extend({ item: {}, tag: {} }, itemList.old);
+                                                            pack_items = extend(pack_items, itemList.added);
+                                                            pack_items = extend(pack_items, itemList.updated);
+
+                                                            // For
+
+                                                            // Item
+                                                            for (const item in pack_items.item) {
+                                                                if (existOLDItems && objType(oldItems[item], 'object')) {
+
+                                                                    // Item
+                                                                    if (toRemove.item[item]) {
+                                                                        try { delete toRemove.item[item]; }
+                                                                        catch (err) { }
+                                                                    }
+
+                                                                }
+                                                            }
+
+                                                            // Tag
+                                                            for (const tag in pack_items.tag) {
+                                                                if (objType(pack_items[tag], 'object')) {
+                                                                    for (const item in pack_items.tag[tag]) {
+                                                                        if (typeof pack_items[tag][item] === "string") {
+
+                                                                            // Remove the Item and Tag from the Remover List
+
+                                                                            // Insert Total
+                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+
+                                                                            // Delete
+                                                                            if (objType(toRemove.tag.data[tag], 'object') && (typeof toRemove.tag.data[tag][item] === "string" || typeof toRemove.tag.data[tag][item] === "number")) {
+                                                                                try {
+                                                                                    delete toRemove.tag.data[tag][item];
+                                                                                    toRemove.tag.count[tag]--;
+                                                                                }
+                                                                                catch (err) { }
+                                                                            }
+
+                                                                            // Check Size
+                                                                            if (toRemove.tag.count[tag] < 1) {
+
+                                                                                // Delete Tag
+                                                                                try {
+                                                                                    delete toRemove.tag.data[tag];
+                                                                                }
+                                                                                catch (err) { }
+
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+
+                                                            // Extra Runs
+                                                            const extraRuns = {
+                                                                items: [],
+                                                                tags: []
+                                                            };
+
+                                                            // For Promise to Remover
+                                                            forPromise({ data: 1 }, function (index, fn, fn_error, extra) {
+
+                                                                // Items
+                                                                // Read Tags
+                                                                extraRuns.items.push({
+                                                                    extra: extra({ data: toRemove.item })
+                                                                });
+
+                                                                // Tags
+                                                                for (const tag in toRemove.tag.data) {
+                                                                    extraRuns.tags.push({
+                                                                        tag: tag,
+                                                                        extra: extra({ data: toRemove.tag.data[tag] })
+                                                                    });
+                                                                }
+
+                                                                // Complete
+                                                                fn();
+
+                                                                // Run Items
+                                                                for (const extraItem in extraRuns.items) {
+                                                                    extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
+
+                                                                        // Remove
+                                                                        tinythis.dbItems.itemData.child(item).remove().then(() => {
+
+                                                                            // Add to Remove List
+                                                                            addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+
+                                                                            // Complete
+                                                                            fn();
+                                                                            return;
+
+                                                                        }).catch(err => {
+                                                                            fn_error(err);
+                                                                            return;
+                                                                        });
 
                                                                         // Complete
                                                                         return;
 
                                                                     });
-
                                                                 }
-                                                            }
 
-                                                            // Extra Not Used
-                                                            else { fn(true); }
+                                                                // Return
+                                                                return;
+
+                                                            })
+
+                                                                // Finished
+                                                                .then(() => {
+                                                                    resolve(itemList);
+                                                                    return;
+                                                                }).catch(err => {
+                                                                    reject(err);
+                                                                    return;
+                                                                });
 
                                                         }
+
+                                                        // Nope
+                                                        else { resolve(itemList); }
 
                                                         // Complete
                                                         return;
 
-                                                    })
-
-                                                        // Result
-                                                        .then(() => {
-
-                                                            // Exist OLD Checker
-                                                            if (existOLDItems || existOLDTags) {
-
-                                                                // Prepare Module
-                                                                const clone = require('clone');
-                                                                const extend = require('object-extend');
-
-                                                                // Remove Items
-                                                                const toRemove = { item: {}, tag: { data: {}, count: {} } };
-
-                                                                // Clone Items
-                                                                if (existOLDItems) { toRemove.item = clone(oldItems); }
-                                                                if (existOLDTags) { toRemove.tag.data = clone(oldTags); }
-
-                                                                // Prepare Pack
-                                                                let pack_items = extend({ item: {}, tag: {} }, itemList.old);
-                                                                pack_items = extend(pack_items, itemList.added);
-                                                                pack_items = extend(pack_items, itemList.updated);
-
-                                                                // For
-
-                                                                // Item
-                                                                for (const item in pack_items.item) {
-                                                                    if (existOLDItems && objType(oldItems[item], 'object')) {
-
-                                                                        // Item
-                                                                        if (toRemove.item[item]) {
-                                                                            try { delete toRemove.item[item]; }
-                                                                            catch (err) { }
-                                                                        }
-
-                                                                    }
-                                                                }
-
-                                                                // Tag
-                                                                for (const tag in pack_items.tag) {
-                                                                    if (existOLDTags && objType(oldTags[tag], 'object')) {
-                                                                        for (const item in pack_items.tag[tag]) {
-                                                                            if (typeof oldTags[tag][item] === "string") {
-
-                                                                                // Remove the Item and Tag from the Remover List
-
-                                                                                // Insert Total
-                                                                                if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
-
-                                                                                // Delete
-                                                                                if (objType(toRemove.tag.data[tag], 'object') && (typeof toRemove.tag.data[tag][item] === "string" || typeof toRemove.tag.data[tag][item] === "number")) {
-                                                                                    try {
-                                                                                        delete toRemove.tag.data[tag][item];
-                                                                                        toRemove.tag.count[tag]--;
-                                                                                    }
-                                                                                    catch (err) { }
-                                                                                }
-
-                                                                                // Check Size
-                                                                                if (toRemove.tag.count[tag] < 1) {
-
-                                                                                    // Delete Tag
-                                                                                    try {
-                                                                                        delete toRemove.tag.data[tag];
-                                                                                    }
-                                                                                    catch (err) { }
-
-                                                                                }
-
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                                // Extra Runs
-                                                                const extraRuns = {
-                                                                    items: [],
-                                                                    tags: []
-                                                                };
-
-                                                                // For Promise to Remover
-                                                                forPromise({ data: 1 }, function (index, fn, fn_error, extra) {
-
-                                                                    // Items
-                                                                    // Read Tags
-                                                                    extraRuns.items.push({
-                                                                        extra: extra({ data: toRemove.item })
-                                                                    });
-
-                                                                    // Tags
-                                                                    for (const tag in toRemove.tag.data) {
-                                                                        extraRuns.tags.push({
-                                                                            tag: tag,
-                                                                            extra: extra({ data: toRemove.tag.data[tag] })
-                                                                        });
-                                                                    }
-
-                                                                    // Complete
-                                                                    fn();
-
-                                                                    // Run Items
-                                                                    for (const extraItem in extraRuns.items) {
-                                                                        extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
-
-                                                                            // Remove
-                                                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
-
-                                                                                // Add to Remove List
-                                                                                addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-
-                                                                                // Complete
-                                                                                fn();
-                                                                                return;
-
-                                                                            }).catch(err => {
-                                                                                fn_error(err);
-                                                                                return;
-                                                                            });
-
-                                                                            // Complete
-                                                                            return;
-
-                                                                        });
-                                                                    }
-
-                                                                    // Run Tags
-                                                                    for (const extraTag in extraRuns.tags) {
-                                                                        const tag = extraRuns.tags[extraTag].tag;
-                                                                        extraRuns.tags[extraTag].extra.run(function (item, fn, fn_error) {
-
-                                                                            // Remove
-                                                                            tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
-
-                                                                                // Add to Remove List
-                                                                                if (toRemove.item[item]) {
-                                                                                    addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-                                                                                }
-
-                                                                                // Complete
-                                                                                fn();
-                                                                                return;
-
-                                                                            }).catch(err => {
-                                                                                fn_error(err);
-                                                                                return;
-                                                                            });
-
-                                                                            // Complete
-                                                                            return;
-
-                                                                        });
-                                                                    }
-
-                                                                    // Return
-                                                                    return;
-
-                                                                })
-
-                                                                    // Finished
-                                                                    .then(() => {
-                                                                        resolve(itemList);
-                                                                        return;
-                                                                    }).catch(err => {
-                                                                        reject(err);
-                                                                        return;
-                                                                    });
-
-                                                            }
-
-                                                            // Nope
-                                                            else { resolve(itemList); }
-
-                                                            // Complete
-                                                            return;
-
-                                                        }).catch(err => {
-                                                            reject(err);
-                                                            return;
-                                                        });
-
-                                                    // Complete
-                                                    return;
-
-                                                }).catch(err => {
-                                                    reject(err);
-                                                    return;
-                                                });
+                                                    }).catch(err => {
+                                                        reject(err);
+                                                        return;
+                                                    });
 
                                                 // Complete
                                                 return;
