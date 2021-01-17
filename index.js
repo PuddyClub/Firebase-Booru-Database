@@ -1272,7 +1272,7 @@ class booru_manager {
                                                                                 if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
 
                                                                                 // Delete
-                                                                                if (toRemove.tag.data[tag] && toRemove.tag.data[tag][item]) {
+                                                                                if (objType(toRemove.tag.data[tag], 'object') && (typeof toRemove.tag.data[tag][item] === "string" || typeof toRemove.tag.data[tag][item] === "number")) {
                                                                                     try {
                                                                                         delete toRemove.tag.data[tag][item];
                                                                                         toRemove.tag.count[tag]--;
