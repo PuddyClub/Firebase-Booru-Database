@@ -1136,8 +1136,23 @@ class booru_manager {
                                                                         // Remove
                                                                         tinythis.dbItems.itemData.child(item).remove().then(() => {
 
-                                                                            // Add to Remove List
-                                                                            addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                            // Preparing Escaped Values
+                                                                            const escaped_values = { itemID: item };
+
+                                                                            // Check Tags
+                                                                            if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
+                                                                                for (const tag in toRemove.item[item][tinythis.tagList]) {
+                                                                                    if (typeof toRemove.item[item][tinythis.tagList][tag] === "string") {
+                                                                                        escaped_values.tagName = databaseEscape(toRemove.item[item][tinythis.tagList][tag], allowPath);
+                                                                                        addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                    }
+                                                                                }
+                                                                            }
+
+                                                                            // Nope
+                                                                            else {
+                                                                                addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                            }
 
                                                                             // Complete
                                                                             fn();
