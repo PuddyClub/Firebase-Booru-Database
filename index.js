@@ -1305,7 +1305,7 @@ class booru_manager {
                                                                 const totalData = data.length - 1;
 
                                                                 // For Promise to Remover
-                                                                forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
+                                                                forPromise({ data: 1 }, function (index, fn, fn_error, extra) {
 
                                                                     // Items
                                                                     // Read Tags
@@ -1316,69 +1316,66 @@ class booru_manager {
                                                                     // Tags
                                                                     for (const tag in toRemove.tag.data) {
                                                                         extraRuns.tags.push({
+                                                                            tag: tag,
                                                                             extra: extra({ data: toRemove.tag.data[tag] })
                                                                         });
                                                                     }
 
-                                                                    // Force FN
-                                                                    if (item >= totalData) {
+                                                                    // Run Items
+                                                                    for (const extraItem in extraRuns.items) {
+                                                                        extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
 
-                                                                        // Run Items
-                                                                        for (const extraItem in extraRuns.items) {
-                                                                            extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
+                                                                            // Remove
+                                                                            tinythis.dbItems.itemData.child(item).remove().then(() => {
 
-                                                                                // Remove
-                                                                                tinythis.dbItems.itemData.child(item).remove().then(() => {
-
-                                                                                    // Add to Remove List
-                                                                                    addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-
-                                                                                    // Complete
-                                                                                    fn();
-                                                                                    return;
-
-                                                                                }).catch(err => {
-                                                                                    fn_error(err);
-                                                                                    return;
-                                                                                });
+                                                                                // Add to Remove List
+                                                                                addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
 
                                                                                 // Complete
+                                                                                fn();
                                                                                 return;
 
-                                                                            });
-                                                                        }
-
-                                                                        // Run Tags
-                                                                        for (const extraTag in extraRuns.tags) {
-                                                                            extraRuns.tags[extraTag].extra.run(function (item, fn, fn_error) {
-
-                                                                                // Remove
-                                                                                tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
-    
-                                                                                    // Add to Remove List
-                                                                                    if (toRemove.item[item]) {
-                                                                                        addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-                                                                                    }
-    
-                                                                                    // Complete
-                                                                                    fn();
-                                                                                    return;
-    
-                                                                                }).catch(err => {
-                                                                                    fn_error(err);
-                                                                                    return;
-                                                                                });
-    
-                                                                                // Complete
+                                                                            }).catch(err => {
+                                                                                fn_error(err);
                                                                                 return;
-    
                                                                             });
-                                                                        }
 
-                                                                        fn(true);
+                                                                            // Complete
+                                                                            return;
 
+                                                                        });
                                                                     }
 
+                                                                    // Run Tags
+                                                                    for (const extraTag in extraRuns.tags) {
+                                                                        const tag = extraRuns.tags[extraTag].tag;
+                                                                        extraRuns.tags[extraTag].extra.run(function (item, fn, fn_error) {
+
+                                                                            // Remove
+                                                                            tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+
+                                                                                // Add to Remove List
+                                                                                if (toRemove.item[item]) {
+                                                                                    addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                }
+
+                                                                                // Complete
+                                                                                fn();
+                                                                                return;
+
+                                                                            }).catch(err => {
+                                                                                fn_error(err);
+                                                                                return;
+                                                                            });
+
+                                                                            // Complete
+                                                                            return;
+
+                                                                        });
+                                                                    }
+
+                                                                    // Complete
+                                                                    fn();
                                                                     return;
 
                                                                 })
