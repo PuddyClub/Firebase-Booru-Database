@@ -63,7 +63,7 @@ const test_booru = new booru_database({
 // Start Test
 test_booru.updateDatabase([
     { id: 'tiny_test_1', tags: ['test1', 'test3'], custom: 1 },
-    { id: 'tiny_test_2', tags: ['test1', 'test2', 'test3'], custom: 2 }
+    { id: 'tiny_test_2', tags: ['test1'], custom: 2 }
 ]).then(result => {
 
     // Show Result
