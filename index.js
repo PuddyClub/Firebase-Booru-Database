@@ -1296,63 +1296,89 @@ class booru_manager {
                                                                     }
                                                                 }
 
+                                                                // Extra Runs
+                                                                const extraRuns = {
+                                                                    items: [],
+                                                                    tags: []
+                                                                };
+
+                                                                const totalData = data.length - 1;
+
                                                                 // For Promise to Remover
                                                                 forPromise({ data: toRemove }, function (index, fn, fn_error, extra) {
 
                                                                     // Items
-                                                                    const items = extra({ data: toRemove.item });
-                                                                    items.run(function (item, fn, fn_error) {
-
-                                                                        // Remove
-                                                                        tinythis.dbItems.itemData.child(item).remove().then(() => {
-
-                                                                            // Add to Remove List
-                                                                            addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-
-                                                                            // Complete
-                                                                            fn();
-                                                                            return;
-
-                                                                        }).catch(err => {
-                                                                            fn_error(err);
-                                                                            return;
-                                                                        });
-
-                                                                        // Complete
-                                                                        return;
-
+                                                                    // Read Tags
+                                                                    extraRuns.items.push({
+                                                                        extra: extra({ data: toRemove.item })
                                                                     });
 
                                                                     // Tags
                                                                     for (const tag in toRemove.tag.data) {
-                                                                        const tagItems = extra({ data: toRemove.tag.data[tag] });
-                                                                        tagItems.run(function (item, fn, fn_error) {
-
-                                                                            // Remove
-                                                                            tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
-
-                                                                                // Add to Remove List
-                                                                                if (toRemove.item[item]) {
-                                                                                    addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-                                                                                }
-
-                                                                                // Complete
-                                                                                fn();
-                                                                                return;
-
-                                                                            }).catch(err => {
-                                                                                fn_error(err);
-                                                                                return;
-                                                                            });
-
-                                                                            // Complete
-                                                                            return;
-
+                                                                        extraRuns.tags.push({
+                                                                            extra: extra({ data: toRemove.tag.data[tag] })
                                                                         });
                                                                     }
 
-                                                                    // Complete
-                                                                    fn(true);
+                                                                    // Force FN
+                                                                    if (item >= totalData) {
+
+                                                                        // Run Items
+                                                                        for (const extraItem in extraRuns.items) {
+                                                                            extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
+
+                                                                                // Remove
+                                                                                tinythis.dbItems.itemData.child(item).remove().then(() => {
+
+                                                                                    // Add to Remove List
+                                                                                    addToList('removed', { itemID: item }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+
+                                                                                    // Complete
+                                                                                    fn();
+                                                                                    return;
+
+                                                                                }).catch(err => {
+                                                                                    fn_error(err);
+                                                                                    return;
+                                                                                });
+
+                                                                                // Complete
+                                                                                return;
+
+                                                                            });
+                                                                        }
+
+                                                                        // Run Tags
+                                                                        for (const extraTag in extraRuns.tags) {
+                                                                            extraRuns.tags[extraTag].extra.run(function (item, fn, fn_error) {
+
+                                                                                // Remove
+                                                                                tinythis.dbItems.tagData.child(tag).child(item).remove().then(() => {
+    
+                                                                                    // Add to Remove List
+                                                                                    if (toRemove.item[item]) {
+                                                                                        addToList('removed', { itemID: item, tagName: tag }, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                    }
+    
+                                                                                    // Complete
+                                                                                    fn();
+                                                                                    return;
+    
+                                                                                }).catch(err => {
+                                                                                    fn_error(err);
+                                                                                    return;
+                                                                                });
+    
+                                                                                // Complete
+                                                                                return;
+    
+                                                                            });
+                                                                        }
+
+                                                                        fn(true);
+
+                                                                    }
+
                                                                     return;
 
                                                                 })
