@@ -222,7 +222,7 @@ class booru_manager {
 
                                         // Get Firebase Database Data
                                         if (typeof tag_name === "string" && tag_name.length > 0) {
-                                            require('@tinypudding/puddy-lib/firebase/getDBData')(tinythis.dbItems[database_name].child(tag_name)).then(data => {
+                                            require('@tinypudding/firebase-lib/getDBData')(tinythis.dbItems[database_name].child(tag_name)).then(data => {
                                                 resolve(data);
                                                 return;
                                             }).catch(err => {
@@ -247,7 +247,7 @@ class booru_manager {
                                     return new Promise(function (resolve, reject) {
 
                                         // Modules
-                                        const getDBData = require('@tinypudding/puddy-lib/firebase/getDBData');
+                                        const getDBData = require('@tinypudding/firebase-lib/getDBData');
 
                                         // Get Firebase Database Data
 
@@ -371,7 +371,7 @@ class booru_manager {
                                                     result.allowed = true;
 
                                                     // Firebase Escape
-                                                    const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                    const databaseEscape = require('@tinypudding/firebase-lib/databaseEscape');
                                                     result.escaped = {};
 
                                                     // Escaped Values
@@ -797,7 +797,7 @@ class booru_manager {
                                                 };
 
                                                 // Firebase Escape
-                                                const databaseEscape = require('@tinypudding/puddy-lib/firebase/databaseEscape');
+                                                const databaseEscape = require('@tinypudding/firebase-lib/databaseEscape');
 
                                                 // Prepare MD5
                                                 const hash = require('object-hash');
