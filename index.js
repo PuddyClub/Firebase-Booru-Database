@@ -74,7 +74,7 @@ class booru_manager {
                         if (objType(data.byteLimit, 'object')) {
 
                             // Check Limit
-                            const checkNumberLimit = function (where, theValue) {
+                            const checkNumberLimit = function(where, theValue) {
                                 return (typeof data.byteLimit[where][theValue] === "number" && !isNaN(data.byteLimit[where][theValue]) && data.byteLimit[where][theValue] > 0);
                             };
 
@@ -98,31 +98,31 @@ class booru_manager {
                         // Get Values
 
                         // Exist DB
-                        this.checkExistDB = function () { return this.existDB; }
+                        this.checkExistDB = function() { return this.existDB; }
 
                         // Name
-                        this.getName = function () { return this.name; }
+                        this.getName = function() { return this.name; }
 
                         // ID
-                        this.getId = function () { return this.id; }
+                        this.getId = function() { return this.id; }
 
                         // URL
-                        this.getUrl = function () { return this.url; }
+                        this.getUrl = function() { return this.url; }
 
                         // Module Name
-                        this.getModuleName = function () { return this.module_name; }
+                        this.getModuleName = function() { return this.module_name; }
 
                         // Tag List Var
-                        this.getTagListVar = function () { return this.tagList; }
+                        this.getTagListVar = function() { return this.tagList; }
 
                         // ID Var
-                        this.getIdVar = function () { return this.idVar; }
+                        this.getIdVar = function() { return this.idVar; }
 
                         // Get Byte Limit Items
-                        this.getbyteLimitItems = function () { return this.byteLimit; };
+                        this.getbyteLimitItems = function() { return this.byteLimit; };
 
                         // Get Byte Limit Item
-                        this.getbyteLimitItem = function (item, item2) {
+                        this.getbyteLimitItem = function(item, item2) {
                             if (typeof item === "string" && item.length > 0 && this.byteLimit[item]) {
 
                                 if (typeof item2 === "string" && item2.length > 0 && this.byteLimit[item][item2]) {
@@ -198,16 +198,16 @@ class booru_manager {
                                 this.existDB = true;
 
                                 // DB
-                                this.getDB = function () { return this.db; };
+                                this.getDB = function() { return this.db; };
 
                                 // First DB Line
-                                this.getFirstDBLine = function () { return this.firstDBLine; };
+                                this.getFirstDBLine = function() { return this.firstDBLine; };
 
                                 // Get DB Items
-                                this.getDBItems = function () { return this.dbItems; };
+                                this.getDBItems = function() { return this.dbItems; };
 
                                 // Get DB Item
-                                this.getDBItem = function (item) {
+                                this.getDBItem = function(item) {
                                     if (typeof item === "string" && item.length > 0 && this.dbItems[item]) {
                                         return this.dbItems[item];
                                     } else {
@@ -216,9 +216,9 @@ class booru_manager {
                                 };
 
                                 // Get Template
-                                this.getItemTemplate = function (tag_name, database_name) {
+                                this.getItemTemplate = function(tag_name, database_name) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Get Firebase Database Data
                                         if (typeof tag_name === "string" && tag_name.length > 0) {
@@ -242,9 +242,9 @@ class booru_manager {
                                     });
                                 };
 
-                                this.getItemsTemplate = function (itemsList = null, database_name) {
+                                this.getItemsTemplate = function(itemsList = null, database_name) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Modules
                                         const getDBData = require('@tinypudding/firebase-lib/getDBData');
@@ -269,7 +269,7 @@ class booru_manager {
                                             const itemList = {};
 
                                             // For Promise
-                                            require('for-promise')({ data: itemsList }, function (item, fn, fn_error) {
+                                            require('for-promise')({ data: itemsList }, function(item, fn, fn_error) {
 
                                                 // Is String
                                                 if (typeof itemsList[item] === "string" && itemsList[item].length > 0) {
@@ -286,11 +286,11 @@ class booru_manager {
 
                                                     })
 
-                                                        // Fail
-                                                        .catch(err => {
-                                                            fn_error(err);
-                                                            return;
-                                                        });
+                                                    // Fail
+                                                    .catch(err => {
+                                                        fn_error(err);
+                                                        return;
+                                                    });
 
                                                 }
 
@@ -299,14 +299,14 @@ class booru_manager {
 
                                             })
 
-                                                // Result
-                                                .then(() => {
-                                                    resolve(itemList);
-                                                    return;
-                                                }).catch(err => {
-                                                    reject(err);
-                                                    return;
-                                                });
+                                            // Result
+                                            .then(() => {
+                                                resolve(itemList);
+                                                return;
+                                            }).catch(err => {
+                                                reject(err);
+                                                return;
+                                            });
 
                                         }
 
@@ -322,29 +322,29 @@ class booru_manager {
                                 };
 
                                 // Get Item
-                                this.getItem = function (tag_name) {
+                                this.getItem = function(tag_name) {
                                     return this.getItemTemplate(tag_name, 'itemData');
                                 };
 
                                 // Get Items
-                                this.getItems = function (itemsList) {
+                                this.getItems = function(itemsList) {
                                     return this.getItemsTemplate(itemsList, 'itemData');
                                 };
 
                                 // Get Error
-                                this.getError = function (error_name) {
+                                this.getError = function(error_name) {
                                     return this.getItemTemplate(error_name, 'error');
                                 };
 
                                 // Get Errors
-                                this.getErrors = function (itemsList) {
+                                this.getErrors = function(itemsList) {
                                     return this.getItemsTemplate(itemsList, 'error');
                                 };
 
                                 // Add Items
 
                                 // Tag Function Template
-                                this.tagItemChecker = function (tagName, itemID, itemData = null, allowPath = false, allowItemNull = false) {
+                                this.tagItemChecker = function(tagName, itemID, itemData = null, allowPath = false, allowItemNull = false) {
 
                                     // Tiny Result
                                     const result = { usePath: false };
@@ -365,7 +365,8 @@ class booru_manager {
                                             if (allowItemNull || objType(itemData, 'object')) {
 
                                                 // Validate Size
-                                                if (allowItemNull || require('json-sizeof')(itemData) <= this.byteLimit.json.tag) {
+                                                const { jsonSizeOf } = require('json-sizeof');
+                                                if (allowItemNull || jsonSizeOf(itemData) <= this.byteLimit.json.tag) {
 
                                                     // Allowed Item
                                                     result.allowed = true;
@@ -418,9 +419,9 @@ class booru_manager {
                                 // Tags
 
                                 // Add Item Template
-                                this.addItemTemplate = function (data, escapeResult = null, type) {
+                                this.addItemTemplate = function(data, escapeResult = null, type) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Fix Database Tag Item
                                         if (!escapeResult) { escapeResult = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath).escaped; }
@@ -431,37 +432,37 @@ class booru_manager {
                                         // Set Data
                                         itemData[type](data.data)
 
-                                            // Success
-                                            .then(() => {
+                                        // Success
+                                        .then(() => {
 
-                                                // Send Result
-                                                resolve({
-                                                    data: data.data,
-                                                    db: {
-                                                        item: itemData
+                                            // Send Result
+                                            resolve({
+                                                data: data.data,
+                                                db: {
+                                                    item: itemData
+                                                },
+                                                values: {
+                                                    normal: {
+                                                        tag: data.tag,
+                                                        itemID: data.itemID
                                                     },
-                                                    values: {
-                                                        normal: {
-                                                            tag: data.tag,
-                                                            itemID: data.itemID
-                                                        },
-                                                        escape: {
-                                                            tag: escapeResult.tagName,
-                                                            itemID: escapeResult.itemID
-                                                        }
+                                                    escape: {
+                                                        tag: escapeResult.tagName,
+                                                        itemID: escapeResult.itemID
                                                     }
-                                                });
-
-                                                // Complete
-                                                return;
-
-                                            })
-
-                                            // Error
-                                            .catch(err => {
-                                                reject(err);
-                                                return;
+                                                }
                                             });
+
+                                            // Complete
+                                            return;
+
+                                        })
+
+                                        // Error
+                                        .catch(err => {
+                                            reject(err);
+                                            return;
+                                        });
 
                                         // Complete
                                         return;
@@ -470,19 +471,19 @@ class booru_manager {
                                 };
 
                                 // Add Item
-                                this.addItem = function (data, escapeResult = null) {
+                                this.addItem = function(data, escapeResult = null) {
                                     return this.addItemTemplate(data, escapeResult, 'set');
                                 };
 
                                 // Update Item
-                                this.updateItem = function (data, escapeResult = null) {
+                                this.updateItem = function(data, escapeResult = null) {
                                     return this.addItemTemplate(data, escapeResult, 'update');
                                 };
 
                                 // Add Template
-                                this.addTagItemTemplate = function (data, notAddData = false, type) {
+                                this.addTagItemTemplate = function(data, notAddData = false, type) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Check
                                         const resultCheck = tinythis.tagItemChecker(data.tag, data.itemID, data.data, data.allowPath);
@@ -529,19 +530,19 @@ class booru_manager {
                                 };
 
                                 // Add
-                                this.addTagItem = function (data, notAddData = false) {
+                                this.addTagItem = function(data, notAddData = false) {
                                     return this.addTagItemTemplate(data, notAddData, 'set');
                                 };
 
                                 // Update
-                                this.updateTagItem = function (data, notAddData = false) {
+                                this.updateTagItem = function(data, notAddData = false) {
                                     return this.addTagItemTemplate(data, notAddData, 'update');
                                 };
 
                                 // Add Tag Items Template
-                                this.addTagItemsTemplate = function (items, notAddData = false, type) {
+                                this.addTagItemsTemplate = function(items, notAddData = false, type) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Item List
                                         const itemList = {};
@@ -550,7 +551,7 @@ class booru_manager {
                                         if (Array.isArray(items)) {
 
                                             // For Promise
-                                            require('for-promise')({ data: items }, function (item, fn, fn_error) {
+                                            require('for-promise')({ data: items }, function(item, fn, fn_error) {
 
                                                 // Add Tag
                                                 tinythis.addTagItemTemplate(items[item], notAddData, type).then((result) => {
@@ -567,14 +568,14 @@ class booru_manager {
 
                                             })
 
-                                                // Result
-                                                .then(() => {
-                                                    resolve(itemList);
-                                                    return;
-                                                }).catch(err => {
-                                                    reject(err);
-                                                    return;
-                                                });
+                                            // Result
+                                            .then(() => {
+                                                resolve(itemList);
+                                                return;
+                                            }).catch(err => {
+                                                reject(err);
+                                                return;
+                                            });
 
                                         }
 
@@ -590,18 +591,18 @@ class booru_manager {
                                 };
 
                                 // Add Multiple Tags
-                                this.addTagItems = function (items, notAddData = false) {
+                                this.addTagItems = function(items, notAddData = false) {
                                     return this.addTagItemsTemplate(items, notAddData, 'set');
                                 };
 
-                                this.updateTagItems = function (items, notAddData = false) {
+                                this.updateTagItems = function(items, notAddData = false) {
                                     return this.addTagItemsTemplate(items, notAddData, 'update');
                                 };
 
                                 // Send Error
-                                this.error = function (data) {
+                                this.error = function(data) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Prepare Data
                                         const insertData = {};
@@ -616,7 +617,8 @@ class booru_manager {
                                             if (typeof data.message === "string" && data.message.length > 0) {
 
                                                 // Message Size
-                                                if (require('json-sizeof')(insertData) <= tinythis.byteLimit.json.error) {
+                                                const { jsonSizeOf } = require('json-sizeof');
+                                                if (jsonSizeOf(insertData) <= tinythis.byteLimit.json.error) {
 
                                                     // Insert Message
                                                     insertData.message = data.message;
@@ -658,9 +660,9 @@ class booru_manager {
                                 };
 
                                 // Check Error
-                                this.checkError = function () {
+                                this.checkError = function() {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Get Errors
                                         tinythis.getErrors().then(errors => {
@@ -692,9 +694,9 @@ class booru_manager {
                                 };
 
                                 // Remove Error
-                                this.setErrorTimeout = function (newTimeout) {
+                                this.setErrorTimeout = function(newTimeout) {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Valid Number
                                         if (typeof newTimeout === "number" && !isNaN(newTimeout)) {
@@ -730,9 +732,9 @@ class booru_manager {
                                 };
 
                                 // Remove Error
-                                this.clearError = function () {
+                                this.clearError = function() {
                                     const tinythis = this;
-                                    return new Promise(function (resolve, reject) {
+                                    return new Promise(function(resolve, reject) {
 
                                         // Insert Data
                                         tinythis.dbItems.error.remove().then(() => {
@@ -750,9 +752,9 @@ class booru_manager {
                                 };
 
                                 // Update Database
-                                this.updateDatabase = function (data, allowPath = false, notAddData = false) {
+                                this.updateDatabase = function(data, allowPath = false, notAddData = false) {
                                     const tinythis = this;
-                                    return new Promise(async function (resolve, reject) {
+                                    return new Promise(async function(resolve, reject) {
 
                                         // Update Database Info
                                         try {
@@ -778,7 +780,7 @@ class booru_manager {
 
                                                 // Item List
                                                 const itemList = { added: { item: {}, tag: {} }, removed: { item: {}, tag: {} }, old: { item: {}, tag: {} }, updated: { item: {}, tag: {} } };
-                                                const addToList = function (type, escaped_values, dataInsert, itemID) {
+                                                const addToList = function(type, escaped_values, dataInsert, itemID) {
 
                                                     // Insert Tag
                                                     if (escaped_values.tagName && escaped_values.itemID && itemID) {
@@ -845,7 +847,7 @@ class booru_manager {
                                                 const extraRuns = [];
 
                                                 // For Promise
-                                                forPromise({ data: data }, function (item, fn, fn_error, extra) {
+                                                forPromise({ data: data }, function(item, fn, fn_error, extra) {
 
                                                     // Extra Items
                                                     item = Number(item);
@@ -916,22 +918,22 @@ class booru_manager {
                                                                 allowPath: allowPath
                                                             })
 
-                                                                // Result
-                                                                .then(() => {
+                                                            // Result
+                                                            .then(() => {
 
-                                                                    // Insert Result
-                                                                    tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
+                                                                // Insert Result
+                                                                tagInsertResult(fn, tinythis.unknownTag, escaped_values, item, itemID, isNew);
 
-                                                                    // Complete
-                                                                    return;
+                                                                // Complete
+                                                                return;
 
-                                                                })
+                                                            })
 
-                                                                // Error
-                                                                .catch(err => {
-                                                                    fn_error(err);
-                                                                    return;
-                                                                });
+                                                            // Error
+                                                            .catch(err => {
+                                                                fn_error(err);
+                                                                return;
+                                                            });
 
                                                         }
 
@@ -959,7 +961,7 @@ class booru_manager {
                                                                 const isNew = extraRuns[extraTag].isNew;
 
                                                                 // Run Extra
-                                                                extraRuns[extraTag].extra.run(function (tagIndex, fn, fn_error) {
+                                                                extraRuns[extraTag].extra.run(function(tagIndex, fn, fn_error) {
 
                                                                     // Tag Name
                                                                     const tagName = data[item][tinythis.tagList][tagIndex];
@@ -981,22 +983,22 @@ class booru_manager {
                                                                                 allowPath: allowPath
                                                                             }, notAddData)
 
-                                                                                // Result
-                                                                                .then(() => {
+                                                                            // Result
+                                                                            .then(() => {
 
-                                                                                    // Insert Tag
-                                                                                    tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
+                                                                                // Insert Tag
+                                                                                tagInsertResult(fn, tagName, escaped_values, item, itemID, isNew);
 
-                                                                                    // Complete
-                                                                                    return;
+                                                                                // Complete
+                                                                                return;
 
-                                                                                })
+                                                                            })
 
-                                                                                // Error
-                                                                                .catch(err => {
-                                                                                    fn_error(err);
-                                                                                    return;
-                                                                                });
+                                                                            // Error
+                                                                            .catch(err => {
+                                                                                fn_error(err);
+                                                                                return;
+                                                                            });
 
                                                                         }
 
@@ -1031,170 +1033,167 @@ class booru_manager {
 
                                                 })
 
-                                                    // Result
-                                                    .then(() => {
+                                                // Result
+                                                .then(() => {
 
-                                                        // Exist OLD Checker
-                                                        if (existOLDItems) {
+                                                    // Exist OLD Checker
+                                                    if (existOLDItems) {
 
-                                                            // Prepare Module
-                                                            const clone = require('clone');
-                                                            const extend = require('object-extend');
+                                                        // Prepare Module
+                                                        const clone = require('clone');
+                                                        const extend = require('object-extend');
 
-                                                            // Remove Items
-                                                            const toRemove = { item: {}, tag: { data: {}, count: {} } };
+                                                        // Remove Items
+                                                        const toRemove = { item: {}, tag: { data: {}, count: {} } };
 
-                                                            // Clone Items
-                                                            if (existOLDItems) { toRemove.item = clone(oldItems); }
+                                                        // Clone Items
+                                                        if (existOLDItems) { toRemove.item = clone(oldItems); }
 
-                                                            // Prepare Pack
-                                                            let pack_items = extend({ item: {}, tag: {} }, itemList.old);
-                                                            pack_items = extend(pack_items, itemList.added);
-                                                            pack_items = extend(pack_items, itemList.updated);
+                                                        // Prepare Pack
+                                                        let pack_items = extend({ item: {}, tag: {} }, itemList.old);
+                                                        pack_items = extend(pack_items, itemList.added);
+                                                        pack_items = extend(pack_items, itemList.updated);
 
-                                                            // For
+                                                        // For
 
-                                                            // Item
-                                                            for (const item in pack_items.item) {
-                                                                if (existOLDItems && objType(oldItems[item], 'object')) {
+                                                        // Item
+                                                        for (const item in pack_items.item) {
+                                                            if (existOLDItems && objType(oldItems[item], 'object')) {
 
-                                                                    // Item
-                                                                    if (toRemove.item[item]) {
-                                                                        try { delete toRemove.item[item]; }
-                                                                        catch (err) { }
-                                                                    }
-
+                                                                // Item
+                                                                if (toRemove.item[item]) {
+                                                                    try { delete toRemove.item[item]; } catch (err) {}
                                                                 }
+
                                                             }
-
-                                                            // Tag
-                                                            for (const tag in pack_items.tag) {
-                                                                if (objType(pack_items[tag], 'object')) {
-                                                                    for (const item in pack_items.tag[tag]) {
-                                                                        if (typeof pack_items[tag][item] === "string") {
-
-                                                                            // Remove the Item and Tag from the Remover List
-
-                                                                            // Insert Total
-                                                                            if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
-
-                                                                            // Delete
-                                                                            if (objType(toRemove.tag.data[tag], 'object') && (typeof toRemove.tag.data[tag][item] === "string" || typeof toRemove.tag.data[tag][item] === "number")) {
-                                                                                try {
-                                                                                    delete toRemove.tag.data[tag][item];
-                                                                                    toRemove.tag.count[tag]--;
-                                                                                }
-                                                                                catch (err) { }
-                                                                            }
-
-                                                                            // Check Size
-                                                                            if (toRemove.tag.count[tag] < 1) {
-
-                                                                                // Delete Tag
-                                                                                try {
-                                                                                    delete toRemove.tag.data[tag];
-                                                                                }
-                                                                                catch (err) { }
-
-                                                                            }
-
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-
-                                                            // Extra Runs
-                                                            const extraRuns = {
-                                                                items: [],
-                                                                tags: []
-                                                            };
-
-                                                            // For Promise to Remover
-                                                            forPromise({ data: 1 }, function (index, fn, fn_error, extra) {
-
-                                                                // Items
-                                                                // Read Tags
-                                                                extraRuns.items.push({
-                                                                    extra: extra({ data: toRemove.item })
-                                                                });
-
-                                                                // Tags
-                                                                for (const tag in toRemove.tag.data) {
-                                                                    extraRuns.tags.push({
-                                                                        tag: tag,
-                                                                        extra: extra({ data: toRemove.tag.data[tag] })
-                                                                    });
-                                                                }
-
-                                                                // Complete
-                                                                fn();
-
-                                                                // Run Items
-                                                                for (const extraItem in extraRuns.items) {
-                                                                    extraRuns.items[extraItem].extra.run(function (item, fn, fn_error) {
-
-                                                                        // Remove
-                                                                        tinythis.dbItems.itemData.child(item).remove().then(() => {
-
-                                                                            // Preparing Escaped Values
-                                                                            const escaped_values = { itemID: item };
-
-                                                                            // Check Tags
-                                                                            if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
-                                                                                for (const tag in toRemove.item[item][tinythis.tagList]) {
-                                                                                    if (typeof toRemove.item[item][tinythis.tagList][tag] === "string") {
-                                                                                        escaped_values.tagName = databaseEscape(toRemove.item[item][tinythis.tagList][tag], allowPath);
-                                                                                        addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-                                                                                    }
-                                                                                }
-                                                                            }
-
-                                                                            // Nope
-                                                                            else {
-                                                                                addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
-                                                                            }
-
-                                                                            // Complete
-                                                                            fn();
-                                                                            return;
-
-                                                                        }).catch(err => {
-                                                                            fn_error(err);
-                                                                            return;
-                                                                        });
-
-                                                                        // Complete
-                                                                        return;
-
-                                                                    });
-                                                                }
-
-                                                                // Return
-                                                                return;
-
-                                                            })
-
-                                                                // Finished
-                                                                .then(() => {
-                                                                    resolve(itemList);
-                                                                    return;
-                                                                }).catch(err => {
-                                                                    reject(err);
-                                                                    return;
-                                                                });
-
                                                         }
 
-                                                        // Nope
-                                                        else { resolve(itemList); }
+                                                        // Tag
+                                                        for (const tag in pack_items.tag) {
+                                                            if (objType(pack_items[tag], 'object')) {
+                                                                for (const item in pack_items.tag[tag]) {
+                                                                    if (typeof pack_items[tag][item] === "string") {
 
-                                                        // Complete
-                                                        return;
+                                                                        // Remove the Item and Tag from the Remover List
 
-                                                    }).catch(err => {
-                                                        reject(err);
-                                                        return;
-                                                    });
+                                                                        // Insert Total
+                                                                        if (typeof toRemove.tag.count[tag] !== "number") { toRemove.tag.count[tag] = Object.keys(toRemove.tag.data[tag]).length; }
+
+                                                                        // Delete
+                                                                        if (objType(toRemove.tag.data[tag], 'object') && (typeof toRemove.tag.data[tag][item] === "string" || typeof toRemove.tag.data[tag][item] === "number")) {
+                                                                            try {
+                                                                                delete toRemove.tag.data[tag][item];
+                                                                                toRemove.tag.count[tag]--;
+                                                                            } catch (err) {}
+                                                                        }
+
+                                                                        // Check Size
+                                                                        if (toRemove.tag.count[tag] < 1) {
+
+                                                                            // Delete Tag
+                                                                            try {
+                                                                                delete toRemove.tag.data[tag];
+                                                                            } catch (err) {}
+
+                                                                        }
+
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+
+                                                        // Extra Runs
+                                                        const extraRuns = {
+                                                            items: [],
+                                                            tags: []
+                                                        };
+
+                                                        // For Promise to Remover
+                                                        forPromise({ data: 1 }, function(index, fn, fn_error, extra) {
+
+                                                            // Items
+                                                            // Read Tags
+                                                            extraRuns.items.push({
+                                                                extra: extra({ data: toRemove.item })
+                                                            });
+
+                                                            // Tags
+                                                            for (const tag in toRemove.tag.data) {
+                                                                extraRuns.tags.push({
+                                                                    tag: tag,
+                                                                    extra: extra({ data: toRemove.tag.data[tag] })
+                                                                });
+                                                            }
+
+                                                            // Complete
+                                                            fn();
+
+                                                            // Run Items
+                                                            for (const extraItem in extraRuns.items) {
+                                                                extraRuns.items[extraItem].extra.run(function(item, fn, fn_error) {
+
+                                                                    // Remove
+                                                                    tinythis.dbItems.itemData.child(item).remove().then(() => {
+
+                                                                        // Preparing Escaped Values
+                                                                        const escaped_values = { itemID: item };
+
+                                                                        // Check Tags
+                                                                        if (Array.isArray(toRemove.item[item][tinythis.tagList]) && toRemove.item[item][tinythis.tagList].length > 0) {
+                                                                            for (const tag in toRemove.item[item][tinythis.tagList]) {
+                                                                                if (typeof toRemove.item[item][tinythis.tagList][tag] === "string") {
+                                                                                    escaped_values.tagName = databaseEscape(toRemove.item[item][tinythis.tagList][tag], allowPath);
+                                                                                    addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                                }
+                                                                            }
+                                                                        }
+
+                                                                        // Nope
+                                                                        else {
+                                                                            addToList('removed', escaped_values, toRemove.item[item], toRemove.item[item][tinythis.idVar]);
+                                                                        }
+
+                                                                        // Complete
+                                                                        fn();
+                                                                        return;
+
+                                                                    }).catch(err => {
+                                                                        fn_error(err);
+                                                                        return;
+                                                                    });
+
+                                                                    // Complete
+                                                                    return;
+
+                                                                });
+                                                            }
+
+                                                            // Return
+                                                            return;
+
+                                                        })
+
+                                                        // Finished
+                                                        .then(() => {
+                                                            resolve(itemList);
+                                                            return;
+                                                        }).catch(err => {
+                                                            reject(err);
+                                                            return;
+                                                        });
+
+                                                    }
+
+                                                    // Nope
+                                                    else { resolve(itemList); }
+
+                                                    // Complete
+                                                    return;
+
+                                                }).catch(err => {
+                                                    reject(err);
+                                                    return;
+                                                });
 
                                                 // Complete
                                                 return;
